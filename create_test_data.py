@@ -47,6 +47,5 @@ def add_trucks_for_user(username, num_trucks=10):
             return False
 
 if __name__ == '__main__':
-    # Get username from input
-    username = input("Enter username to add trucks for: ")
-    add_trucks_for_user(username)
+    # Add trucks for admin user
+    add_trucks_for_user('admin')
