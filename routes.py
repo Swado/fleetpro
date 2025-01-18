@@ -3,6 +3,16 @@ from flask_login import login_user, logout_user, login_required, current_user
 from app import app, db
 from models import User, Truck
 import logging
+from datetime import datetime
+
+# US states for the dropdown
+US_STATES = [
+    'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
+    'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
+    'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',
+    'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',
+    'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
+]
 
 @app.route('/')
 def index():
@@ -48,3 +58,18 @@ def dashboard():
                          trucks=trucks, 
                          truck_count=truck_count,
                          active_trucks=active_trucks)
+
+@app.route('/truck/<int:truck_id>', methods=['GET', 'POST'])
+@login_required
+def truck_detail(truck_id):
+    truck = Truck.query.filter_by(id=truck_id, user_id=current_user.id).first_or_404()
+
+    if request.method == 'POST':
+        truck.destination_city = request.form.get('city')
+        truck.destination_state = request.form.get('state')
+        truck.destination_set_at = datetime.utcnow()
+        db.session.commit()
+        flash(f'Destination updated for truck {truck.plate_number}')
+        return redirect(url_for('truck_detail', truck_id=truck.id))
+
+    return render_template('truck_detail.html', truck=truck, states=US_STATES)

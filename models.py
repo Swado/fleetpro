@@ -28,3 +28,6 @@ class Truck(db.Model):
     status = db.Column(db.String(20), default='active')
     last_maintenance = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    destination_city = db.Column(db.String(100))
+    destination_state = db.Column(db.String(2))
+    destination_set_at = db.Column(db.DateTime)
