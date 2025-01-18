@@ -40,12 +40,6 @@
                         <i class="fas fa-history"></i> Trip History
                     </button>
                 </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="invoices-tab" data-bs-toggle="tab" 
-                            data-bs-target="#invoices" type="button" role="tab">
-                        <i class="fas fa-file-invoice-dollar"></i> Invoices
-                    </button>
-                </li>
             </ul>
 
             <!-- Tab Contents -->
@@ -86,24 +80,45 @@
                         {% if truck.trips %}
                             {% for trip in truck.trips|sort(attribute='start_date', reverse=true) %}
                             <div class="trip-card">
-                                <div class="row">
-                                    <div class="col-md-4">
+                                <div class="row align-items-center">
+                                    <div class="col-md-3">
                                         <h5>Trip #{{ trip.id }}</h5>
                                         <span class="badge {{ 'bg-success' if trip.status == 'completed' else 'bg-warning' }}">
                                             {{ trip.status|title }}
                                         </span>
                                     </div>
-                                    <div class="col-md-4">
-                                        <p><strong>From:</strong> {{ trip.start_city }}, {{ trip.start_state }}</p>
-                                        <p><strong>To:</strong> {{ trip.end_city }}, {{ trip.end_state }}</p>
+                                    <div class="col-md-3">
+                                        <p class="mb-1"><strong>From:</strong> {{ trip.start_city }}, {{ trip.start_state }}</p>
+                                        <p class="mb-1"><strong>To:</strong> {{ trip.end_city }}, {{ trip.end_state }}</p>
                                     </div>
-                                    <div class="col-md-4">
-                                        <p><strong>Started:</strong> {{ trip.start_date.strftime('%Y-%m-%d') }}</p>
+                                    <div class="col-md-3">
+                                        <p class="mb-1"><strong>Started:</strong> {{ trip.start_date.strftime('%Y-%m-%d') }}</p>
                                         {% if trip.end_date %}
-                                        <p><strong>Completed:</strong> {{ trip.end_date.strftime('%Y-%m-%d') }}</p>
+                                        <p class="mb-1"><strong>Completed:</strong> {{ trip.end_date.strftime('%Y-%m-%d') }}</p>
                                         {% endif %}
                                         {% if trip.distance %}
-                                        <p><strong>Distance:</strong> {{ "%.1f"|format(trip.distance) }} miles</p>
+                                        <p class="mb-1"><strong>Distance:</strong> {{ "%.1f"|format(trip.distance) }} miles</p>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-3">
+                                        {% if trip.invoice %}
+                                            <div class="payment-status mb-2">
+                                                <span class="badge {{ 'bg-success' if trip.invoice.status == 'paid' else 'bg-warning' }}">
+                                                    {% if trip.invoice.status == 'paid' %}
+                                                        <i class="fas fa-check-circle"></i> Paid
+                                                    {% else %}
+                                                        <i class="fas fa-clock"></i> Payment Pending
+                                                    {% endif %}
+                                                </span>
+                                                <p class="mb-1"><strong>Amount:</strong> ${{ "%.2f"|format(trip.invoice.amount) }}</p>
+                                            </div>
+                                            <button class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-file-invoice-dollar"></i> View Invoice
+                                            </button>
+                                        {% else %}
+                                            <span class="badge bg-secondary">
+                                                <i class="fas fa-file-invoice"></i> No Invoice
+                                            </span>
                                         {% endif %}
                                     </div>
                                 </div>
@@ -112,46 +127,6 @@
                         {% else %}
                             <div class="alert alert-info">
                                 <i class="fas fa-info-circle"></i> No trip history available for this truck.
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-
-                <!-- Invoices Tab -->
-                <div class="tab-pane fade" id="invoices" role="tabpanel">
-                    <div class="invoices-list">
-                        {% set all_invoices = [] %}
-                        {% for trip in truck.trips %}
-                            {% if trip.invoice %}
-                                {% set _ = all_invoices.append(trip.invoice) %}
-                            {% endif %}
-                        {% endfor %}
-
-                        {% if all_invoices %}
-                            {% for invoice in all_invoices|sort(attribute='created_at', reverse=true) %}
-                            <div class="invoice-card">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <h5>Invoice #{{ invoice.invoice_number }}</h5>
-                                        <span class="badge {{ 'bg-success' if invoice.status == 'paid' else 'bg-warning' }}">
-                                            {{ invoice.status|title }}
-                                        </span>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <p><strong>Amount:</strong> ${{ "%.2f"|format(invoice.amount) }}</p>
-                                        <p><strong>Date:</strong> {{ invoice.created_at.strftime('%Y-%m-%d') }}</p>
-                                    </div>
-                                    <div class="col-md-4 text-end">
-                                        <button class="btn btn-sm btn-outline-primary">
-                                            <i class="fas fa-download"></i> Download PDF
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        {% else %}
-                            <div class="alert alert-info">
-                                <i class="fas fa-info-circle"></i> No invoices available for this truck.
                             </div>
                         {% endif %}
                     </div>
