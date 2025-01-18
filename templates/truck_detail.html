@@ -12,46 +12,148 @@
                     <li class="breadcrumb-item active">{{ truck.plate_number }}</li>
                 </ol>
             </nav>
-            <div class="truck-detail-card">
-                <div class="row">
-                    <div class="col-md-6">
-                        <h2>{{ truck.plate_number }}</h2>
-                        <span class="truck-status" data-status="{{ truck.status }}">
-                            <i class="fas fa-circle"></i> {{ truck.status|title }}
-                        </span>
-                        <div class="truck-info mt-3">
-                            <p><strong>Model:</strong> {{ truck.model }}</p>
-                            <p><strong>Year:</strong> {{ truck.year }}</p>
-                            <p><strong>Last Maintenance:</strong> {{ truck.last_maintenance.strftime('%Y-%m-%d') }}</p>
+
+            <!-- Truck Info Header -->
+            <div class="truck-detail-header mb-4">
+                <h2>{{ truck.plate_number }}</h2>
+                <span class="truck-status" data-status="{{ truck.status }}">
+                    <i class="fas fa-circle"></i> {{ truck.status|title }}
+                </span>
+                <div class="truck-info mt-3">
+                    <p><strong>Model:</strong> {{ truck.model }}</p>
+                    <p><strong>Year:</strong> {{ truck.year }}</p>
+                    <p><strong>Last Maintenance:</strong> {{ truck.last_maintenance.strftime('%Y-%m-%d') }}</p>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <ul class="nav nav-tabs" id="truckTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="destination-tab" data-bs-toggle="tab" 
+                            data-bs-target="#destination" type="button" role="tab">
+                        <i class="fas fa-map-marker-alt"></i> Next Destination
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="history-tab" data-bs-toggle="tab" 
+                            data-bs-target="#history" type="button" role="tab">
+                        <i class="fas fa-history"></i> Trip History
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="invoices-tab" data-bs-toggle="tab" 
+                            data-bs-target="#invoices" type="button" role="tab">
+                        <i class="fas fa-file-invoice-dollar"></i> Invoices
+                    </button>
+                </li>
+            </ul>
+
+            <!-- Tab Contents -->
+            <div class="tab-content mt-3" id="truckTabsContent">
+                <!-- Next Destination Tab -->
+                <div class="tab-pane fade show active" id="destination" role="tabpanel">
+                    <div class="destination-search">
+                        <h3>Set Next Destination</h3>
+                        <div id="map-container" class="mb-3">
+                            <div id="map"></div>
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="destination-search">
-                            <h3>Set Next Destination</h3>
-                            <div id="map-container" class="mb-3">
-                                <div id="map"></div>
+                        <div id="selected-region" class="mt-2 text-muted"></div>
+                        <div id="region-helper" class="mb-2 text-info"></div>
+                        <form method="POST" class="mt-3">
+                            <div class="mb-3">
+                                <label for="city" class="form-label">City</label>
+                                <input type="text" class="form-control" id="city" name="city" required>
                             </div>
-                            <div id="selected-region" class="mt-2 text-muted"></div>
-                            <div id="region-helper" class="mb-2 text-info"></div>
-                            <form method="POST" class="mt-3">
-                                <div class="mb-3">
-                                    <label for="city" class="form-label">City</label>
-                                    <input type="text" class="form-control" id="city" name="city" required>
+                            <div class="mb-3">
+                                <label for="state" class="form-label">State</label>
+                                <select class="form-control" id="state" name="state" required>
+                                    <option value="">Select State</option>
+                                    {% for state in states %}
+                                    <option value="{{ state }}">{{ state }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-map-marker-alt"></i> Set Destination
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Trip History Tab -->
+                <div class="tab-pane fade" id="history" role="tabpanel">
+                    <div class="trip-history">
+                        {% if truck.trips %}
+                            {% for trip in truck.trips|sort(attribute='start_date', reverse=true) %}
+                            <div class="trip-card">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <h5>Trip #{{ trip.id }}</h5>
+                                        <span class="badge {{ 'bg-success' if trip.status == 'completed' else 'bg-warning' }}">
+                                            {{ trip.status|title }}
+                                        </span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p><strong>From:</strong> {{ trip.start_city }}, {{ trip.start_state }}</p>
+                                        <p><strong>To:</strong> {{ trip.end_city }}, {{ trip.end_state }}</p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p><strong>Started:</strong> {{ trip.start_date.strftime('%Y-%m-%d') }}</p>
+                                        {% if trip.end_date %}
+                                        <p><strong>Completed:</strong> {{ trip.end_date.strftime('%Y-%m-%d') }}</p>
+                                        {% endif %}
+                                        {% if trip.distance %}
+                                        <p><strong>Distance:</strong> {{ "%.1f"|format(trip.distance) }} miles</p>
+                                        {% endif %}
+                                    </div>
                                 </div>
-                                <div class="mb-3">
-                                    <label for="state" class="form-label">State</label>
-                                    <select class="form-control" id="state" name="state" required>
-                                        <option value="">Select State</option>
-                                        {% for state in states %}
-                                        <option value="{{ state }}">{{ state }}</option>
-                                        {% endfor %}
-                                    </select>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i> No trip history available for this truck.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Invoices Tab -->
+                <div class="tab-pane fade" id="invoices" role="tabpanel">
+                    <div class="invoices-list">
+                        {% set all_invoices = [] %}
+                        {% for trip in truck.trips %}
+                            {% if trip.invoice %}
+                                {% set _ = all_invoices.append(trip.invoice) %}
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if all_invoices %}
+                            {% for invoice in all_invoices|sort(attribute='created_at', reverse=true) %}
+                            <div class="invoice-card">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <h5>Invoice #{{ invoice.invoice_number }}</h5>
+                                        <span class="badge {{ 'bg-success' if invoice.status == 'paid' else 'bg-warning' }}">
+                                            {{ invoice.status|title }}
+                                        </span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p><strong>Amount:</strong> ${{ "%.2f"|format(invoice.amount) }}</p>
+                                        <p><strong>Date:</strong> {{ invoice.created_at.strftime('%Y-%m-%d') }}</p>
+                                    </div>
+                                    <div class="col-md-4 text-end">
+                                        <button class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-download"></i> Download PDF
+                                        </button>
+                                    </div>
                                 </div>
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-map-marker-alt"></i> Set Destination
-                                </button>
-                            </form>
-                        </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i> No invoices available for this truck.
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>

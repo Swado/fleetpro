@@ -31,3 +31,25 @@ class Truck(db.Model):
     destination_city = db.Column(db.String(100))
     destination_state = db.Column(db.String(2))
     destination_set_at = db.Column(db.DateTime)
+    trips = db.relationship('TripHistory', backref='truck', lazy=True)
+
+class TripHistory(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    truck_id = db.Column(db.Integer, db.ForeignKey('truck.id'), nullable=False)
+    start_city = db.Column(db.String(100), nullable=False)
+    start_state = db.Column(db.String(2), nullable=False)
+    end_city = db.Column(db.String(100), nullable=False)
+    end_state = db.Column(db.String(2), nullable=False)
+    start_date = db.Column(db.DateTime, nullable=False)
+    end_date = db.Column(db.DateTime)
+    distance = db.Column(db.Float)  # in miles
+    status = db.Column(db.String(20), default='in_progress')
+    invoice = db.relationship('Invoice', backref='trip', uselist=False)
+
+class Invoice(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    trip_id = db.Column(db.Integer, db.ForeignKey('trip_history.id'), nullable=False)
+    invoice_number = db.Column(db.String(20), unique=True, nullable=False)
+    amount = db.Column(db.Float, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    status = db.Column(db.String(20), default='pending')  # pending, paid, cancelled
