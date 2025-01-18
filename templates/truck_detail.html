@@ -166,66 +166,88 @@
 {% block extra_js %}
 <!-- Custom map handling -->
 <script src="{{ url_for('static', filename='js/map.js') }}"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Previous map initialization remains unchanged
+    // Performance Chart Initialization
+    const performanceTab = document.querySelector('#performance-tab');
+    let performanceChart = null;
 
-    // Initialize performance chart when tab is shown
-    document.querySelector('#performance-tab').addEventListener('shown.bs.tab', function (e) {
-        if (!window.performanceChart) {
-            fetch(`/api/truck/{{ truck.id }}/performance`)
-                .then(response => response.json())
-                .then(data => {
-                    const ctx = document.getElementById('performanceChart').getContext('2d');
-                    window.performanceChart = new Chart(ctx, {
-                        type: 'line',
-                        data: {
-                            labels: data.dates,
-                            datasets: [{
-                                label: 'Runtime (hours)',
-                                data: data.runtime,
-                                borderColor: '#2ecc71',
-                                backgroundColor: 'rgba(46, 204, 113, 0.1)',
-                                tension: 0.4
-                            }, {
-                                label: 'Idle Time (hours)',
-                                data: data.idle_time,
-                                borderColor: '#e74c3c',
-                                backgroundColor: 'rgba(231, 76, 60, 0.1)',
-                                tension: 0.4
-                            }]
+    performanceTab.addEventListener('shown.bs.tab', function (e) {
+        console.log('Performance tab shown');
+        if (performanceChart) {
+            performanceChart.destroy();
+        }
+
+        fetch(`/api/truck/{{ truck.id }}/performance`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Received performance data:', data);
+                const ctx = document.getElementById('performanceChart').getContext('2d');
+                performanceChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: data.dates,
+                        datasets: [{
+                            label: 'Runtime (hours)',
+                            data: data.runtime,
+                            borderColor: '#2ecc71',
+                            backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }, {
+                            label: 'Idle Time (hours)',
+                            data: data.idle_time,
+                            borderColor: '#e74c3c',
+                            backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top'
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false
+                            }
                         },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                legend: {
-                                    display: false
-                                },
-                                tooltip: {
-                                    mode: 'index',
-                                    intersect: false
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Hours'
                                 }
                             },
-                            scales: {
-                                y: {
-                                    beginAtZero: true,
-                                    title: {
-                                        display: true,
-                                        text: 'Hours'
-                                    }
-                                },
-                                x: {
-                                    ticks: {
-                                        maxTicksLimit: 10
-                                    }
+                            x: {
+                                ticks: {
+                                    maxTicksLimit: 10
                                 }
                             }
                         }
-                    });
+                    }
                 });
-        }
+            })
+            .catch(error => {
+                console.error('Error fetching performance data:', error);
+                document.querySelector('.performance-chart-container').innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle"></i> 
+                        Error loading performance data. Please try again later.
+                    </div>
+                `;
+            });
     });
 });
 </script>
