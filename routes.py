@@ -14,13 +14,19 @@ def index():
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('dashboard'))
-    
+
     if request.method == 'POST':
-        user = User.query.filter_by(username=request.form['username']).first()
-        if user and user.check_password(request.form['password']):
-            login_user(user)
+        logging.debug(f"Login attempt for username: {request.form.get('username')}")
+        user = User.query.filter_by(username=request.form.get('username')).first()
+        if user and user.check_password(request.form.get('password')):
+            login_user(user, remember=True)
+            logging.info(f"User {user.username} logged in successfully")
+            next_page = request.args.get('next')
+            if next_page:
+                return redirect(next_page)
             return redirect(url_for('dashboard'))
         flash('Invalid username or password')
+        logging.warning(f"Failed login attempt for username: {request.form.get('username')}")
     return render_template('login.html')
 
 @app.route('/logout')
