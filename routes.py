@@ -16,17 +16,20 @@ def login():
         return redirect(url_for('dashboard'))
 
     if request.method == 'POST':
-        logging.debug(f"Login attempt for username: {request.form.get('username')}")
-        user = User.query.filter_by(username=request.form.get('username')).first()
-        if user and user.check_password(request.form.get('password')):
-            login_user(user, remember=True)
-            logging.info(f"User {user.username} logged in successfully")
+        username = request.form.get('username')
+        password = request.form.get('password')
+        logging.debug(f"Login attempt for username: {username}")
+
+        user = User.query.filter_by(username=username).first()
+        if user and user.check_password(password):
+            login_user(user)
+            logging.info(f"User {username} logged in successfully")
             next_page = request.args.get('next')
-            if next_page:
-                return redirect(next_page)
-            return redirect(url_for('dashboard'))
+            return redirect(next_page if next_page else url_for('dashboard'))
+
         flash('Invalid username or password')
-        logging.warning(f"Failed login attempt for username: {request.form.get('username')}")
+        logging.warning(f"Failed login attempt for username: {username}")
+
     return render_template('login.html')
 
 @app.route('/logout')
