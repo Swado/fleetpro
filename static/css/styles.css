@@ -287,3 +287,39 @@ body {
     color: var(--primary-color);
     margin-bottom: 8px;
 }
+
+/* Performance Chart Styles */
+.performance-chart-container {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.chart-wrapper {
+    position: relative;
+    height: 400px;
+    margin: 20px 0;
+}
+
+.chart-legend {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    font-size: 0.9em;
+    color: var(--text-color);
+}
+
+.legend-color {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    margin-right: 8px;
+}

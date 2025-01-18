@@ -44,6 +44,8 @@ class TripHistory(db.Model):
     end_date = db.Column(db.DateTime)
     distance = db.Column(db.Float)  # in miles
     status = db.Column(db.String(20), default='in_progress')
+    runtime_hours = db.Column(db.Float, default=0.0)  # Daily active driving time
+    idle_time_hours = db.Column(db.Float, default=0.0)  # Daily idle time
     invoice = db.relationship('Invoice', backref='trip', uselist=False)
 
 class Invoice(db.Model):

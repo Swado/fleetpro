@@ -1,9 +1,10 @@
-from flask import render_template, redirect, url_for, flash, request
+from flask import render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
 from app import app, db
-from models import User, Truck
+from models import User, Truck, TripHistory
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
+from sqlalchemy import func
 
 # US states for the dropdown
 US_STATES = [
@@ -73,3 +74,50 @@ def truck_detail(truck_id):
         return redirect(url_for('truck_detail', truck_id=truck.id))
 
     return render_template('truck_detail.html', truck=truck, states=US_STATES)
+
+
+@app.route('/api/truck/<int:truck_id>/performance')
+@login_required
+def truck_performance(truck_id):
+    # Get data for last 90 days
+    end_date = datetime.utcnow()
+    start_date = end_date - timedelta(days=90)
+
+    # Query trips for the truck within date range
+    trips = TripHistory.query.filter(
+        TripHistory.truck_id == truck_id,
+        TripHistory.start_date >= start_date,
+        TripHistory.start_date <= end_date
+    ).all()
+
+    # Prepare data for chart
+    dates = []
+    runtime_data = []
+    idle_time_data = []
+
+    current_date = start_date
+    while current_date <= end_date:
+        date_str = current_date.strftime('%Y-%m-%d')
+        dates.append(date_str)
+
+        # Get trips for current date
+        day_trips = [t for t in trips if t.start_date.date() == current_date.date()]
+
+        # Calculate averages for the day
+        if day_trips:
+            avg_runtime = sum(t.runtime_hours for t in day_trips) / len(day_trips)
+            avg_idle = sum(t.idle_time_hours for t in day_trips) / len(day_trips)
+        else:
+            avg_runtime = 0
+            avg_idle = 0
+
+        runtime_data.append(round(avg_runtime, 2))
+        idle_time_data.append(round(avg_idle, 2))
+
+        current_date += timedelta(days=1)
+
+    return jsonify({
+        'dates': dates,
+        'runtime': runtime_data,
+        'idle_time': idle_time_data
+    })

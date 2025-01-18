@@ -26,7 +26,7 @@
                 </div>
             </div>
 
-            <!-- Tabs -->
+            <!-- Updated Tabs -->
             <ul class="nav nav-tabs" id="truckTabs" role="tablist">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active" id="destination-tab" data-bs-toggle="tab" 
@@ -38,6 +38,12 @@
                     <button class="nav-link" id="history-tab" data-bs-toggle="tab" 
                             data-bs-target="#history" type="button" role="tab">
                         <i class="fas fa-history"></i> Trip History
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="performance-tab" data-bs-toggle="tab" 
+                            data-bs-target="#performance" type="button" role="tab">
+                        <i class="fas fa-chart-line"></i> Performance
                     </button>
                 </li>
             </ul>
@@ -131,6 +137,26 @@
                         {% endif %}
                     </div>
                 </div>
+
+                <!-- Performance Tab -->
+                <div class="tab-pane fade" id="performance" role="tabpanel">
+                    <div class="performance-chart-container">
+                        <h3>Driver Performance - Last 90 Days</h3>
+                        <div class="chart-wrapper">
+                            <canvas id="performanceChart"></canvas>
+                        </div>
+                        <div class="chart-legend mt-3">
+                            <div class="legend-item">
+                                <span class="legend-color" style="background-color: #2ecc71"></span>
+                                Active Runtime
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-color" style="background-color: #e74c3c"></span>
+                                Idle Time
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -140,4 +166,67 @@
 {% block extra_js %}
 <!-- Custom map handling -->
 <script src="{{ url_for('static', filename='js/map.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Previous map initialization remains unchanged
+
+    // Initialize performance chart when tab is shown
+    document.querySelector('#performance-tab').addEventListener('shown.bs.tab', function (e) {
+        if (!window.performanceChart) {
+            fetch(`/api/truck/{{ truck.id }}/performance`)
+                .then(response => response.json())
+                .then(data => {
+                    const ctx = document.getElementById('performanceChart').getContext('2d');
+                    window.performanceChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: data.dates,
+                            datasets: [{
+                                label: 'Runtime (hours)',
+                                data: data.runtime,
+                                borderColor: '#2ecc71',
+                                backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                                tension: 0.4
+                            }, {
+                                label: 'Idle Time (hours)',
+                                data: data.idle_time,
+                                borderColor: '#e74c3c',
+                                backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                                tension: 0.4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: false
+                                },
+                                tooltip: {
+                                    mode: 'index',
+                                    intersect: false
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Hours'
+                                    }
+                                },
+                                x: {
+                                    ticks: {
+                                        maxTicksLimit: 10
+                                    }
+                                }
+                            }
+                        }
+                    });
+                });
+        }
+    });
+});
+</script>
 {% endblock %}
