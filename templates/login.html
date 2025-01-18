@@ -1,13 +1,14 @@
 {% extends "base.html" %}
 
-{% block title %}Login - Truck Management System{% endblock %}
+{% block title %}Login - Xpress360 Fleet Management{% endblock %}
 
 {% block content %}
 <div class="container">
     <div class="login-container">
         <h2 class="text-center mb-4">
-            <i class="fas fa-truck"></i> TMS Login
+            <i class="fas fa-truck"></i> Xpress360
         </h2>
+        <p class="text-center text-muted mb-4">Fleet Management System</p>
         <form method="POST" action="{{ url_for('login') }}">
             <div class="mb-3">
                 <label for="username" class="form-label">Username</label>
