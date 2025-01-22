@@ -46,6 +46,12 @@
                         <i class="fas fa-chart-line"></i> Performance
                     </button>
                 </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="ai-assistant-tab" data-bs-toggle="tab" 
+                            data-bs-target="#ai-assistant" type="button" role="tab">
+                        <i class="fas fa-robot"></i> AI Assistant
+                    </button>
+                </li>
             </ul>
 
             <!-- Tab Contents -->
@@ -157,6 +163,89 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- AI Assistant Tab -->
+                <div class="tab-pane fade" id="ai-assistant" role="tabpanel">
+                    <div class="ai-assistant-container">
+                        <!-- Route Suggestions Section -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-route"></i> AI Route Assistant
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <form id="routeSuggestionForm" class="mb-3">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Start Location</label>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <input type="text" class="form-control" 
+                                                               name="start_city" placeholder="City" required>
+                                                    </div>
+                                                    <div class="col">
+                                                        <select class="form-control" name="start_state" required>
+                                                            <option value="">State</option>
+                                                            {% for state in states %}
+                                                            <option value="{{ state }}">{{ state }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Destination</label>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <input type="text" class="form-control" 
+                                                               name="destination_city" placeholder="City" required>
+                                                    </div>
+                                                    <div class="col">
+                                                        <select class="form-control" name="destination_state" required>
+                                                            <option value="">State</option>
+                                                            {% for state in states %}
+                                                            <option value="{{ state }}">{{ state }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-magic"></i> Get Route Suggestions
+                                    </button>
+                                </form>
+                                <div id="routeSuggestionResult" class="d-none">
+                                    <h6>AI Suggestions:</h6>
+                                    <div class="suggestion-content p-3 border rounded"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Performance Analysis Section -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-chart-line"></i> AI Performance Analysis
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <button id="getPerformanceAnalysis" class="btn btn-primary mb-3">
+                                    <i class="fas fa-sync"></i> Analyze Performance
+                                </button>
+                                <div id="performanceAnalysisResult" class="d-none">
+                                    <h6>AI Analysis:</h6>
+                                    <div class="analysis-content p-3 border rounded"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -247,6 +336,60 @@ document.addEventListener('DOMContentLoaded', function() {
                         Error loading performance data. Please try again later.
                     </div>
                 `;
+            });
+    });
+    // Route Suggestion Form Handler
+    const routeSuggestionForm = document.getElementById('routeSuggestionForm');
+    const routeSuggestionResult = document.getElementById('routeSuggestionResult');
+
+    routeSuggestionForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(routeSuggestionForm);
+        const data = {
+            start_city: formData.get('start_city'),
+            start_state: formData.get('start_state'),
+            destination_city: formData.get('destination_city'),
+            destination_state: formData.get('destination_state')
+        };
+
+        fetch(`/api/truck/{{ truck.id }}/ai/route-suggestion`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            routeSuggestionResult.classList.remove('d-none');
+            routeSuggestionResult.querySelector('.suggestion-content').innerHTML = 
+                data.suggestion.replace(/\n/g, '<br>');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            routeSuggestionResult.classList.remove('d-none');
+            routeSuggestionResult.querySelector('.suggestion-content').innerHTML = 
+                'Error getting route suggestions. Please try again.';
+        });
+    });
+
+    // Performance Analysis Handler
+    const getPerformanceAnalysis = document.getElementById('getPerformanceAnalysis');
+    const performanceAnalysisResult = document.getElementById('performanceAnalysisResult');
+
+    getPerformanceAnalysis.addEventListener('click', function() {
+        fetch(`/api/truck/{{ truck.id }}/ai/performance-analysis`)
+            .then(response => response.json())
+            .then(data => {
+                performanceAnalysisResult.classList.remove('d-none');
+                performanceAnalysisResult.querySelector('.analysis-content').innerHTML = 
+                    data.analysis.replace(/\n/g, '<br>');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                performanceAnalysisResult.classList.remove('d-none');
+                performanceAnalysisResult.querySelector('.analysis-content').innerHTML = 
+                    'Error getting performance analysis. Please try again.';
             });
     });
 });

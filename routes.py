@@ -5,6 +5,9 @@ from models import User, Truck, TripHistory
 import logging
 from datetime import datetime, timedelta
 from sqlalchemy import func
+from services.ai_service import AIFleetAssistant
+
+ai_assistant = AIFleetAssistant()
 
 # US states for the dropdown
 US_STATES = [
@@ -121,3 +124,49 @@ def truck_performance(truck_id):
         'runtime': runtime_data,
         'idle_time': idle_time_data
     })
+
+@app.route('/api/truck/<int:truck_id>/ai/route-suggestion', methods=['POST'])
+@login_required
+def get_ai_route_suggestion(truck_id):
+    truck = Truck.query.filter_by(id=truck_id, user_id=current_user.id).first_or_404()
+
+    data = request.json
+    start_city = data.get('start_city')
+    start_state = data.get('start_state')
+    destination_city = data.get('destination_city')
+    destination_state = data.get('destination_state')
+
+    truck_data = {
+        'model': truck.model,
+        'last_maintenance': truck.last_maintenance.strftime('%Y-%m-%d'),
+        'status': truck.status
+    }
+
+    suggestion = ai_assistant.get_route_suggestion(
+        start_city, start_state,
+        destination_city, destination_state,
+        truck_data
+    )
+
+    return jsonify({'suggestion': suggestion})
+
+@app.route('/api/truck/<int:truck_id>/ai/performance-analysis')
+@login_required
+def get_ai_performance_analysis(truck_id):
+    # Get last 30 days of data
+    end_date = datetime.utcnow()
+    start_date = end_date - timedelta(days=30)
+
+    trips = TripHistory.query.filter(
+        TripHistory.truck_id == truck_id,
+        TripHistory.start_date >= start_date
+    ).all()
+
+    performance_data = {
+        'avg_runtime': sum(t.runtime_hours for t in trips) / len(trips) if trips else 0,
+        'avg_idle_time': sum(t.idle_time_hours for t in trips) / len(trips) if trips else 0,
+        'total_trips': len(trips)
+    }
+
+    analysis = ai_assistant.analyze_performance(performance_data)
+    return jsonify({'analysis': analysis})
