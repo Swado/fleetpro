@@ -27,6 +27,9 @@
         <div class="container">
             <a class="navbar-brand" href="{{ url_for('dashboard') }}">
                 <i class="fas fa-truck"></i> Xpress360
+                {% if session.get('is_demo') %}
+                <span class="badge bg-warning text-dark ms-2">Demo Mode</span>
+                {% endif %}
             </a>
             <div class="navbar-nav ms-auto">
                 <span class="nav-item nav-link text-light">

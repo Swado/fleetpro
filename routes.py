@@ -1,4 +1,4 @@
-from flask import render_template, redirect, url_for, flash, request, jsonify
+from flask import render_template, redirect, url_for, flash, request, jsonify, session
 from flask_login import login_user, logout_user, login_required, current_user
 from app import app, db
 from models import User, Truck, TripHistory
@@ -24,6 +24,24 @@ def index():
         return redirect(url_for('dashboard'))
     return redirect(url_for('login'))
 
+@app.route('/demo')
+def demo_login():
+    # Find or create demo user
+    demo_user = User.query.filter_by(username='demo').first()
+    if not demo_user:
+        demo_user = User(
+            username='demo',
+            email='demo@example.com'
+        )
+        demo_user.set_password('demo123')
+        db.session.add(demo_user)
+        db.session.commit()
+
+    login_user(demo_user)
+    session['is_demo'] = True
+    flash('You are now viewing the application in demo mode. Some features are restricted.')
+    return redirect(url_for('dashboard'))
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -37,6 +55,7 @@ def login():
         user = User.query.filter_by(username=username).first()
         if user and user.check_password(password):
             login_user(user)
+            session['is_demo'] = False
             logging.info(f"User {username} logged in successfully")
             next_page = request.args.get('next')
             return redirect(next_page if next_page else url_for('dashboard'))
