@@ -95,7 +95,7 @@ def dashboard():
 def truck_detail(truck_id):
     truck = Truck.query.filter_by(id=truck_id, user_id=current_user.id).first_or_404()
 
-    if request.method == 'POST':
+    if request.method == 'POST' and not session.get('is_demo'):
         truck.destination_city = request.form.get('city')
         truck.destination_state = request.form.get('state')
         truck.destination_set_at = datetime.utcnow()
@@ -104,7 +104,6 @@ def truck_detail(truck_id):
         return redirect(url_for('truck_detail', truck_id=truck.id))
 
     return render_template('truck_detail.html', truck=truck, states=US_STATES)
-
 
 @app.route('/api/truck/<int:truck_id>/performance')
 @login_required

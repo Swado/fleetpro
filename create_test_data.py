@@ -33,6 +33,9 @@ def add_trucks_for_user(username, num_trucks=10):
                 year=random.randint(2018, 2024),
                 status=random.choice(TRUCK_STATUSES),
                 last_maintenance=last_maintenance,
+                destination_city=random.choice(["Los Angeles", "New York", "Chicago", "Houston"]),
+                destination_state=random.choice(["CA", "NY", "IL", "TX"]),
+                destination_set_at=datetime.utcnow(),
                 user_id=user.id
             )
             db.session.add(truck)
