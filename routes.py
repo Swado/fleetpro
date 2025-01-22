@@ -26,7 +26,7 @@ def index():
 
 @app.route('/demo')
 def demo_login():
-    # Find or create demo user
+    # Find or create demo user with sample data
     demo_user = User.query.filter_by(username='demo').first()
     if not demo_user:
         demo_user = User(
@@ -37,9 +37,17 @@ def demo_login():
         db.session.add(demo_user)
         db.session.commit()
 
+        # Add sample trucks for demo user
+        from create_test_data import add_trucks_for_user
+        add_trucks_for_user('demo', num_trucks=5)
+
+        # Add sample trips for the trucks
+        from add_sample_trips import add_sample_trips
+        add_sample_trips()
+
     login_user(demo_user)
     session['is_demo'] = True
-    flash('You are now viewing the application in demo mode. Some features are restricted.')
+    flash('Welcome to the demo! Feel free to explore all features.')
     return redirect(url_for('dashboard'))
 
 @app.route('/login', methods=['GET', 'POST'])
