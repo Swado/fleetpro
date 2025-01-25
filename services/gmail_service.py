@@ -2,7 +2,7 @@ import os
 import pickle
 import base64
 from email.mime.text import MIMEText
-from google_auth_oauthlib.flow import InstalledAppFlow
+from google_auth_oauthlib.flow import Flow
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 import logging
@@ -12,7 +12,7 @@ class GmailService:
         self.SCOPES = ['https://www.googleapis.com/auth/gmail.send']
         self.service = None
         self.creds = None
-        self.REDIRECT_URI = 'http://localhost:5000/oauth2callback'
+        self.REDIRECT_URI = os.environ.get('REDIRECT_URI', 'http://localhost:5000/oauth2callback')
 
     def authenticate(self):
         """Authenticate with Gmail API using OAuth2"""
@@ -21,6 +21,10 @@ class GmailService:
             token_file = 'token.pickle'
             client_id = os.environ.get('GMAIL_CLIENT_ID')
             client_secret = os.environ.get('GMAIL_CLIENT_SECRET')
+
+            if not client_id or not client_secret:
+                logging.error("Missing Gmail API credentials")
+                return False
 
             # Load existing token
             if os.path.exists(token_file):
@@ -32,9 +36,9 @@ class GmailService:
                 if self.creds and self.creds.expired and self.creds.refresh_token:
                     self.creds.refresh(Request())
                 else:
-                    flow = InstalledAppFlow.from_client_config(
+                    flow = Flow.from_client_config(
                         {
-                            "installed": {
+                            "web": {
                                 "client_id": client_id,
                                 "client_secret": client_secret,
                                 "redirect_uris": [self.REDIRECT_URI],
@@ -44,7 +48,9 @@ class GmailService:
                         },
                         self.SCOPES
                     )
-                    self.creds = flow.run_local_server(port=5000)
+                    flow.redirect_uri = self.REDIRECT_URI
+                    auth_url = flow.authorization_url()[0]
+                    return auth_url
 
                 # Save the credentials for future use
                 with open(token_file, 'wb') as token:
@@ -55,7 +61,7 @@ class GmailService:
             return True
 
         except Exception as e:
-            logging.error(f"Error authenticating Gmail service: {e}")
+            logging.error(f"Error authenticating Gmail service: {e}", exc_info=True)
             return False
 
     def send_email(self, to, subject, body):
@@ -82,7 +88,7 @@ class GmailService:
             return True
 
         except Exception as e:
-            logging.error(f"Error sending email: {e}")
+            logging.error(f"Error sending email: {e}", exc_info=True)
             return False
 
 # Initialize Gmail service
