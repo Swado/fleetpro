@@ -65,6 +65,8 @@ def login():
         if user and user.check_password(password):
             login_user(user)
             session['is_demo'] = False
+            # Initialize email notification status
+            session['email_enabled'] = False
             logging.info(f"User {username} logged in successfully")
             next_page = request.args.get('next')
             return redirect(next_page if next_page else url_for('dashboard'))
@@ -223,11 +225,14 @@ def oauth2callback():
     try:
         # Attempt to authenticate Gmail service
         if gmail_service.authenticate():
+            session['email_enabled'] = True
             flash('Email notifications have been successfully enabled.')
         else:
+            session['email_enabled'] = False
             flash('Failed to enable email notifications. Please try again.')
     except Exception as e:
         logging.error(f"OAuth callback error: {e}")
+        session['email_enabled'] = False
         flash('An error occurred during email setup.')
 
     return redirect(url_for('dashboard'))

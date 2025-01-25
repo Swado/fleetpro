@@ -32,6 +32,16 @@
                 {% endif %}
             </a>
             <div class="navbar-nav ms-auto">
+                <!-- Email Notification Status -->
+                {% if not session.get('is_demo') %}
+                <a class="nav-item nav-link" href="{{ url_for('oauth2callback') }}" 
+                   data-bs-toggle="tooltip" title="Setup Email Notifications">
+                    <i class="fas fa-envelope{% if session.get('email_enabled') %} text-success{% endif %}"></i>
+                    {% if not session.get('email_enabled') %}
+                    Setup Notifications
+                    {% endif %}
+                </a>
+                {% endif %}
                 <span class="nav-item nav-link text-light">
                     <i class="fas fa-user"></i> {{ current_user.username }}
                 </span>
@@ -63,5 +73,13 @@
     <!-- Custom JS -->
     <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
     {% block extra_js %}{% endblock %}
+
+    <script>
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+    </script>
 </body>
 </html>
