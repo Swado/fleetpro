@@ -6,6 +6,7 @@ import logging
 from datetime import datetime, timedelta
 from sqlalchemy import func
 from services.ai_service import AIFleetAssistant
+from services.gmail_service import gmail_service
 
 ai_assistant = AIFleetAssistant()
 
@@ -100,6 +101,26 @@ def truck_detail(truck_id):
         truck.destination_state = request.form.get('state')
         truck.destination_set_at = datetime.utcnow()
         db.session.commit()
+
+        # Send email notification for destination update
+        if not session.get('is_demo'):
+            email_body = f"""
+            Destination Updated for Truck {truck.plate_number}
+
+            New Destination: {truck.destination_city}, {truck.destination_state}
+            Update Time: {truck.destination_set_at}
+
+            Truck Details:
+            - Model: {truck.model}
+            - Year: {truck.year}
+            - Status: {truck.status}
+            """
+            gmail_service.send_email(
+                to=current_user.email,
+                subject=f"Destination Update - Truck {truck.plate_number}",
+                body=email_body
+            )
+
         flash(f'Destination updated for truck {truck.plate_number}')
         return redirect(url_for('truck_detail', truck_id=truck.id))
 
@@ -196,3 +217,17 @@ def get_ai_performance_analysis(truck_id):
 
     analysis = ai_assistant.analyze_performance(performance_data)
     return jsonify({'analysis': analysis})
+
+@app.route('/oauth2callback')
+def oauth2callback():
+    try:
+        # Attempt to authenticate Gmail service
+        if gmail_service.authenticate():
+            flash('Email notifications have been successfully enabled.')
+        else:
+            flash('Failed to enable email notifications. Please try again.')
+    except Exception as e:
+        logging.error(f"OAuth callback error: {e}")
+        flash('An error occurred during email setup.')
+
+    return redirect(url_for('dashboard'))
