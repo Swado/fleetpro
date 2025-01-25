@@ -223,15 +223,18 @@ def get_ai_performance_analysis(truck_id):
 @app.route('/oauth2callback')
 def oauth2callback():
     try:
+        logging.info("Starting OAuth callback process")
         # Attempt to authenticate Gmail service
         if gmail_service.authenticate():
             session['email_enabled'] = True
             flash('Email notifications have been successfully enabled.')
+            logging.info("Gmail authentication successful")
         else:
             session['email_enabled'] = False
             flash('Failed to enable email notifications. Please try again.')
+            logging.warning("Gmail authentication failed")
     except Exception as e:
-        logging.error(f"OAuth callback error: {e}")
+        logging.error(f"OAuth callback error: {e}", exc_info=True)
         session['email_enabled'] = False
         flash('An error occurred during email setup.')
 

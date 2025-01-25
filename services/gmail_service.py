@@ -12,6 +12,7 @@ class GmailService:
         self.SCOPES = ['https://www.googleapis.com/auth/gmail.send']
         self.service = None
         self.creds = None
+        self.REDIRECT_URI = 'http://localhost:5000/oauth2callback'
 
     def authenticate(self):
         """Authenticate with Gmail API using OAuth2"""
@@ -36,14 +37,14 @@ class GmailService:
                             "installed": {
                                 "client_id": client_id,
                                 "client_secret": client_secret,
-                                "redirect_uris": ["http://localhost:5000/oauth2callback"],
+                                "redirect_uris": [self.REDIRECT_URI],
                                 "auth_uri": "https://accounts.google.com/o/oauth2/auth",
                                 "token_uri": "https://oauth2.googleapis.com/token"
                             }
                         },
                         self.SCOPES
                     )
-                    self.creds = flow.run_local_server(port=0)
+                    self.creds = flow.run_local_server(port=5000)
 
                 # Save the credentials for future use
                 with open(token_file, 'wb') as token:
@@ -70,7 +71,7 @@ class GmailService:
 
             # Encode the message
             raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode('utf-8')
-            
+
             # Send the email
             self.service.users().messages().send(
                 userId='me',
