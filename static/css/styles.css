@@ -9,7 +9,7 @@ body {
     font-family: 'Roboto', sans-serif;
     background-color: var(--bg-color);
     color: var(--text-color);
-    background-image: url('../images/truck-background.webp');
+    background-image: url('../images/truck-background.jpg');
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
