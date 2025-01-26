@@ -34,6 +34,33 @@ body::before {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
+.company-title h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 2.5rem;
+    background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0;
+    letter-spacing: -0.5px;
+}
+
+.company-title i {
+    font-size: 2rem;
+    margin-right: 5px;
+    color: var(--accent-color);
+}
+
+.company-subtitle {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
+    color: var(--text-color);
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+    opacity: 0.8;
+}
+
 .login-container {
     max-width: 400px;
     margin: 100px 0;
@@ -43,6 +70,7 @@ body::before {
     background-color: rgba(255, 255, 255, 0.95);
     border-radius: 8px;
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(5px);
 }
 
 .dashboard-header {

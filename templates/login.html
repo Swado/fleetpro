@@ -5,10 +5,12 @@
 {% block content %}
 <div class="container">
     <div class="login-container">
-        <h2 class="text-center mb-4">
-            <i class="fas fa-truck"></i> Xpress360
-        </h2>
-        <p class="text-center text-muted mb-4">Fleet Management System</p>
+        <div class="company-title">
+            <h2 class="text-center mb-2">
+                <i class="fas fa-truck"></i> Xpress360
+            </h2>
+            <p class="text-center company-subtitle mb-4">Fleet Management System</p>
+        </div>
 
         <!-- Regular Login Form -->
         <form method="POST" action="{{ url_for('login') }}" class="mb-4">
