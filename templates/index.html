@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Xpress360 Fleet Management{% endblock %}
+
+{% block content %}
+<div class="company-title">
+    <h1>Xpress360</h1>
+    <div class="company-subtitle">Advanced Fleet Management Solutions</div>
+</div>
+
+<div class="nav-buttons">
+    <button class="nav-btn">About</button>
+    <button class="nav-btn">Features</button>
+</div>
+
+<a href="{{ url_for('login') }}" class="login-btn">Login</a>
+{% endblock %}

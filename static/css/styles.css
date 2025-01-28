@@ -62,30 +62,6 @@ body {
     white-space: nowrap;
 }
 
-.login-btn {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 10px 25px;
-    background: transparent;
-    border: none;
-    color: transparent;
-    font-weight: 500;
-    font-size: 1.1rem;
-    transition: all 0.3s ease;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    z-index: 1000;
-    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-    -webkit-background-clip: text;
-    background-clip: text;
-}
-
-.login-btn:hover {
-    transform: translateY(-2px);
-    opacity: 0.8;
-}
-
 .nav-buttons {
     position: fixed;
     top: 20px;
@@ -167,6 +143,30 @@ body {
 
 .close-modal:hover {
     opacity: 1;
+}
+
+.login-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 10px 25px;
+    background: transparent;
+    border: none;
+    color: transparent;
+    font-weight: 500;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    z-index: 1000;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+.login-btn:hover {
+    transform: translateY(-2px);
+    opacity: 0.8;
 }
 .login-container {
     max-width: 400px;
