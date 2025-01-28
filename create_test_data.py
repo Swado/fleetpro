@@ -1,7 +1,7 @@
 from app import app, db
-from models import User, Truck
-import random
+from models import User
 from datetime import datetime, timedelta
+import random
 
 # Sample data for random generation
 TRUCK_MODELS = [
@@ -23,7 +23,12 @@ SAMPLE_LOCATIONS = [
     {"city": "New York", "state": "NY", "lat": 40.7128, "lon": -74.0060},
     {"city": "Chicago", "state": "IL", "lat": 41.8781, "lon": -87.6298},
     {"city": "Houston", "state": "TX", "lat": 29.7604, "lon": -95.3698},
-    {"city": "Phoenix", "state": "AZ", "lat": 33.4484, "lon": -112.0740}
+    {"city": "Phoenix", "state": "AZ", "lat": 33.4484, "lon": -112.0740},
+    {"city": "San Francisco", "state": "CA", "lat": 37.7749, "lon": -122.4194},
+    {"city": "Miami", "state": "FL", "lat": 25.7617, "lon": -80.1918},
+    {"city": "Seattle", "state": "WA", "lat": 47.6062, "lon": -122.3321},
+    {"city": "Denver", "state": "CO", "lat": 39.7392, "lon": -104.9903},
+    {"city": "Atlanta", "state": "GA", "lat": 33.7490, "lon": -84.3880}
 ]
 
 def add_trucks_for_user(username, num_trucks=10):
@@ -35,6 +40,7 @@ def add_trucks_for_user(username, num_trucks=10):
             return False
 
         # Delete existing trucks for this user
+        from models import Truck
         Truck.query.filter_by(user_id=user.id).delete()
 
         # Create specified number of trucks
@@ -49,6 +55,10 @@ def add_trucks_for_user(username, num_trucks=10):
             # Pick a random location
             location = random.choice(SAMPLE_LOCATIONS)
 
+            # Slightly randomize the exact position to avoid overlapping markers
+            lat_offset = random.uniform(-0.1, 0.1)
+            lon_offset = random.uniform(-0.1, 0.1)
+
             truck = Truck(
                 plate_number=f"XP360-{user.id}-{i+1}",
                 model=random.choice(TRUCK_MODELS),
@@ -61,8 +71,8 @@ def add_trucks_for_user(username, num_trucks=10):
                 user_id=user.id,
                 driver_name=random.choice(DRIVER_NAMES),
                 insurance_expiry=insurance_expiry,
-                current_latitude=location["lat"],
-                current_longitude=location["lon"]
+                current_latitude=location["lat"] + lat_offset,
+                current_longitude=location["lon"] + lon_offset
             )
             db.session.add(truck)
 
@@ -76,5 +86,6 @@ def add_trucks_for_user(username, num_trucks=10):
             return False
 
 if __name__ == '__main__':
-    # Add trucks for admin user
-    add_trucks_for_user('admin')
+    # Add trucks for both admin and demo users
+    add_trucks_for_user('admin', num_trucks=5)
+    add_trucks_for_user('demo', num_trucks=5)
