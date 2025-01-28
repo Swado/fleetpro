@@ -87,9 +87,10 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Hardcoded values for the circular chart
-    const activeCount = 7;
-    const inactiveCount = 3;
+    // Use the actual counts from the backend
+    const activeCount = {{ active_trucks }};
+    const totalCount = {{ truck_count }};
+    const inactiveCount = totalCount - activeCount;
 
     // Create the circular chart
     const ctx = document.getElementById('fleetStatusChart').getContext('2d');
