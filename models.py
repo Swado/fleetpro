@@ -31,7 +31,24 @@ class Truck(db.Model):
     destination_city = db.Column(db.String(100))
     destination_state = db.Column(db.String(2))
     destination_set_at = db.Column(db.DateTime)
+    driver_name = db.Column(db.String(100))
+    insurance_expiry = db.Column(db.DateTime)
+    current_latitude = db.Column(db.Float)
+    current_longitude = db.Column(db.Float)
     trips = db.relationship('TripHistory', backref='truck', lazy=True)
+
+    @property
+    def insurance_status(self):
+        if not self.insurance_expiry:
+            return 'expired'
+
+        days_until_expiry = (self.insurance_expiry - datetime.utcnow()).days
+        if days_until_expiry < 0:
+            return 'expired'
+        elif days_until_expiry <= 30:
+            return 'expiring_soon'
+        else:
+            return 'active'
 
 class TripHistory(db.Model):
     id = db.Column(db.Integer, primary_key=True)

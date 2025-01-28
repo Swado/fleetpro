@@ -384,7 +384,6 @@ body {
     border-bottom: 2px solid #e74c3c;
 }
 
-
 .nav-tabs .nav-link i {
     margin-right: 5px;
 }
@@ -608,4 +607,26 @@ html {
     margin: 20px auto;
     height: 250px;
     width: 250px;
+}
+
+/* Add these styles at the end of the file */
+
+.badge {
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+#fleet-map {
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.leaflet-popup-content {
+    font-size: 0.9em;
+    line-height: 1.4;
+}
+
+.leaflet-popup-content strong {
+    color: var(--primary-color);
 }
