@@ -34,6 +34,14 @@
                 {% endif %}
             </a>
             <div class="navbar-nav ms-auto">
+                <!-- Messages Link -->
+                <a class="nav-item nav-link position-relative" href="{{ url_for('messages') }}">
+                    <i class="fas fa-envelope"></i> Messages
+                    {% set unread_count = get_unread_message_count() %}
+                    {% if unread_count > 0 %}
+                    <span class="badge bg-danger message-badge">{{ unread_count }}</span>
+                    {% endif %}
+                </a>
                 <!-- Email Notification Status -->
                 {% if not session.get('is_demo') %}
                 <a class="nav-item nav-link" href="{{ url_for('oauth2callback') }}" 

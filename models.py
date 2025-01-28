@@ -13,6 +13,15 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(256))
     trucks = db.relationship('Truck', backref='owner', lazy=True)
+    # Add relationships for sent and received messages
+    sent_messages = db.relationship('Message', 
+                                  foreign_keys='Message.sender_id',
+                                  backref='sender', 
+                                  lazy=True)
+    received_messages = db.relationship('Message',
+                                      foreign_keys='Message.receiver_id',
+                                      backref='receiver',
+                                      lazy=True)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -49,6 +58,18 @@ class Truck(db.Model):
             return 'expiring_soon'
         else:
             return 'active'
+
+class Message(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    sender_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    receiver_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    is_read = db.Column(db.Boolean, default=False)
+    message_type = db.Column(db.String(20), default='normal')  # normal or urgent
+    subject = db.Column(db.String(100))
+    related_truck_id = db.Column(db.Integer, db.ForeignKey('truck.id'))
+    related_truck = db.relationship('Truck', backref='messages')
 
 class TripHistory(db.Model):
     id = db.Column(db.Integer, primary_key=True)

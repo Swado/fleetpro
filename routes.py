@@ -2,9 +2,9 @@ import os
 from flask import render_template, redirect, url_for, flash, request, jsonify, session
 from flask_login import login_user, logout_user, login_required, current_user
 from app import app, db
-from models import User, Truck, TripHistory
-import logging
+from models import User, Truck, TripHistory, Message
 from datetime import datetime, timedelta
+import logging
 from sqlalchemy import func
 from services.ai_service import AIFleetAssistant
 from services.gmail_service import gmail_service
@@ -250,3 +250,90 @@ def oauth2callback():
         flash('An error occurred during email setup.')
 
     return redirect(url_for('dashboard'))
+
+
+@app.route('/messages')
+@login_required
+def messages():
+    # Get all messages for the current user (both sent and received)
+    received_messages = Message.query.filter_by(receiver_id=current_user.id)\
+        .order_by(Message.timestamp.desc()).all()
+    sent_messages = Message.query.filter_by(sender_id=current_user.id)\
+        .order_by(Message.timestamp.desc()).all()
+
+    # Get all users for the new message form
+    users = User.query.filter(User.id != current_user.id).all()
+    # Get all trucks for the current user
+    trucks = Truck.query.filter_by(user_id=current_user.id).all()
+
+    return render_template('messages.html', 
+                         messages=received_messages + sent_messages,
+                         users=users,
+                         trucks=trucks)
+
+@app.route('/send_message', methods=['POST'])
+@login_required
+def send_message():
+    try:
+        new_message = Message(
+            sender_id=current_user.id,
+            receiver_id=request.form['receiver_id'],
+            subject=request.form['subject'],
+            content=request.form['content'],
+            message_type=request.form['message_type'],
+            related_truck_id=request.form['related_truck_id'] or None
+        )
+        db.session.add(new_message)
+        db.session.commit()
+        flash('Message sent successfully')
+    except Exception as e:
+        logging.error(f"Error sending message: {e}")
+        flash('Error sending message')
+        db.session.rollback()
+
+    return redirect(url_for('messages'))
+
+@app.route('/api/messages/<int:message_id>')
+@login_required
+def get_message(message_id):
+    message = Message.query.get_or_404(message_id)
+
+    # Security check - only sender and receiver can view the message
+    if message.sender_id != current_user.id and message.receiver_id != current_user.id:
+        return jsonify({'error': 'Unauthorized'}), 403
+
+    return jsonify({
+        'id': message.id,
+        'subject': message.subject,
+        'content': message.content,
+        'sender': message.sender.username,
+        'timestamp': message.timestamp.strftime('%Y-%m-%d %H:%M'),
+        'is_read': message.is_read,
+        'message_type': message.message_type,
+        'truck': f"{message.related_truck.plate_number} - {message.related_truck.driver_name}" if message.related_truck else None
+    })
+
+@app.route('/api/messages/<int:message_id>/read', methods=['POST'])
+@login_required
+def mark_message_read(message_id):
+    message = Message.query.get_or_404(message_id)
+
+    # Security check - only receiver can mark as read
+    if message.receiver_id != current_user.id:
+        return jsonify({'error': 'Unauthorized'}), 403
+
+    message.is_read = True
+    db.session.commit()
+    return jsonify({'success': True})
+
+@app.context_processor
+def utility_processor():
+    def get_unread_message_count():
+        if current_user.is_authenticated:
+            return Message.query.filter_by(
+                receiver_id=current_user.id,
+                is_read=False
+            ).count()
+        return 0
+
+    return dict(get_unread_message_count=get_unread_message_count)
