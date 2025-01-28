@@ -84,17 +84,23 @@
                                             {% endif %}
                                         </span>
                                     </p>
-                                    <button class="btn btn-primary me-2" data-bs-toggle="collapse" 
-                                            data-bs-target="#messages-{{ truck.id }}">
-                                        <i class="fas fa-envelope"></i> Messages
-                                        {% set unread_count = truck.messages|selectattr('is_read', 'equalto', false)|list|length %}
-                                        {% if unread_count > 0 %}
-                                        <span class="badge bg-danger ms-1">{{ unread_count }}</span>
-                                        {% endif %}
-                                    </button>
-                                    <button class="btn btn-info" onclick="openAIChat('{{ truck.plate_number }}')">
-                                        <i class="fas fa-robot"></i> AI Assistant
-                                    </button>
+                                    <div class="btn-group">
+                                        <a href="{{ url_for('truck_detail', truck_id=truck.id) }}" 
+                                           class="btn btn-primary me-2">
+                                            <i class="fas fa-eye"></i> View Details
+                                        </a>
+                                        <button class="btn btn-primary me-2" data-bs-toggle="collapse" 
+                                                data-bs-target="#messages-{{ truck.id }}">
+                                            <i class="fas fa-envelope"></i> Messages
+                                            {% set unread_count = truck.messages|selectattr('is_read', 'equalto', false)|list|length %}
+                                            {% if unread_count > 0 %}
+                                            <span class="badge bg-danger ms-1">{{ unread_count }}</span>
+                                            {% endif %}
+                                        </button>
+                                        <button class="btn btn-info" onclick="openAIChat('{{ truck.plate_number }}')">
+                                            <i class="fas fa-robot"></i> AI Assistant
+                                        </button>
+                                    </div>
                                     <div class="collapse mt-3" id="messages-{{ truck.id }}">
                                         <div class="card">
                                             <div class="card-header d-flex justify-content-between align-items-center">
@@ -274,20 +280,16 @@ document.addEventListener('DOMContentLoaded', function() {
         `);
     });
 
-    // Hide the widget initially
-    const widget = document.querySelector('elevenlabs-convai');
-    if (widget) {
-        widget.style.display = 'none';
-    }
-
-    // Add this to your existing JavaScript
-    function openAIChat(truckId) {
+    // AI Chat Widget Handling
+    window.openAIChat = function(truckId) {
         const widget = document.querySelector('elevenlabs-convai');
         if (widget) {
-            widget.setAttribute('data-context', `Assisting with truck ${truckId}`);
+            // Hide any previously visible widgets
             widget.style.display = 'block';
+            // Set the context for this truck
+            widget.setAttribute('data-context', `Assisting with truck ${truckId}`);
         }
-    }
+    };
 });
 </script>
 <elevenlabs-convai agent-id="kIJtewstoJnssPcE7t9p"></elevenlabs-convai>

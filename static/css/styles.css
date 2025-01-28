@@ -609,8 +609,6 @@ html {
     width: 250px;
 }
 
-/* Add these styles at the end of the file */
-
 .badge {
     padding: 5px 10px;
     border-radius: 4px;
@@ -631,7 +629,6 @@ html {
     color: var(--primary-color);
 }
 
-/* Message Portal Styles */
 .unread {
     background-color: rgba(13, 110, 253, 0.05);
     font-weight: 500;
@@ -667,7 +664,6 @@ html {
     background-color: rgba(13, 110, 253, 0.1);
 }
 
-/* Message Badge Styles */
 .navbar .message-badge {
     position: absolute;
     top: 0;
@@ -678,7 +674,6 @@ html {
     font-weight: 600;
 }
 
-/* Modal Styles */
 .modal-body {
     max-height: calc(100vh - 210px);
     overflow-y: auto;
@@ -693,7 +688,6 @@ elevenlabs-convai {
     bottom: 20px;
     right: 20px;
     z-index: 1000;
-    display: none;
 }
 
 .btn-info {
@@ -706,4 +700,21 @@ elevenlabs-convai {
     background-color: #138496;
     border-color: #117a8b;
     color: white;
+}
+
+/* Button group styles */
+.btn-group {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.btn-group .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-group .btn i {
+    margin-right: 0.5rem;
 }
