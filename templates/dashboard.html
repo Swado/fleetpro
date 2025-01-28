@@ -214,10 +214,18 @@ document.addEventListener('DOMContentLoaded', function() {
         const widget = document.querySelector('elevenlabs-convai');
         if (widget) {
             widget.style.display = 'block';
+            widget.setAttribute('convai-id', 'kIJtewstoJnssPcE7t9p');
             widget.setAttribute('data-context', `Assisting with truck ${truckId}`);
+            widget.setAttribute('mode', 'voice');
         }
     };
 });
 </script>
-<elevenlabs-convai agent-id="kIJtewstoJnssPcE7t9p"></elevenlabs-convai>
+
+<!-- Add the ElevenLabs Convai widget with proper attributes -->
+<elevenlabs-convai
+    convai-id="kIJtewstoJnssPcE7t9p"
+    mode="voice"
+    style="display: none;">
+</elevenlabs-convai>
 {% endblock %}
