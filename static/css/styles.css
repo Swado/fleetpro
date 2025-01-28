@@ -9,7 +9,7 @@ body {
     font-family: 'Roboto', sans-serif;
     background-color: transparent;
     color: var(--text-color);
-    background-image: url('/static/images/cf3bbce2-3eaf-4d02-9eef-d50fb5e23259.webp');
+    background-image: url('/static/images/DALL·E 2025-01-26 12.48.05 - A serene winter landscape featuring a vintage blue pickup truck parked in a snowy field. The truck looks weathered but sturdy, with a nostalgic, timel.webp');
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
@@ -66,18 +66,21 @@ body {
     padding: 10px 25px;
     background: transparent;
     border: none;
-    color: white;
+    color: transparent;
     font-weight: 500;
     font-size: 1.1rem;
     transition: all 0.3s ease;
     text-transform: uppercase;
     letter-spacing: 1px;
     z-index: 1000;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    -webkit-background-clip: text;
+    background-clip: text;
 }
 
 .login-btn:hover {
-    color: var(--accent-color);
     transform: translateY(-2px);
+    opacity: 0.8;
 }
 
 .login-modal {
@@ -344,17 +347,20 @@ body {
     padding: 10px 25px;
     background: transparent;
     border: none;
-    color: white;
+    color: transparent;
     font-weight: 500;
     font-size: 1.1rem;
     transition: all 0.3s ease;
     text-transform: uppercase;
     letter-spacing: 1px;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    -webkit-background-clip: text;
+    background-clip: text;
 }
 
 .nav-btn:hover {
-    color: var(--accent-color);
     transform: translateY(-2px);
+    opacity: 0.8;
 }
 
 .truck-detail-header {
