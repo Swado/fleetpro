@@ -1,5 +1,7 @@
+'use client'
+
 import { useState } from 'react'
-import { useRouter } from 'next/router'
+import { usePathname } from 'next/navigation'
 import { signOut, useSession } from 'next-auth/react'
 import {
   ChartBarIcon,
@@ -30,7 +32,7 @@ export default function DashboardLayout({
   children: React.ReactNode
   title: string
 }) {
-  const router = useRouter()
+  const pathname = usePathname()
   const { data: session } = useSession()
   const [unreadMessages] = useState(0)
 
@@ -50,7 +52,7 @@ export default function DashboardLayout({
                     key={item.name}
                     href={item.href}
                     className={`inline-flex items-center px-1 pt-1 text-sm font-medium ${
-                      router.pathname === item.href
+                      pathname === item.href
                         ? 'text-white border-b-2 border-accent'
                         : 'text-gray-300 hover:text-white'
                     }`}
