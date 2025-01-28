@@ -8,7 +8,6 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        background: '#F5F6FA',
         primary: {
           DEFAULT: '#2C3E50',
           dark: '#1a252f',
@@ -19,7 +18,6 @@ module.exports = {
           dark: '#d35400',
           light: '#f39c12',
         },
-        text: '#34495E',
       },
     },
   },

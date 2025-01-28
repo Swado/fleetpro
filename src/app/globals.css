@@ -4,17 +4,17 @@
 
 @layer base {
   body {
-    @apply bg-background text-text;
+    @apply bg-white text-gray-900;
   }
 }
 
 @layer components {
   .navbar {
-    @apply bg-primary shadow-md;
+    @apply bg-primary-DEFAULT shadow-md;
   }
 
   .btn-primary {
-    @apply bg-primary hover:bg-primary-dark text-white;
+    @apply bg-primary-DEFAULT hover:bg-primary-dark text-white;
   }
 
   .btn-info {
