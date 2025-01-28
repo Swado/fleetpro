@@ -2,34 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --primary-color: #2C3E50;
-  --accent-color: #E67E22;
-  --bg-color: #F5F6FA;
-  --text-color: #34495E;
+@layer base {
+  body {
+    @apply bg-background text-text min-h-screen m-0 p-0;
+  }
 }
 
-body {
-  font-family: 'Inter', sans-serif;
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  min-height: 100vh;
-  margin: 0;
-  padding: 0;
-}
+@layer components {
+  .navbar {
+    @apply bg-primary shadow-md;
+  }
 
-.navbar {
-  @apply bg-primary shadow-md;
-}
+  .btn-primary {
+    @apply bg-primary hover:bg-primary-dark text-white font-semibold py-2 px-4 rounded transition-colors;
+  }
 
-.btn-primary {
-  @apply bg-primary hover:bg-primary-dark text-white font-semibold py-2 px-4 rounded transition-colors;
-}
-
-.btn-info {
-  @apply bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded transition-colors;
-}
-
-elevenlabs-convai {
-  @apply fixed bottom-5 right-5 z-50;
+  .btn-info {
+    @apply bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded transition-colors;
+  }
 }

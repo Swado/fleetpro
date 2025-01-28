@@ -5,24 +5,41 @@ import { redirect } from 'next/navigation'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import ElevenLabsWidget from '@/components/ElevenLabsWidget'
 import { useEffect, useState } from 'react'
+import Button from '@/components/ui/Button'
+import { TruckIcon, ChatBubbleLeftIcon } from '@heroicons/react/24/outline'
+
+interface Truck {
+  id: number
+  plate_number: string
+  driver_name: string
+  status: string
+  current_latitude: number
+  current_longitude: number
+  destination_city?: string
+  destination_state?: string
+}
 
 export default function DashboardPage() {
   const { data: session, status } = useSession()
   const [showAIChat, setShowAIChat] = useState(false)
+  const [trucks, setTrucks] = useState<Truck[]>([])
 
   useEffect(() => {
-    // Load ElevenLabs script only when needed
-    if (showAIChat) {
-      const script = document.createElement('script')
-      script.src = "https://elevenlabs.io/convai-widget/index.js"
-      script.async = true
-      document.body.appendChild(script)
-
-      return () => {
-        document.body.removeChild(script)
+    // Fetch trucks data
+    const fetchTrucks = async () => {
+      try {
+        const response = await fetch('/api/trucks')
+        const data = await response.json()
+        setTrucks(data)
+      } catch (error) {
+        console.error('Failed to fetch trucks:', error)
       }
     }
-  }, [showAIChat])
+
+    if (session) {
+      fetchTrucks()
+    }
+  }, [session])
 
   if (status === 'loading') {
     return <div>Loading...</div>
@@ -39,19 +56,56 @@ export default function DashboardPage() {
   return (
     <DashboardLayout title="Dashboard">
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {/* Dashboard cards and stats will go here */}
+        {trucks.map((truck) => (
+          <div key={truck.id} className="bg-white rounded-lg shadow p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center">
+                <TruckIcon className="h-8 w-8 text-primary-DEFAULT" />
+                <div className="ml-3">
+                  <h3 className="font-semibold">{truck.plate_number}</h3>
+                  <p className="text-sm text-gray-600">{truck.driver_name}</p>
+                </div>
+              </div>
+              <span
+                className={`px-2 py-1 rounded text-sm ${
+                  truck.status === 'active'
+                    ? 'bg-green-100 text-green-800'
+                    : 'bg-red-100 text-red-800'
+                }`}
+              >
+                {truck.status}
+              </span>
+            </div>
+            <div className="space-y-2">
+              {truck.destination_city && (
+                <p className="text-sm">
+                  Destination: {truck.destination_city}, {truck.destination_state}
+                </p>
+              )}
+            </div>
+            <div className="mt-4 flex space-x-2">
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => window.location.href = `/trucks/${truck.id}`}
+                className="flex items-center"
+              >
+                <TruckIcon className="h-4 w-4 mr-2" />
+                View Details
+              </Button>
+              <Button
+                variant="info"
+                size="sm"
+                onClick={() => handleAIChatClick()}
+                className="flex items-center"
+              >
+                <ChatBubbleLeftIcon className="h-4 w-4 mr-2" />
+                AI Chat
+              </Button>
+            </div>
+          </div>
+        ))}
       </div>
-      <button
-        onClick={handleAIChatClick}
-        className="fixed bottom-5 right-5 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-full shadow-lg transition-colors"
-      >
-        <span className="flex items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M10 2a8 8 0 100 16 8 8 0 000-16zm0 14a6 6 0 100-12 6 6 0 000 12zm1-5a1 1 0 11-2 0 1 1 0 012 0zm-1-4a1 1 0 00-1 1v2a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-          </svg>
-          AI Assistant
-        </span>
-      </button>
       {showAIChat && <ElevenLabsWidget />}
     </DashboardLayout>
   )

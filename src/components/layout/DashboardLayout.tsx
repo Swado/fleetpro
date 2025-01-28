@@ -32,10 +32,10 @@ export default function DashboardLayout({
 }) {
   const router = useRouter()
   const { data: session } = useSession()
-  const [unreadMessages] = useState(0) // This will be replaced with real data
+  const [unreadMessages] = useState(0)
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-background">
       <nav className="bg-primary shadow-md">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 justify-between">
@@ -86,7 +86,7 @@ export default function DashboardLayout({
 
       <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-6">
-          <h1 className="text-2xl font-semibold text-gray-900">{title}</h1>
+          <h1 className="text-2xl font-semibold text-text">{title}</h1>
         </div>
         {children}
       </main>
