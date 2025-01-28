@@ -36,7 +36,7 @@
                                     data-bs-target="#truck-content-{{ truck.id }}" 
                                     type="button" 
                                     role="tab"
-                                    style="color: {{ truck.status == 'active' ? '#2ecc71' : '#e74c3c' }};">
+                                    style="color: {% if truck.status == 'active' %}#2ecc71{% else %}#e74c3c{% endif %};">
                                 {{ truck.plate_number }}
                             </button>
                         </li>
