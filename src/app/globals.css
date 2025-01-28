@@ -4,7 +4,7 @@
 
 @layer base {
   body {
-    @apply bg-background text-text min-h-screen m-0 p-0;
+    @apply bg-background text-text;
   }
 }
 
@@ -14,10 +14,10 @@
   }
 
   .btn-primary {
-    @apply bg-primary hover:bg-primary-dark text-white font-semibold py-2 px-4 rounded transition-colors;
+    @apply bg-primary hover:bg-primary-dark text-white;
   }
 
   .btn-info {
-    @apply bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded transition-colors;
+    @apply bg-blue-500 hover:bg-blue-600 text-white;
   }
 }
