@@ -327,6 +327,7 @@ body {
     padding: 4px 8px;
     border-radius: 4px;
     font-size: 0.9em;
+    margin-left: 5px;
 }
 
 .truck-status[data-status='active'] i {
@@ -348,19 +349,41 @@ body {
     margin-bottom: 0.5rem;
 }
 
+.nav-tabs {
+    border-bottom: 2px solid var(--accent-color);
+}
+
 .nav-tabs .nav-link {
     color: var(--text-color);
     border: none;
     padding: 10px 20px;
     margin-right: 5px;
     border-radius: 8px 8px 0 0;
+    transition: all 0.3s ease;
 }
 
-.nav-tabs .nav-link.active {
-    color: var(--accent-color);
-    background-color: #fff;
-    border-bottom: 2px solid var(--accent-color);
+.nav-tabs .nav-link[style*="color: #2ecc71"] {
+    background-color: rgba(46, 204, 113, 0.1);
 }
+
+.nav-tabs .nav-link[style*="color: #e74c3c"] {
+    background-color: rgba(231, 76, 60, 0.1);
+}
+
+.nav-tabs .nav-link:hover {
+    opacity: 0.8;
+}
+
+.nav-tabs .nav-link.active[style*="color: #2ecc71"] {
+    background-color: rgba(46, 204, 113, 0.2);
+    border-bottom: 2px solid #2ecc71;
+}
+
+.nav-tabs .nav-link.active[style*="color: #e74c3c"] {
+    background-color: rgba(231, 76, 60, 0.2);
+    border-bottom: 2px solid #e74c3c;
+}
+
 
 .nav-tabs .nav-link i {
     margin-right: 5px;
@@ -574,49 +597,15 @@ html {
     scroll-behavior: smooth;
 }
 
-/* Add these styles at the end of the file */
-
-.chart-container {
-    position: relative;
-    margin: 20px auto;
-    height: 250px;
-    width: 250px;
-}
-
-.nav-tabs {
-    border-bottom: 2px solid var(--accent-color);
-}
-
-.nav-tabs .nav-link {
-    color: var(--text-color);
-    border: none;
-    padding: 10px 20px;
-    margin-right: 5px;
-    border-radius: 8px 8px 0 0;
-    transition: all 0.3s ease;
-}
-
-.nav-tabs .nav-link:hover {
-    color: var(--accent-color);
-    background-color: rgba(230, 126, 34, 0.1);
-}
-
-.nav-tabs .nav-link.active {
-    color: var(--accent-color);
-    background-color: #fff;
-    border-bottom: 2px solid var(--accent-color);
-}
-
 .tab-content {
     padding: 20px;
     background-color: #fff;
     border-radius: 0 0 8px 8px;
 }
 
-.truck-status {
-    display: inline-block;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 0.9em;
-    margin-left: 5px;
+.chart-container {
+    position: relative;
+    margin: 20px auto;
+    height: 250px;
+    width: 250px;
 }

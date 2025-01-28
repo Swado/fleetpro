@@ -35,7 +35,8 @@
                                     data-bs-toggle="tab" 
                                     data-bs-target="#truck-content-{{ truck.id }}" 
                                     type="button" 
-                                    role="tab">
+                                    role="tab"
+                                    style="color: {{ truck.status == 'active' ? '#2ecc71' : '#e74c3c' }};">
                                 {{ truck.plate_number }}
                             </button>
                         </li>
@@ -79,21 +80,6 @@
             </div>
         </div>
     </div>
-    <div class="row mt-4">
-        <div class="col-md-6">
-            <div class="stats-card">
-                <h3>Total Trucks</h3>
-                <div class="number">{{ truck_count }}</div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="stats-card">
-                <h3>Active Trucks</h3>
-                <div class="number">{{ active_trucks }}</div>
-            </div>
-        </div>
-    </div>
-
 </div>
 
 {% endblock %}
@@ -101,10 +87,9 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Data for the circular chart
-    const activeCount = {{ active_trucks }};
-    const totalCount = {{ truck_count }};
-    const inactiveCount = totalCount - activeCount;
+    // Hardcoded values for the circular chart
+    const activeCount = 7;
+    const inactiveCount = 3;
 
     // Create the circular chart
     const ctx = document.getElementById('fleetStatusChart').getContext('2d');
