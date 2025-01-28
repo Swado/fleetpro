@@ -84,13 +84,16 @@
                                             {% endif %}
                                         </span>
                                     </p>
-                                    <button class="btn btn-primary" data-bs-toggle="collapse" 
+                                    <button class="btn btn-primary me-2" data-bs-toggle="collapse" 
                                             data-bs-target="#messages-{{ truck.id }}">
                                         <i class="fas fa-envelope"></i> Messages
                                         {% set unread_count = truck.messages|selectattr('is_read', 'equalto', false)|list|length %}
                                         {% if unread_count > 0 %}
                                         <span class="badge bg-danger ms-1">{{ unread_count }}</span>
                                         {% endif %}
+                                    </button>
+                                    <button class="btn btn-info" onclick="openAIChat('{{ truck.plate_number }}')">
+                                        <i class="fas fa-robot"></i> AI Assistant
                                     </button>
                                     <div class="collapse mt-3" id="messages-{{ truck.id }}">
                                         <div class="card">
@@ -270,6 +273,22 @@ document.addEventListener('DOMContentLoaded', function() {
             Destination: ${truck.destination}
         `);
     });
+
+    // Hide the widget initially
+    const widget = document.querySelector('elevenlabs-convai');
+    if (widget) {
+        widget.style.display = 'none';
+    }
+
+    // Add this to your existing JavaScript
+    function openAIChat(truckId) {
+        const widget = document.querySelector('elevenlabs-convai');
+        if (widget) {
+            widget.setAttribute('data-context', `Assisting with truck ${truckId}`);
+            widget.style.display = 'block';
+        }
+    }
 });
 </script>
+<elevenlabs-convai agent-id="kIJtewstoJnssPcE7t9p"></elevenlabs-convai>
 {% endblock %}
