@@ -38,10 +38,6 @@
                                     role="tab"
                                     style="color: {% if truck.status == 'active' %}#2ecc71{% else %}#e74c3c{% endif %};">
                                 {{ truck.plate_number }} - {{ truck.driver_name }}
-                                {% set unread_count = truck.messages|selectattr('is_read', 'equalto', false)|list|length %}
-                                {% if unread_count > 0 %}
-                                <span class="badge bg-danger ms-2">{{ unread_count }}</span>
-                                {% endif %}
                             </button>
                         </li>
                         {% endfor %}
@@ -63,80 +59,63 @@
                                             <i class="fas fa-circle"></i> {{ truck.status|title }}
                                         </span>
                                     </p>
+                                    <p>
+                                        <strong>Last Maintenance:</strong> 
+                                        {% if truck.last_maintenance %}
+                                            {{ truck.last_maintenance.strftime('%Y-%m-%d') }}
+                                        {% else %}
+                                            Not Available
+                                        {% endif %}
+                                    </p>
                                 </div>
                                 <div class="col-md-6">
-                                    <p><strong>Last Maintenance:</strong> {{ truck.last_maintenance.strftime('%Y-%m-%d') }}</p>
                                     {% if truck.destination_city %}
                                     <p>
                                         <strong>Current Destination:</strong>
                                         {{ truck.destination_city }}, {{ truck.destination_state }}
                                     </p>
                                     {% endif %}
-                                    <p>
-                                        <strong>Insurance Status:</strong>
-                                        <span class="badge {% if truck.insurance_status == 'active' %}bg-success{% elif truck.insurance_status == 'expiring_soon' %}bg-warning{% else %}bg-danger{% endif %}">
-                                            {% if truck.insurance_status == 'active' %}
-                                                Active
-                                            {% elif truck.insurance_status == 'expiring_soon' %}
-                                                Expiring Soon
-                                            {% else %}
-                                                Expired
-                                            {% endif %}
-                                        </span>
-                                    </p>
                                     <div class="btn-group">
                                         <a href="{{ url_for('truck_detail', truck_id=truck.id) }}" 
-                                           class="btn btn-primary me-2">
+                                           class="btn btn-primary">
                                             <i class="fas fa-eye"></i> View Details
                                         </a>
-                                        <button class="btn btn-primary me-2" data-bs-toggle="collapse" 
-                                                data-bs-target="#messages-{{ truck.id }}">
-                                            <i class="fas fa-envelope"></i> Messages
-                                            {% set unread_count = truck.messages|selectattr('is_read', 'equalto', false)|list|length %}
-                                            {% if unread_count > 0 %}
-                                            <span class="badge bg-danger ms-1">{{ unread_count }}</span>
-                                            {% endif %}
-                                        </button>
                                         <button class="btn btn-info" onclick="openAIChat('{{ truck.plate_number }}')">
-                                            <i class="fas fa-robot"></i> AI Assistant
+                                            <i class="fas fa-robot"></i> Voice Assistant
                                         </button>
-                                    </div>
-                                    <div class="collapse mt-3" id="messages-{{ truck.id }}">
-                                        <div class="card">
-                                            <div class="card-header d-flex justify-content-between align-items-center">
-                                                <h5 class="mb-0">Messages</h5>
-                                                <button class="btn btn-sm btn-primary" 
-                                                        data-bs-toggle="modal" 
-                                                        data-bs-target="#newMessageModal" 
-                                                        data-truck-id="{{ truck.id }}"
-                                                        data-driver="{{ truck.driver_name }}">
-                                                    <i class="fas fa-plus"></i> New Message
-                                                </button>
-                                            </div>
-                                            <div class="list-group list-group-flush">
-                                                {% for message in truck.messages|sort(attribute='timestamp', reverse=true) %}
-                                                <div class="list-group-item {% if not message.is_read %}unread{% endif %}">
-                                                    <div class="d-flex w-100 justify-content-between">
-                                                        <h6 class="mb-1">{{ message.subject }}</h6>
-                                                        <small>{{ message.timestamp.strftime('%m/%d/%Y') }}</small>
-                                                    </div>
-                                                    <p class="mb-1">{{ message.content[:100] }}...</p>
-                                                    <small>
-                                                        From: {{ message.sender.username }}
-                                                        {% if message.message_type == 'urgent' %}
-                                                        <span class="badge bg-danger">Urgent</span>
-                                                        {% endif %}
-                                                    </small>
-                                                </div>
-                                                {% else %}
-                                                <div class="list-group-item">
-                                                    <p class="text-muted mb-0">No messages</p>
-                                                </div>
-                                                {% endfor %}
-                                            </div>
-                                        </div>
                                     </div>
                                 </div>
+                            </div>
+
+                            <!-- Trip History Section -->
+                            <div class="trip-history mt-4">
+                                <h5>Recent Trips</h5>
+                                {% for trip in truck.trips %}
+                                <div class="trip-card">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6>{{ trip.start_city }}, {{ trip.start_state }} to {{ trip.end_city }}, {{ trip.end_state }}</h6>
+                                            <small class="text-muted">
+                                                Started: {{ trip.start_date.strftime('%Y-%m-%d') }}
+                                                {% if trip.end_date %}
+                                                | Ended: {{ trip.end_date.strftime('%Y-%m-%d') }}
+                                                {% endif %}
+                                            </small>
+                                        </div>
+                                        <span class="badge bg-{{ 'success' if trip.status == 'completed' else 'warning' }}">
+                                            {{ trip.status|title }}
+                                        </span>
+                                    </div>
+                                    <div class="mt-2">
+                                        <small class="text-muted">
+                                            Distance: {{ "%.1f"|format(trip.distance) }} miles |
+                                            Runtime: {{ "%.1f"|format(trip.runtime_hours) }} hours
+                                        </small>
+                                    </div>
+                                </div>
+                                {% else %}
+                                <p class="text-muted">No trip history available</p>
+                                {% endfor %}
                             </div>
                         </div>
                         {% endfor %}
@@ -161,42 +140,6 @@
     </div>
 </div>
 
-<!-- New Message Modal -->
-<div class="modal fade" id="newMessageModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">New Message</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form id="newMessageForm" action="{{ url_for('send_message') }}" method="POST">
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="subject" class="form-label">Subject</label>
-                        <input type="text" class="form-control" id="subject" name="subject" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="message_type" class="form-label">Message Type</label>
-                        <select class="form-control" id="message_type" name="message_type">
-                            <option value="normal">Normal</option>
-                            <option value="urgent">Urgent</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="content" class="form-label">Message</label>
-                        <textarea class="form-control" id="content" name="content" rows="5" required></textarea>
-                    </div>
-                    <input type="hidden" name="receiver_id" id="receiver_id">
-                    <input type="hidden" name="related_truck_id" id="related_truck_id">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Send Message</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 {% endblock %}
 
 {% block extra_js %}
@@ -205,20 +148,36 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize message modal handlers
-    const newMessageModal = document.getElementById('newMessageModal');
-    newMessageModal.addEventListener('show.bs.modal', function(event) {
-        const button = event.relatedTarget;
-        const truckId = button.dataset.truckId;
-        const driverName = button.dataset.driver;
+    // Initialize the map
+    const map = L.map('fleet-map').setView([39.8283, -98.5795], 4); // Center of USA
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
 
-        // Set the truck ID in the hidden field
-        document.getElementById('related_truck_id').value = truckId;
+    // Add markers for each truck
+    const trucks = [
+        {% for truck in trucks %}
+        {% if truck.current_latitude and truck.current_longitude %}
+        {
+            lat: {{ truck.current_latitude }},
+            lng: {{ truck.current_longitude }},
+            plateNumber: "{{ truck.plate_number }}",
+            driverName: "{{ truck.driver_name }}",
+            status: "{{ truck.status }}",
+            destination: "{{ truck.destination_city + ', ' + truck.destination_state if truck.destination_city else 'No active destination' }}"
+        },
+        {% endif %}
+        {% endfor %}
+    ];
 
-        // Find the driver's user ID based on the driver name
-        // This would need to be implemented based on your user-driver relationship
-        // For now, we'll set it in the data attributes of the button
-        document.getElementById('receiver_id').value = button.dataset.driverId;
+    trucks.forEach(truck => {
+        const marker = L.marker([truck.lat, truck.lng]).addTo(map);
+        marker.bindPopup(`
+            <strong>${truck.plateNumber}</strong><br>
+            Driver: ${truck.driverName}<br>
+            Status: ${truck.status}<br>
+            Destination: ${truck.destination}
+        `);
     });
 
     // Use the actual counts from the backend
@@ -231,7 +190,7 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(ctx, {
         type: 'doughnut',
         data: {
-            labels: ['Active Trucks', 'Inactive Trucks'],
+            labels: ['Active Trucks', 'Inactive/Maintenance'],
             datasets: [{
                 data: [activeCount, inactiveCount],
                 backgroundColor: ['#2ecc71', '#e74c3c'],
@@ -250,43 +209,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Initialize the map
-    const map = L.map('fleet-map').setView([39.8283, -98.5795], 4); // Center of USA
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
-
-    // Add markers for each truck
-    const trucks = [
-        {% for truck in trucks %}
-        {
-            lat: {{ truck.current_latitude }},
-            lng: {{ truck.current_longitude }},
-            plateNumber: "{{ truck.plate_number }}",
-            driverName: "{{ truck.driver_name }}",
-            status: "{{ truck.status }}",
-            destination: "{{ truck.destination_city }}, {{ truck.destination_state }}"
-        },
-        {% endfor %}
-    ];
-
-    trucks.forEach(truck => {
-        const marker = L.marker([truck.lat, truck.lng]).addTo(map);
-        marker.bindPopup(`
-            <strong>${truck.plateNumber}</strong><br>
-            Driver: ${truck.driverName}<br>
-            Status: ${truck.status}<br>
-            Destination: ${truck.destination}
-        `);
-    });
-
-    // AI Chat Widget Handling
+    // Voice Assistant Setup
     window.openAIChat = function(truckId) {
         const widget = document.querySelector('elevenlabs-convai');
         if (widget) {
-            // Hide any previously visible widgets
             widget.style.display = 'block';
-            // Set the context for this truck
             widget.setAttribute('data-context', `Assisting with truck ${truckId}`);
         }
     };
