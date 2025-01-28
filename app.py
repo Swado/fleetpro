@@ -53,16 +53,16 @@ def login():
 
     if request.method == 'POST':
         from models import User
-        email = request.form.get('email')
+        username = request.form.get('username')
         password = request.form.get('password')
-        user = User.query.filter_by(email=email).first()
+        user = User.query.filter_by(username=username).first()
 
         if user and user.check_password(password):
             login_user(user)
             flash('Logged in successfully.')
             next_page = request.args.get('next')
             return redirect(next_page or url_for('dashboard'))
-        flash('Invalid email or password')
+        flash('Invalid username or password')
 
     return render_template('login.html')
 
@@ -169,6 +169,16 @@ def utility_processor():
 
     return dict(users=get_users_for_messaging, trucks=get_user_trucks)
 
+
+@app.route('/trucks/<int:truck_id>')
+@login_required
+def truck_detail(truck_id):
+    from models import Truck
+    truck = Truck.query.get_or_404(truck_id)
+    if truck.user_id != current_user.id:
+        flash('Access denied.', 'error')
+        return redirect(url_for('dashboard'))
+    return render_template('truck_detail.html', truck=truck)
 
 with app.app_context():
     # Import models after app creation to avoid circular imports
