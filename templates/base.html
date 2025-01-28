@@ -31,9 +31,6 @@
         <div class="container">
             <a class="navbar-brand" href="{{ url_for('dashboard') }}">
                 <i class="fas fa-truck"></i> Xpress360
-                {% if session.get('is_demo') %}
-                <span class="badge bg-warning text-dark ms-2">Demo Mode</span>
-                {% endif %}
             </a>
             <div class="navbar-nav ms-auto">
                 <!-- Messages Link -->
@@ -44,16 +41,6 @@
                     <span class="badge bg-danger message-badge">{{ unread_count }}</span>
                     {% endif %}
                 </a>
-                <!-- Email Notification Status -->
-                {% if not session.get('is_demo') %}
-                <a class="nav-item nav-link" href="{{ url_for('oauth2callback') }}" 
-                   data-bs-toggle="tooltip" title="Setup Email Notifications">
-                    <i class="fas fa-envelope{% if session.get('email_enabled') %} text-success{% endif %}"></i>
-                    {% if not session.get('email_enabled') %}
-                    Setup Notifications
-                    {% endif %}
-                </a>
-                {% endif %}
                 <span class="nav-item nav-link text-light">
                     <i class="fas fa-user"></i> {{ current_user.username }}
                 </span>
