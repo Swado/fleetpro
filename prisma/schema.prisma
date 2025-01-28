@@ -1,0 +1,86 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              Int       @id @default(autoincrement())
+  username        String    @unique
+  email           String    @unique
+  password_hash   String
+  trucks          Truck[]
+  sent_messages   Message[] @relation("SentMessages")
+  received_messages Message[] @relation("ReceivedMessages")
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+}
+
+model Truck {
+  id                Int          @id @default(autoincrement())
+  plate_number      String       @unique
+  model             String
+  year              Int
+  status            String       @default("active")
+  last_maintenance  DateTime     @default(now())
+  user_id           Int
+  owner             User         @relation(fields: [user_id], references: [id])
+  destination_city  String?
+  destination_state String?
+  destination_set_at DateTime?
+  driver_name       String?
+  insurance_expiry  DateTime?
+  current_latitude  Float?
+  current_longitude Float?
+  trips            TripHistory[]
+  messages         Message[]
+  created_at       DateTime      @default(now())
+  updated_at       DateTime      @updatedAt
+}
+
+model Message {
+  id              Int       @id @default(autoincrement())
+  sender_id       Int
+  receiver_id     Int
+  content         String
+  timestamp       DateTime  @default(now())
+  is_read         Boolean   @default(false)
+  message_type    String    @default("normal")
+  subject         String
+  related_truck_id Int?
+  sender          User      @relation("SentMessages", fields: [sender_id], references: [id])
+  receiver        User      @relation("ReceivedMessages", fields: [receiver_id], references: [id])
+  related_truck   Truck?    @relation(fields: [related_truck_id], references: [id])
+}
+
+model TripHistory {
+  id              Int       @id @default(autoincrement())
+  truck_id        Int
+  truck           Truck     @relation(fields: [truck_id], references: [id])
+  start_city      String
+  start_state     String
+  end_city        String
+  end_state       String
+  start_date      DateTime
+  end_date        DateTime?
+  distance        Float?
+  status          String    @default("in_progress")
+  runtime_hours   Float     @default(0.0)
+  idle_time_hours Float     @default(0.0)
+  invoice         Invoice?
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+}
+
+model Invoice {
+  id              Int         @id @default(autoincrement())
+  trip_id         Int         @unique
+  trip            TripHistory @relation(fields: [trip_id], references: [id])
+  invoice_number  String      @unique
+  amount          Float
+  created_at      DateTime    @default(now())
+  status          String      @default("pending")
+}
