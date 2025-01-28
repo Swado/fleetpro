@@ -59,6 +59,20 @@ body {
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
+.company-title .company-subtitle {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
+    font-size: 1.2rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-top: 0.5rem;
+    background: linear-gradient(135deg, #3498db, #2ecc71);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: none;
+}
+
 .login-btn {
     position: fixed;
     top: 20px;
@@ -524,4 +538,49 @@ body {
 .ai-assistant-container .btn-primary:hover {
     background-color: var(--accent-color);
     border-color: var(--accent-color);
+}
+
+.about-section {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(135deg, rgba(44, 62, 80, 0.95), rgba(52, 73, 94, 0.95));
+    padding: 50px 0;
+    color: white;
+    display: none;
+    transition: transform 0.5s ease-in-out;
+    transform: translateY(100%);
+}
+
+.about-section.show {
+    display: block;
+    transform: translateY(0);
+}
+
+.about-content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px;
+    line-height: 1.8;
+}
+
+.about-section h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 2rem;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, #3498db, #2ecc71);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.about-section p {
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+html {
+    scroll-behavior: smooth;
 }

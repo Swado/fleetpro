@@ -7,7 +7,7 @@
     <!-- Navigation Buttons -->
     <div class="nav-buttons">
         <button class="nav-btn">HOME</button>
-        <button class="nav-btn">ABOUT</button>
+        <button class="nav-btn" onclick="toggleAbout()">ABOUT</button>
     </div>
 
     <!-- Login Button -->
@@ -58,6 +58,16 @@
             </div>
         </div>
     </div>
+
+    <!-- About Section -->
+    <div class="about-section" id="aboutSection">
+        <div class="about-content">
+            <h2>About Us</h2>
+            <p>At Xpress360, we are revolutionizing fleet management with the power of cutting-edge AI technology. Our mission is to simplify, optimize, and enhance every aspect of fleet operations, from route planning and vehicle maintenance to real-time tracking and performance analytics.</p>
+            <p>Our fully AI-driven fleet management system is designed to minimize human intervention while maximizing efficiency, safety, and cost-effectiveness. By leveraging advanced algorithms and real-time data, we empower businesses to make smarter, faster decisions, ensuring their fleets operate at peak performance.</p>
+            <p>With a focus on innovation and sustainability, we aim to redefine how fleets are managed, delivering unparalleled value and peace of mind to our clients. Whether you're managing a small fleet or a large-scale operation, our AI system adapts seamlessly to your needs, paving the way for the future of autonomous fleet management.</p>
+        </div>
+    </div>
 </div>
 
 {% block extra_js %}
@@ -70,6 +80,11 @@ function openLoginModal() {
 function closeLoginModal() {
     document.getElementById('loginModal').style.display = 'none';
     document.body.style.overflow = 'auto';
+}
+
+function toggleAbout() {
+    const aboutSection = document.getElementById('aboutSection');
+    aboutSection.classList.toggle('show');
 }
 
 // Close modal when clicking outside
