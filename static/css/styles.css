@@ -9,7 +9,7 @@ body {
     font-family: 'Roboto', sans-serif;
     background-color: transparent;
     color: var(--text-color);
-    background-image: url('/static/images/DALL·E 2025-01-26 12.48.05 - A serene winter landscape featuring a vintage blue pickup truck parked in a snowy field. The truck looks weathered but sturdy, with a nostalgic, timel.webp');
+    background-image: url('/static/images/winter-truck.webp');
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
@@ -47,7 +47,7 @@ body {
     text-transform: uppercase;
 }
 
-.company-subtitle {
+.company-title .company-subtitle {
     font-family: 'Montserrat', sans-serif;
     font-weight: 400;
     color: white;
@@ -79,6 +79,35 @@ body {
 }
 
 .login-btn:hover {
+    transform: translateY(-2px);
+    opacity: 0.8;
+}
+
+.nav-buttons {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    gap: 15px;
+    z-index: 1000;
+}
+
+.nav-btn {
+    padding: 10px 25px;
+    background: transparent;
+    border: none;
+    color: transparent;
+    font-weight: 500;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+.nav-btn:hover {
     transform: translateY(-2px);
     opacity: 0.8;
 }
@@ -332,35 +361,6 @@ body {
 
 .nav-tabs .nav-link i {
     margin-right: 5px;
-}
-
-.nav-buttons {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    display: flex;
-    gap: 15px;
-    z-index: 1000;
-}
-
-.nav-btn {
-    padding: 10px 25px;
-    background: transparent;
-    border: none;
-    color: transparent;
-    font-weight: 500;
-    font-size: 1.1rem;
-    transition: all 0.3s ease;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-    -webkit-background-clip: text;
-    background-clip: text;
-}
-
-.nav-btn:hover {
-    transform: translateY(-2px);
-    opacity: 0.8;
 }
 
 .truck-detail-header {
