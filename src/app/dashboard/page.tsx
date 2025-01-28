@@ -20,12 +20,17 @@ interface Truck {
 }
 
 export default function DashboardPage() {
-  const { data: session, status } = useSession()
+  const { data: session, status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      redirect('/login')
+    },
+  })
   const [showAIChat, setShowAIChat] = useState(false)
   const [trucks, setTrucks] = useState<Truck[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    // Fetch trucks data
     const fetchTrucks = async () => {
       try {
         const response = await fetch('/api/trucks')
@@ -33,6 +38,8 @@ export default function DashboardPage() {
         setTrucks(data)
       } catch (error) {
         console.error('Failed to fetch trucks:', error)
+      } finally {
+        setIsLoading(false)
       }
     }
 
@@ -41,12 +48,14 @@ export default function DashboardPage() {
     }
   }, [session])
 
-  if (status === 'loading') {
-    return <div>Loading...</div>
-  }
-
-  if (!session) {
-    redirect('/login')
+  if (status === 'loading' || isLoading) {
+    return (
+      <DashboardLayout title="Loading...">
+        <div className="flex justify-center items-center min-h-[50vh]">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </div>
+      </DashboardLayout>
+    )
   }
 
   const handleAIChatClick = () => {
