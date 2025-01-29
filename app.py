@@ -1,6 +1,6 @@
 import os
 import logging
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, Response
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from sqlalchemy.orm import DeclarativeBase
@@ -8,6 +8,7 @@ import urllib.parse
 from twilio.rest import Client
 from twilio.base.exceptions import TwilioRestException
 from twilio.twiml.voice_response import VoiceResponse, Gather
+import requests
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -248,26 +249,69 @@ def make_call(truck_id):
             'message': 'An unexpected error occurred'
         }), 500
 
+def generate_elevenlabs_audio(text):
+    """Generate audio using ElevenLabs API"""
+    ELEVEN_LABS_API_KEY = os.environ.get("ELEVEN_LABS_API_KEY")
+    VOICE_ID = "21m00Tcm4TlvDq8ikWAM"  # default voice ID
+
+    url = f"https://api.elevenlabs.io/v1/text-to-speech/{VOICE_ID}"
+
+    headers = {
+        "Accept": "audio/mpeg",
+        "Content-Type": "application/json",
+        "xi-api-key": ELEVEN_LABS_API_KEY
+    }
+
+    data = {
+        "text": text,
+        "model_id": "eleven_monolingual_v1",
+        "voice_settings": {
+            "stability": 0.5,
+            "similarity_boost": 0.5
+        }
+    }
+
+    try:
+        response = requests.post(url, json=data, headers=headers)
+        if response.status_code == 200:
+            # Save the audio file temporarily
+            audio_file_path = f"temp_audio_{hash(text)}.mp3"
+            with open(audio_file_path, "wb") as f:
+                f.write(response.content)
+            return audio_file_path
+        else:
+            app.logger.error(f"ElevenLabs API error: {response.status_code}")
+            return None
+    except Exception as e:
+        app.logger.error(f"Error generating ElevenLabs audio: {str(e)}")
+        return None
+
 @app.route('/voice', methods=['GET', 'POST'])
 def voice():
-    """Handle incoming voice calls."""
+    """Handle incoming voice calls with ElevenLabs integration."""
     try:
         app.logger.info("Voice endpoint called")
         app.logger.info(f"Request method: {request.method}")
         app.logger.info(f"Request values: {request.values}")
 
-        # Create TwiML response
         resp = VoiceResponse()
 
         if 'SpeechResult' in request.values:
-            # Log the received speech
             speech_text = request.values['SpeechResult']
             app.logger.info(f"Received speech: {speech_text}")
 
-            # Add a response message
-            resp.say("I received your message. Let me help you with that.", voice='alice')
+            # Generate response using ElevenLabs
+            response_text = "I received your message. Let me help you with that."
+            audio_file = generate_elevenlabs_audio(response_text)
 
-            # Set up for the next input
+            if audio_file:
+                # Play the generated audio file
+                resp.play(url_for('static', filename=audio_file, _external=True))
+            else:
+                # Fallback to Twilio voice if ElevenLabs fails
+                resp.say(response_text, voice='alice')
+
+            # Set up for next input
             gather = Gather(
                 input='speech',
                 action='/voice',
@@ -275,13 +319,27 @@ def voice():
                 timeout=3,
                 speechTimeout='auto'
             )
-            gather.say("Please continue with your question.", voice='alice')
+
+            # Generate follow-up prompt
+            follow_up_text = "Please continue with your question."
+            follow_up_audio = generate_elevenlabs_audio(follow_up_text)
+
+            if follow_up_audio:
+                gather.play(url_for('static', filename=follow_up_audio, _external=True))
+            else:
+                gather.say(follow_up_text, voice='alice')
+
             resp.append(gather)
         else:
-            # Initial call setup
-            resp.say("Welcome to Xpress360 Fleet Management. How can I help you today?", voice='alice')
+            # Initial greeting
+            welcome_text = "Welcome to Xpress360 Fleet Management. How can I help you today?"
+            audio_file = generate_elevenlabs_audio(welcome_text)
 
-            # Set up gathering of speech input
+            if audio_file:
+                resp.play(url_for('static', filename=audio_file, _external=True))
+            else:
+                resp.say(welcome_text, voice='alice')
+
             gather = Gather(
                 input='speech',
                 action='/voice',
@@ -299,7 +357,14 @@ def voice():
         app.logger.error(f"Error in voice endpoint: {str(e)}")
         app.logger.exception("Full traceback:")
         error_response = VoiceResponse()
-        error_response.say("I apologize, but I encountered an error. Please try again.", voice='alice')
+        error_text = "I apologize, but I encountered an error. Please try again."
+        audio_file = generate_elevenlabs_audio(error_text)
+
+        if audio_file:
+            error_response.play(url_for('static', filename=audio_file, _external=True))
+        else:
+            error_response.say(error_text, voice='alice')
+
         return str(error_response)
 
 with app.app_context():
