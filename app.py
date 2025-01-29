@@ -351,7 +351,7 @@ def voice():
             )
 
             # Generate follow-up prompt
-            follow_up_text = "Please continue with your question."
+            follow_up_text = "Please continue with your question or request about fleet management."
             follow_up_audio = generate_elevenlabs_audio(follow_up_text)
 
             if follow_up_audio:
@@ -362,7 +362,7 @@ def voice():
             resp.append(gather)
         else:
             # Initial greeting
-            welcome_text = "Welcome to Xpress360 Fleet Management. How can I help you today?"
+            welcome_text = "Hello, I'm your AI Fleet Assistant powered by ElevenLabs. I'm here to help you manage your truck fleet efficiently. How may I assist you today?"
             audio_file = generate_elevenlabs_audio(welcome_text)
 
             if audio_file:
