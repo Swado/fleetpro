@@ -57,14 +57,26 @@ def get_ai_response(prompt):
         app.logger.error(f"OpenAI API error: {e}")
         return "I apologize, but I'm having trouble processing your request at the moment."
 
-@app.route('/voice', methods=['POST'])
+@app.route('/voice', methods=['GET', 'POST'])
 def voice():
     """Handle incoming voice calls."""
     try:
         app.logger.info("Voice endpoint called")
+        app.logger.info(f"Request method: {request.method}")
+        app.logger.info(f"Request values: {request.values}")
+
         resp = VoiceResponse()
 
-        if 'SpeechResult' in request.values:
+        if request.method == 'GET':
+            # Initial greeting for GET request
+            app.logger.info("Handling GET request - sending initial greeting")
+            gather = Gather(input='speech', action='/voice', method='POST', language='en-US')
+            gather.say(
+                "Hello! I'm your fleet management assistant. How can I help you today?",
+                voice='alice'
+            )
+            resp.append(gather)
+        elif 'SpeechResult' in request.values:
             # Get the transcribed speech
             user_input = request.values['SpeechResult']
             app.logger.info(f"Received speech input: {user_input}")
@@ -78,8 +90,8 @@ def voice():
             gather.say(ai_response, voice='alice')
             resp.append(gather)
         else:
-            # Initial greeting
-            app.logger.info("Sending initial greeting")
+            # Initial greeting for POST without speech
+            app.logger.info("Sending initial greeting for POST without speech")
             gather = Gather(input='speech', action='/voice', method='POST', language='en-US')
             gather.say(
                 "Hello! I'm your fleet management assistant. How can I help you today?",
@@ -91,12 +103,14 @@ def voice():
         resp.redirect('/voice')
 
         app.logger.info("Voice response created successfully")
+        app.logger.info(f"Response TwiML: {str(resp)}")
         return str(resp)
     except Exception as e:
         app.logger.error(f"Error in voice endpoint: {str(e)}")
+        app.logger.exception("Full traceback:")
         # Create a response that communicates the error to the caller
         error_response = VoiceResponse()
-        error_response.say("I apologize, but I'm having trouble processing your request. Please try again later.")
+        error_response.say("I apologize, but I'm having trouble processing your request. Please try again later.", voice='alice')
         return str(error_response)
 
 def get_unread_message_count():
