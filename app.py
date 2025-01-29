@@ -256,42 +256,17 @@ def voice():
         app.logger.info(f"Request method: {request.method}")
         app.logger.info(f"Request values: {request.values}")
 
+        # Create a minimal response that connects the call
         resp = VoiceResponse()
 
         if request.method == 'GET':
-            # Initial connection - use ElevenLabs widget
-            gather = Gather(
-                input='speech dtmf',
-                action='/voice',
-                method='POST',
-                language='en-US',
-                speechTimeout='auto'
-            )
-
-            # Instead of speaking, play a brief tone to indicate readiness
+            # Just play a tone to indicate connection
             resp.play('', digits='1')
-            resp.pause(length=2)
-
-            resp.append(gather)
-        elif 'SpeechResult' in request.values:
-            # Forward the conversation to ElevenLabs widget
-            user_input = request.values['SpeechResult']
-            app.logger.info(f"Received speech input: {user_input}")
-
-            # Brief pause to allow ElevenLabs to process
+        else:
+            # Brief pause for ElevenLabs to take over
             resp.pause(length=1)
 
-            # Set up next speech gathering
-            gather = Gather(
-                input='speech dtmf',
-                action='/voice',
-                method='POST',
-                language='en-US',
-                speechTimeout='auto'
-            )
-            resp.append(gather)
-
-        # Add a default action if no input is received
+        # Add a default action for continuous connection
         resp.redirect('/voice')
 
         app.logger.info("Voice response created successfully")
