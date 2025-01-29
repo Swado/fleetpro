@@ -15,7 +15,6 @@
 
     <div class="row">
         <div class="col-md-4">
-            <!-- Circular Progress Chart -->
             <div class="stats-card">
                 <h3>Fleet Status</h3>
                 <div class="chart-container">
@@ -24,7 +23,6 @@
             </div>
         </div>
         <div class="col-md-8">
-            <!-- Truck Tabs -->
             <div class="card">
                 <div class="card-body">
                     <ul class="nav nav-tabs" id="truckTabs" role="tablist">
@@ -92,7 +90,6 @@
                                 </div>
                             </div>
 
-                            <!-- Trip History Section -->
                             <div class="trip-history mt-4">
                                 <h5>Recent Trips</h5>
                                 {% for trip in truck.trips %}
@@ -130,7 +127,6 @@
         </div>
     </div>
 
-    <!-- Fleet Map Section -->
     <div class="row mt-4">
         <div class="col-md-12">
             <div class="card">
@@ -144,7 +140,6 @@
         </div>
     </div>
 </div>
-
 {% endblock %}
 
 {% block extra_js %}
@@ -153,13 +148,11 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize the map
-    const map = L.map('fleet-map').setView([39.8283, -98.5795], 4); // Center of USA
+    const map = L.map('fleet-map').setView([39.8283, -98.5795], 4); 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors'
     }).addTo(map);
 
-    // Add markers for each truck
     const trucks = [
         {% for truck in trucks %}
         {% if truck.current_latitude and truck.current_longitude %}
@@ -185,12 +178,10 @@ document.addEventListener('DOMContentLoaded', function() {
         `);
     });
 
-    // Use the actual counts from the backend
     const activeCount = {{ active_trucks }};
     const totalCount = {{ truck_count }};
     const inactiveCount = totalCount - activeCount;
 
-    // Create the circular chart
     const ctx = document.getElementById('fleetStatusChart').getContext('2d');
     new Chart(ctx, {
         type: 'doughnut',
@@ -214,31 +205,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Voice Assistant Setup
     window.openAIChat = function(truckId) {
         const widget = document.querySelector('elevenlabs-convai');
         if (widget) {
-            console.log('Initializing ElevenLabs widget...');
-            widget.style.display = 'block';
-            widget.setAttribute('agent-id', 'kIJtewstoJnssPcE7t9p');
             widget.setAttribute('data-context', `Fleet management assistant for truck ${truckId}`);
-
-            // Initialize the widget
-            widget.addEventListener('ready', function(e) {
-                console.log('ElevenLabs widget is ready');
-            });
-
-            widget.addEventListener('error', function(e) {
-                console.error('ElevenLabs widget error:', e.detail);
-            });
-
-            widget.addEventListener('message', function(e) {
-                console.log('ElevenLabs message:', e.detail);
-            });
         }
     };
 
-    // Twilio call initiation 
     window.initiateCall = function(truckId, phoneNumber, driverName) {
         if (confirm(`Do you want to call ${driverName}?`)) {
             fetch(`/api/make_call/${truckId}`, {
@@ -271,13 +244,4 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
-
-<!-- Add the ElevenLabs Convai widget with proper attributes -->
-<elevenlabs-convai 
-    agent-id="kIJtewstoJnssPcE7t9p"
-    style="display: none;"
-    enable-voice="true"
-    voice-chat="true">
-</elevenlabs-convai>
-<script src="https://elevenlabs.io/convai-widget/index.js" async type="text/javascript"></script>
 {% endblock %}
