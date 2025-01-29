@@ -257,8 +257,8 @@ def generate_elevenlabs_audio(text):
             app.logger.error("ElevenLabs API key is missing")
             return None
 
-        VOICE_ID = "21m00Tcm4TlvDq8ikWAM"  # default voice ID
-        url = f"https://api.elevenlabs.io/v1/text-to-speech/{VOICE_ID}/stream"  # Using stream endpoint
+        VOICE_ID = "21m00Tcm4TlvDq8ikWAM"  # Rachel voice
+        url = f"https://api.elevenlabs.io/v1/text-to-speech/{VOICE_ID}/stream"
 
         headers = {
             "Accept": "audio/mpeg",
@@ -271,12 +271,17 @@ def generate_elevenlabs_audio(text):
             "model_id": "eleven_monolingual_v1",
             "voice_settings": {
                 "stability": 0.5,
-                "similarity_boost": 0.5
+                "similarity_boost": 0.5,
+                "style": 0.5,
+                "use_speaker_boost": True
             }
         }
 
         app.logger.debug(f"Making request to ElevenLabs API with text: {text}")
         app.logger.debug(f"Using ElevenLabs API key: {ELEVEN_LABS_API_KEY[:4]}...")
+        app.logger.debug(f"Request URL: {url}")
+        app.logger.debug(f"Request headers: {headers}")
+
         response = requests.post(url, json=data, headers=headers)
         app.logger.debug(f"ElevenLabs API response status: {response.status_code}")
 
@@ -297,7 +302,9 @@ def generate_elevenlabs_audio(text):
         # Verify the file was created and has content
         if os.path.exists(audio_path) and os.path.getsize(audio_path) > 0:
             app.logger.debug(f"Audio file created successfully at {audio_path}")
-            return f"audio/{audio_filename}"
+            audio_url = f"audio/{audio_filename}"
+            app.logger.debug(f"Returning audio URL: {audio_url}")
+            return audio_url
         else:
             app.logger.error("Failed to create audio file or file is empty")
             return None
