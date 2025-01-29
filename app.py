@@ -324,63 +324,44 @@ def voice():
 
         resp = VoiceResponse()
 
+        # Connect to ElevenLabs Convai agent
+        agent_id = "kIJtewstoJnssPcE7t9p"
+        convai_url = f"https://elevenlabs.io/api/convai-agent/{agent_id}/chat"
+
+        headers = {
+            "Authorization": f"Bearer {os.environ.get('ELEVEN_LABS_API_KEY')}",
+            "Content-Type": "application/json"
+        }
+
         if 'SpeechResult' in request.values:
             speech_text = request.values['SpeechResult']
             app.logger.info(f"Received speech: {speech_text}")
 
-            # Generate response using ElevenLabs
-            response_text = "I received your message. Let me help you with that."
-            audio_file = generate_elevenlabs_audio(response_text)
-
-            if audio_file:
-                # Generate a full URL for the audio file
-                audio_url = request.url_root.rstrip('/') + url_for('static', filename=audio_file)
-                app.logger.info(f"Playing audio from URL: {audio_url}")
-                resp.play(audio_url)
-            else:
-                app.logger.warning("ElevenLabs audio generation failed, falling back to Twilio voice")
-                resp.say(response_text, voice='alice')
-
-            # Set up for next input
-            gather = Gather(
-                input='speech',
-                action='/voice',
-                method='POST',
-                timeout=3,
-                speechTimeout='auto'
+            # Send the speech to ElevenLabs Convai agent
+            agent_response = requests.post(convai_url, 
+                headers=headers,
+                json={"text": speech_text}
             )
 
-            # Generate follow-up prompt
-            follow_up_text = "Please continue with your question or request about fleet management."
-            follow_up_audio = generate_elevenlabs_audio(follow_up_text)
-
-            if follow_up_audio:
-                gather.play(request.url_root.rstrip('/') + url_for('static', filename=follow_up_audio))
+            if agent_response.status_code == 200:
+                response_audio_url = agent_response.json().get('audio_url')
+                if response_audio_url:
+                    resp.play(response_audio_url)
+                else:
+                    app.logger.warning("No audio URL in agent response, falling back to Twilio voice")
+                    resp.say("I apologize, but I'm having trouble generating voice. Please try again.", voice='alice')
             else:
-                gather.say(follow_up_text, voice='alice')
+                app.logger.error(f"Agent error: {agent_response.status_code}")
+                resp.say("I apologize, but I encountered an error. Please try again.", voice='alice')
 
-            resp.append(gather)
-        else:
-            # Initial greeting
-            welcome_text = "Hello, I'm your AI Fleet Assistant powered by ElevenLabs. I'm here to help you manage your truck fleet efficiently. How may I assist you today?"
-            audio_file = generate_elevenlabs_audio(welcome_text)
-
-            if audio_file:
-                audio_url = request.url_root.rstrip('/') + url_for('static', filename=audio_file)
-                app.logger.info(f"Playing welcome audio from URL: {audio_url}")
-                resp.play(audio_url)
-            else:
-                app.logger.warning("Initial ElevenLabs audio generation failed, falling back to Twilio voice")
-                resp.say(welcome_text, voice='alice')
-
-            gather = Gather(
-                input='speech',
-                action='/voice',
-                method='POST',
-                timeout=3,
-                speechTimeout='auto'
-            )
-            resp.append(gather)
+        gather = Gather(
+            input='speech',
+            action='/voice',
+            method='POST',
+            timeout=3,
+            speechTimeout='auto'
+        )
+        resp.append(gather)
 
         app.logger.info("Voice response created successfully")
         app.logger.info(f"Response TwiML: {str(resp)}")
@@ -390,14 +371,7 @@ def voice():
         app.logger.error(f"Error in voice endpoint: {str(e)}")
         app.logger.exception("Full traceback:")
         error_response = VoiceResponse()
-        error_text = "I apologize, but I encountered an error. Please try again."
-        error_audio = generate_elevenlabs_audio(error_text)
-
-        if error_audio:
-            error_response.play(request.url_root.rstrip('/') + url_for('static', filename=error_audio))
-        else:
-            error_response.say(error_text, voice='alice')
-
+        error_response.say("I apologize, but I encountered an error. Please try again.", voice='alice')
         return str(error_response)
 
 @app.route('/static/audio/<path:filename>')
