@@ -256,17 +256,11 @@ def voice():
         app.logger.info(f"Request method: {request.method}")
         app.logger.info(f"Request values: {request.values}")
 
-        # Create a minimal response that connects the call
+        # Create the most minimal response possible
         resp = VoiceResponse()
 
-        if request.method == 'GET':
-            # Just play a tone to indicate connection
-            resp.play('', digits='1')
-        else:
-            # Brief pause for ElevenLabs to take over
-            resp.pause(length=1)
-
-        # Add a default action for continuous connection
+        # Just keep the connection open with a silent pause
+        resp.pause(length=2)
         resp.redirect('/voice')
 
         app.logger.info("Voice response created successfully")
@@ -276,7 +270,7 @@ def voice():
         app.logger.error(f"Error in voice endpoint: {str(e)}")
         app.logger.exception("Full traceback:")
         error_response = VoiceResponse()
-        error_response.play('', digits='#')  # Play error tone instead of speaking
+        error_response.pause(length=1)  # Silent error response
         return str(error_response)
 
 with app.app_context():
