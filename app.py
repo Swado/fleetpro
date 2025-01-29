@@ -259,13 +259,27 @@ def voice():
         # Create TwiML response
         resp = VoiceResponse()
 
-        # When the call is first connected
-        if request.method == 'GET':
-            # Add a brief pause to allow the call to establish
-            resp.pause(length=1)
+        if 'SpeechResult' in request.values:
+            # Log the received speech
+            speech_text = request.values['SpeechResult']
+            app.logger.info(f"Received speech: {speech_text}")
 
-            # Play a tone to indicate connection
-            resp.play(digits='1')
+            # Add a response message
+            resp.say("I received your message. Let me help you with that.", voice='alice')
+
+            # Set up for the next input
+            gather = Gather(
+                input='speech',
+                action='/voice',
+                method='POST',
+                timeout=3,
+                speechTimeout='auto'
+            )
+            gather.say("Please continue with your question.", voice='alice')
+            resp.append(gather)
+        else:
+            # Initial call setup
+            resp.say("Welcome to Xpress360 Fleet Management. How can I help you today?", voice='alice')
 
             # Set up gathering of speech input
             gather = Gather(
@@ -277,17 +291,15 @@ def voice():
             )
             resp.append(gather)
 
-        # Keep the connection alive
-        resp.redirect('/voice')
-
         app.logger.info("Voice response created successfully")
         app.logger.info(f"Response TwiML: {str(resp)}")
         return str(resp)
+
     except Exception as e:
         app.logger.error(f"Error in voice endpoint: {str(e)}")
         app.logger.exception("Full traceback:")
         error_response = VoiceResponse()
-        error_response.pause(length=1)
+        error_response.say("I apologize, but I encountered an error. Please try again.", voice='alice')
         return str(error_response)
 
 with app.app_context():
