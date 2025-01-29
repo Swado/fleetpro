@@ -208,7 +208,18 @@ document.addEventListener('DOMContentLoaded', function() {
     window.openAIChat = function(truckId) {
         const widget = document.querySelector('elevenlabs-convai');
         if (widget) {
-            widget.setAttribute('data-context', `Fleet management assistant for truck ${truckId}`);
+            // Make sure the widget is visible
+            widget.style.display = 'block';
+            // Set the context for the current truck
+            widget.setAttribute('data-context', 
+                `You are a fleet management assistant helping with truck ${truckId}. ` +
+                `You can help with maintenance schedules, route planning, and any other fleet management related questions.`
+            );
+            // Programmatically click the widget to open it
+            const chatButton = widget.shadowRoot.querySelector('.chat-button');
+            if (chatButton) {
+                chatButton.click();
+            }
         }
     };
 
