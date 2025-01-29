@@ -225,7 +225,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    function initiateCall(truckId, phoneNumber, driverName) {
+    window.initiateCall = function(truckId, phoneNumber, driverName) {
         if (confirm(`Do you want to call ${driverName}?`)) {
             fetch(`/api/make_call/${truckId}`, {
                 method: 'POST',
@@ -236,7 +236,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     to_number: phoneNumber
                 })
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.status === 'success') {
                     alert(data.message);

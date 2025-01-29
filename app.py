@@ -242,8 +242,17 @@ def make_call(truck_id):
 
         # Format the phone number to E.164 format
         to_number = request.json.get('to_number')
+        if not to_number:
+            app.logger.error("No phone number provided")
+            return jsonify({
+                'status': 'error',
+                'message': 'Phone number is required'
+            }), 400
+
         if not to_number.startswith('+'):
             to_number = '+1' + to_number  # Assuming US numbers
+
+        app.logger.info(f"Initiating call to {to_number} for truck {truck_id}")
 
         # Initialize Twilio client
         client = Client(
@@ -257,6 +266,8 @@ def make_call(truck_id):
             to=to_number,
             from_=os.environ.get('TWILIO_PHONE_NUMBER')
         )
+
+        app.logger.info(f"Call initiated successfully with SID: {call.sid}")
 
         return jsonify({
             'status': 'success',
