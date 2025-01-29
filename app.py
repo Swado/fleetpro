@@ -7,6 +7,8 @@ from sqlalchemy.orm import DeclarativeBase
 import urllib.parse
 from twilio.rest import Client
 from twilio.base.exceptions import TwilioRestException
+from twilio.twiml.voice_response import VoiceResponse, Gather
+from openai import OpenAI
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -19,6 +21,9 @@ login_manager = LoginManager()
 # create the app
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY") or "dev_key_only_for_development"
+
+# Initialize OpenAI client
+openai_client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
 # Database configuration
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
@@ -33,6 +38,48 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 login_manager.login_message = 'Please log in to access this page.'
 login_manager.login_message_category = 'warning'
+
+def get_ai_response(prompt):
+    try:
+        response = openai_client.chat.completions.create(
+            model="gpt-4",
+            messages=[{
+                "role": "system",
+                "content": "You are a helpful fleet management assistant. Keep responses concise and clear for voice communication."
+            }, {
+                "role": "user",
+                "content": prompt
+            }],
+            max_tokens=100
+        )
+        return response.choices[0].message.content.strip()
+    except Exception as e:
+        app.logger.error(f"OpenAI API error: {e}")
+        return "I apologize, but I'm having trouble processing your request at the moment."
+
+@app.route('/voice', methods=['POST'])
+def voice():
+    """Handle incoming voice calls."""
+    resp = VoiceResponse()
+
+    if 'SpeechResult' in request.values:
+        # Get the transcribed speech
+        user_input = request.values['SpeechResult']
+
+        # Get AI response
+        ai_response = get_ai_response(user_input)
+
+        # Say the AI response and gather next input
+        gather = Gather(input='speech', action='/voice', method='POST')
+        gather.say(ai_response)
+        resp.append(gather)
+    else:
+        # Initial greeting
+        gather = Gather(input='speech', action='/voice', method='POST')
+        gather.say("Hello! I'm your fleet management assistant. How can I help you today?")
+        resp.append(gather)
+
+    return str(resp)
 
 def get_unread_message_count():
     if not current_user.is_authenticated:
@@ -199,9 +246,14 @@ def make_call(truck_id):
             os.environ.get('TWILIO_AUTH_TOKEN')
         )
 
-        # Make the call
+        # Get the base URL for the voice endpoint
+        base_url = request.url_root.rstrip('/')
+        if request.is_secure:
+            base_url = base_url.replace('http://', 'https://')
+
+        # Make the call using our voice endpoint
         call = client.calls.create(
-            url='http://demo.twilio.com/docs/voice.xml',  # TwiML URL for the call
+            url=f"{base_url}/voice",  # Our TwiML endpoint
             to=request.json.get('to_number'),  # Driver's phone number
             from_=os.environ.get('TWILIO_PHONE_NUMBER')
         )
