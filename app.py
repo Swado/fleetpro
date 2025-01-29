@@ -251,36 +251,43 @@ def make_call(truck_id):
 
 def generate_elevenlabs_audio(text):
     """Generate audio using ElevenLabs API"""
-    ELEVEN_LABS_API_KEY = os.environ.get("ELEVEN_LABS_API_KEY")
-    VOICE_ID = "21m00Tcm4TlvDq8ikWAM"  # default voice ID
-
-    url = f"https://api.elevenlabs.io/v1/text-to-speech/{VOICE_ID}"
-
-    headers = {
-        "Accept": "audio/mpeg",
-        "Content-Type": "application/json",
-        "xi-api-key": ELEVEN_LABS_API_KEY
-    }
-
-    data = {
-        "text": text,
-        "model_id": "eleven_monolingual_v1",
-        "voice_settings": {
-            "stability": 0.5,
-            "similarity_boost": 0.5
-        }
-    }
-
     try:
+        ELEVEN_LABS_API_KEY = os.environ.get("ELEVEN_LABS_API_KEY")
+        VOICE_ID = "21m00Tcm4TlvDq8ikWAM"  # default voice ID
+
+        url = f"https://api.elevenlabs.io/v1/text-to-speech/{VOICE_ID}"
+
+        headers = {
+            "Accept": "audio/mpeg",
+            "Content-Type": "application/json",
+            "xi-api-key": ELEVEN_LABS_API_KEY
+        }
+
+        data = {
+            "text": text,
+            "model_id": "eleven_monolingual_v1",
+            "voice_settings": {
+                "stability": 0.5,
+                "similarity_boost": 0.5
+            }
+        }
+
         response = requests.post(url, json=data, headers=headers)
         if response.status_code == 200:
-            # Save the audio file temporarily
-            audio_file_path = f"temp_audio_{hash(text)}.mp3"
-            with open(audio_file_path, "wb") as f:
+            # Save the audio file in the static folder
+            static_folder = os.path.join(app.root_path, 'static', 'audio')
+            os.makedirs(static_folder, exist_ok=True)
+
+            audio_filename = f"temp_audio_{hash(text)}.mp3"
+            audio_path = os.path.join(static_folder, audio_filename)
+
+            with open(audio_path, "wb") as f:
                 f.write(response.content)
-            return audio_file_path
+
+            # Return just the filename, not the full path
+            return f"audio/{audio_filename}"
         else:
-            app.logger.error(f"ElevenLabs API error: {response.status_code}")
+            app.logger.error(f"ElevenLabs API error: {response.status_code} - {response.text}")
             return None
     except Exception as e:
         app.logger.error(f"Error generating ElevenLabs audio: {str(e)}")
@@ -305,10 +312,11 @@ def voice():
             audio_file = generate_elevenlabs_audio(response_text)
 
             if audio_file:
-                # Play the generated audio file
-                resp.play(url_for('static', filename=audio_file, _external=True))
+                # Generate a full URL for the audio file
+                audio_url = request.url_root.rstrip('/') + url_for('static', filename=audio_file)
+                app.logger.info(f"Playing audio from URL: {audio_url}")
+                resp.play(audio_url)
             else:
-                # Fallback to Twilio voice if ElevenLabs fails
                 resp.say(response_text, voice='alice')
 
             # Set up for next input
@@ -325,7 +333,7 @@ def voice():
             follow_up_audio = generate_elevenlabs_audio(follow_up_text)
 
             if follow_up_audio:
-                gather.play(url_for('static', filename=follow_up_audio, _external=True))
+                gather.play(request.url_root.rstrip('/') + url_for('static', filename=follow_up_audio))
             else:
                 gather.say(follow_up_text, voice='alice')
 
@@ -336,7 +344,9 @@ def voice():
             audio_file = generate_elevenlabs_audio(welcome_text)
 
             if audio_file:
-                resp.play(url_for('static', filename=audio_file, _external=True))
+                audio_url = request.url_root.rstrip('/') + url_for('static', filename=audio_file)
+                app.logger.info(f"Playing welcome audio from URL: {audio_url}")
+                resp.play(audio_url)
             else:
                 resp.say(welcome_text, voice='alice')
 
@@ -358,10 +368,10 @@ def voice():
         app.logger.exception("Full traceback:")
         error_response = VoiceResponse()
         error_text = "I apologize, but I encountered an error. Please try again."
-        audio_file = generate_elevenlabs_audio(error_text)
+        error_audio = generate_elevenlabs_audio(error_text)
 
-        if audio_file:
-            error_response.play(url_for('static', filename=audio_file, _external=True))
+        if error_audio:
+            error_response.play(request.url_root.rstrip('/') + url_for('static', filename=error_audio))
         else:
             error_response.say(error_text, voice='alice')
 
