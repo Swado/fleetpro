@@ -272,7 +272,10 @@ def generate_elevenlabs_audio(text):
             }
         }
 
+        app.logger.debug(f"Making request to ElevenLabs API with text: {text}")
         response = requests.post(url, json=data, headers=headers)
+        app.logger.debug(f"ElevenLabs API response status: {response.status_code}")
+
         if response.status_code == 200:
             # Save the audio file in the static folder
             static_folder = os.path.join(app.root_path, 'static', 'audio')
@@ -317,7 +320,6 @@ def voice():
                 app.logger.info(f"Playing audio from URL: {audio_url}")
                 resp.play(audio_url)
             else:
-                # Fallback to Twilio voice if ElevenLabs fails
                 app.logger.warning("ElevenLabs audio generation failed, falling back to Twilio voice")
                 resp.say(response_text, voice='alice')
 
