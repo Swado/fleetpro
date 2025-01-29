@@ -80,6 +80,11 @@
                                            class="btn btn-primary">
                                             <i class="fas fa-eye"></i> View Details
                                         </a>
+                                        {% if truck.driver_phone %}
+                                        <button class="btn btn-success" onclick="initiateCall('{{ truck.id }}', '{{ truck.driver_phone }}', '{{ truck.driver_name }}')">
+                                            <i class="fas fa-phone"></i> Call Driver
+                                        </button>
+                                        {% endif %}
                                         <button class="btn btn-info" onclick="openAIChat('{{ truck.plate_number }}')">
                                             <i class="fas fa-robot"></i> Voice Assistant
                                         </button>
@@ -219,6 +224,32 @@ document.addEventListener('DOMContentLoaded', function() {
             widget.setAttribute('mode', 'voice');
         }
     };
+
+    function initiateCall(truckId, phoneNumber, driverName) {
+        if (confirm(`Do you want to call ${driverName}?`)) {
+            fetch(`/api/make_call/${truckId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    to_number: phoneNumber
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert(data.message);
+                } else {
+                    alert('Failed to initiate call: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to initiate call. Please try again.');
+            });
+        }
+    }
 });
 </script>
 

@@ -41,6 +41,7 @@ class Truck(db.Model):
     destination_state = db.Column(db.String(2))
     destination_set_at = db.Column(db.DateTime)
     driver_name = db.Column(db.String(100))
+    driver_phone = db.Column(db.String(20))  # Add this field
     insurance_expiry = db.Column(db.DateTime)
     current_latitude = db.Column(db.Float)
     current_longitude = db.Column(db.Float)

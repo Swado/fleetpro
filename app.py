@@ -5,6 +5,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from sqlalchemy.orm import DeclarativeBase
 import urllib.parse
+from twilio.rest import Client
+from twilio.base.exceptions import TwilioRestException
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -179,6 +181,49 @@ def truck_detail(truck_id):
         flash('Access denied.', 'error')
         return redirect(url_for('dashboard'))
     return render_template('truck_detail.html', truck=truck)
+
+@app.route('/api/make_call/<int:truck_id>', methods=['POST'])
+@login_required
+def make_call(truck_id):
+    try:
+        from models import Truck
+        truck = Truck.query.get_or_404(truck_id)
+
+        # Verify truck belongs to current user
+        if truck.user_id != current_user.id:
+            return jsonify({'error': 'Unauthorized'}), 403
+
+        # Initialize Twilio client
+        client = Client(
+            os.environ.get('TWILIO_ACCOUNT_SID'),
+            os.environ.get('TWILIO_AUTH_TOKEN')
+        )
+
+        # Make the call
+        call = client.calls.create(
+            url='http://demo.twilio.com/docs/voice.xml',  # TwiML URL for the call
+            to=request.json.get('to_number'),  # Driver's phone number
+            from_=os.environ.get('TWILIO_PHONE_NUMBER')
+        )
+
+        return jsonify({
+            'status': 'success',
+            'call_sid': call.sid,
+            'message': f'Initiating call to driver of truck {truck.plate_number}'
+        })
+
+    except TwilioRestException as e:
+        app.logger.error(f"Twilio error: {str(e)}")
+        return jsonify({
+            'status': 'error',
+            'message': 'Failed to initiate call. Please try again.'
+        }), 500
+    except Exception as e:
+        app.logger.error(f"Error making call: {str(e)}")
+        return jsonify({
+            'status': 'error',
+            'message': 'An unexpected error occurred'
+        }), 500
 
 with app.app_context():
     # Import models after app creation to avoid circular imports
