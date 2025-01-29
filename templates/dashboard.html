@@ -219,11 +219,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const widget = document.querySelector('elevenlabs-convai');
         if (widget) {
             widget.style.display = 'block';
-            widget.setAttribute('convai-id', 'kIJtewstoJnssPcE7t9p');
+            widget.setAttribute('agent-id', 'kIJtewstoJnssPcE7t9p');
             widget.setAttribute('data-context', `Assisting with truck ${truckId}`);
-            widget.setAttribute('mode', 'voice');
-            widget.setAttribute('voice-id', 'male');
-            widget.setAttribute('data-channel', 'twilio');
         }
     };
 
@@ -261,12 +258,9 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <!-- Add the ElevenLabs Convai widget with proper attributes -->
-<elevenlabs-convai
-    convai-id="kIJtewstoJnssPcE7t9p"
-    mode="voice"
-    voice-id="male"
-    style="display: none;"
-    data-context="Xpress360 Fleet Management Assistant"
-    data-channel="twilio">
+<elevenlabs-convai 
+    agent-id="kIJtewstoJnssPcE7t9p"
+    style="display: none;">
 </elevenlabs-convai>
+<script src="https://elevenlabs.io/convai-widget/index.js" async type="text/javascript"></script>
 {% endblock %}
