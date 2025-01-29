@@ -1,6 +1,6 @@
 import os
 import logging
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, Response
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, Response, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from sqlalchemy.orm import DeclarativeBase
@@ -253,9 +253,12 @@ def generate_elevenlabs_audio(text):
     """Generate audio using ElevenLabs API"""
     try:
         ELEVEN_LABS_API_KEY = os.environ.get("ELEVEN_LABS_API_KEY")
-        VOICE_ID = "21m00Tcm4TlvDq8ikWAM"  # default voice ID
+        if not ELEVEN_LABS_API_KEY:
+            app.logger.error("ElevenLabs API key is missing")
+            return None
 
-        url = f"https://api.elevenlabs.io/v1/text-to-speech/{VOICE_ID}"
+        VOICE_ID = "21m00Tcm4TlvDq8ikWAM"  # default voice ID
+        url = f"https://api.elevenlabs.io/v1/text-to-speech/{VOICE_ID}/stream"  # Using stream endpoint
 
         headers = {
             "Accept": "audio/mpeg",
@@ -273,27 +276,35 @@ def generate_elevenlabs_audio(text):
         }
 
         app.logger.debug(f"Making request to ElevenLabs API with text: {text}")
+        app.logger.debug(f"Using ElevenLabs API key: {ELEVEN_LABS_API_KEY[:4]}...")
         response = requests.post(url, json=data, headers=headers)
         app.logger.debug(f"ElevenLabs API response status: {response.status_code}")
 
-        if response.status_code == 200:
-            # Save the audio file in the static folder
-            static_folder = os.path.join(app.root_path, 'static', 'audio')
-            os.makedirs(static_folder, exist_ok=True)
-
-            audio_filename = f"temp_audio_{hash(text)}.mp3"
-            audio_path = os.path.join(static_folder, audio_filename)
-
-            with open(audio_path, "wb") as f:
-                f.write(response.content)
-
-            # Return just the filename, not the full path
-            return f"audio/{audio_filename}"
-        else:
+        if response.status_code != 200:
             app.logger.error(f"ElevenLabs API error: {response.status_code} - {response.text}")
             return None
+
+        # Save the audio file in the static folder
+        static_folder = os.path.join(app.root_path, 'static', 'audio')
+        os.makedirs(static_folder, exist_ok=True)
+
+        audio_filename = f"temp_audio_{hash(text)}.mp3"
+        audio_path = os.path.join(static_folder, audio_filename)
+
+        with open(audio_path, "wb") as f:
+            f.write(response.content)
+
+        # Verify the file was created and has content
+        if os.path.exists(audio_path) and os.path.getsize(audio_path) > 0:
+            app.logger.debug(f"Audio file created successfully at {audio_path}")
+            return f"audio/{audio_filename}"
+        else:
+            app.logger.error("Failed to create audio file or file is empty")
+            return None
+
     except Exception as e:
         app.logger.error(f"Error generating ElevenLabs audio: {str(e)}")
+        app.logger.exception("Full traceback:")
         return None
 
 @app.route('/voice', methods=['GET', 'POST'])
@@ -381,6 +392,15 @@ def voice():
             error_response.say(error_text, voice='alice')
 
         return str(error_response)
+
+@app.route('/static/audio/<path:filename>')
+def serve_audio(filename):
+    """Serve audio files with correct content type"""
+    return send_from_directory(
+        os.path.join(app.root_path, 'static', 'audio'),
+        filename,
+        mimetype='audio/mpeg'
+    )
 
 with app.app_context():
     # Import models after app creation to avoid circular imports
