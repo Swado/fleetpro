@@ -260,9 +260,14 @@ def make_call(truck_id):
             os.environ.get('TWILIO_AUTH_TOKEN')
         )
 
-        # Make the call using Twilio's demo TwiML
+        # Get the base URL for the voice endpoint
+        base_url = request.url_root.rstrip('/')
+        if request.is_secure:
+            base_url = base_url.replace('http://', 'https://')
+
+        # Make the call using our voice endpoint
         call = client.calls.create(
-            url='http://demo.twilio.com/docs/voice.xml',
+            url=f"{base_url}/voice",  # Our TwiML endpoint
             to=to_number,
             from_=os.environ.get('TWILIO_PHONE_NUMBER')
         )
