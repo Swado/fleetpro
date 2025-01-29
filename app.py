@@ -317,6 +317,8 @@ def voice():
                 app.logger.info(f"Playing audio from URL: {audio_url}")
                 resp.play(audio_url)
             else:
+                # Fallback to Twilio voice if ElevenLabs fails
+                app.logger.warning("ElevenLabs audio generation failed, falling back to Twilio voice")
                 resp.say(response_text, voice='alice')
 
             # Set up for next input
@@ -348,6 +350,7 @@ def voice():
                 app.logger.info(f"Playing welcome audio from URL: {audio_url}")
                 resp.play(audio_url)
             else:
+                app.logger.warning("Initial ElevenLabs audio generation failed, falling back to Twilio voice")
                 resp.say(welcome_text, voice='alice')
 
             gather = Gather(
