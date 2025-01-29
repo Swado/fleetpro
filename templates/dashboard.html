@@ -222,6 +222,8 @@ document.addEventListener('DOMContentLoaded', function() {
             widget.setAttribute('convai-id', 'kIJtewstoJnssPcE7t9p');
             widget.setAttribute('data-context', `Assisting with truck ${truckId}`);
             widget.setAttribute('mode', 'voice');
+            widget.setAttribute('voice-id', 'male');
+            widget.setAttribute('data-channel', 'twilio');
         }
     };
 
@@ -262,6 +264,9 @@ document.addEventListener('DOMContentLoaded', function() {
 <elevenlabs-convai
     convai-id="kIJtewstoJnssPcE7t9p"
     mode="voice"
-    style="display: none;">
+    voice-id="male"
+    style="display: none;"
+    data-context="Xpress360 Fleet Management Assistant"
+    data-channel="twilio">
 </elevenlabs-convai>
 {% endblock %}

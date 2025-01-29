@@ -8,7 +8,6 @@ import urllib.parse
 from twilio.rest import Client
 from twilio.base.exceptions import TwilioRestException
 from twilio.twiml.voice_response import VoiceResponse, Gather
-#from openai import OpenAI #Removed OpenAI import
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -36,7 +35,6 @@ login_manager.login_view = 'login'
 login_manager.login_message = 'Please log in to access this page.'
 login_manager.login_message_category = 'warning'
 
-#Removed OpenAI related functions
 
 def get_unread_message_count():
     if not current_user.is_authenticated:
@@ -260,40 +258,36 @@ def voice():
 
         resp = VoiceResponse()
 
-        # Initial greeting and connect to ElevenLabs widget
-        gather = Gather(
-            input='speech',
-            action='/voice',
-            method='POST',
-            language='en-US',
-            speechTimeout='auto'
-        )
-
         if request.method == 'GET':
-            # Initial connection to ElevenLabs
-            gather.say(
-                "Connecting you to the Xpress360 AI Assistant. Please speak after the tone.",
-                voice='alice'
+            # Initial connection - use ElevenLabs widget
+            gather = Gather(
+                input='speech dtmf',
+                action='/voice',
+                method='POST',
+                language='en-US',
+                speechTimeout='auto'
             )
+
+            # Instead of speaking, play a brief tone to indicate readiness
+            resp.play('', digits='1')
+            resp.pause(length=2)
+
             resp.append(gather)
-            # Add a brief pause
-            resp.pause(length=1)
         elif 'SpeechResult' in request.values:
             # Forward the conversation to ElevenLabs widget
             user_input = request.values['SpeechResult']
             app.logger.info(f"Received speech input: {user_input}")
 
-            # Use ElevenLabs widget for response
-            gather.say(
-                "Your message has been received. Please wait while I process your request.",
-                voice='alice'
-            )
-            resp.append(gather)
+            # Brief pause to allow ElevenLabs to process
             resp.pause(length=1)
-        else:
-            gather.say(
-                "I didn't catch that. Could you please repeat?",
-                voice='alice'
+
+            # Set up next speech gathering
+            gather = Gather(
+                input='speech dtmf',
+                action='/voice',
+                method='POST',
+                language='en-US',
+                speechTimeout='auto'
             )
             resp.append(gather)
 
@@ -307,10 +301,7 @@ def voice():
         app.logger.error(f"Error in voice endpoint: {str(e)}")
         app.logger.exception("Full traceback:")
         error_response = VoiceResponse()
-        error_response.say(
-            "I apologize, but I'm having trouble connecting to the AI assistant. Please try again later.",
-            voice='alice'
-        )
+        error_response.play('', digits='#')  # Play error tone instead of speaking
         return str(error_response)
 
 with app.app_context():
