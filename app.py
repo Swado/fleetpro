@@ -60,26 +60,44 @@ def get_ai_response(prompt):
 @app.route('/voice', methods=['POST'])
 def voice():
     """Handle incoming voice calls."""
-    resp = VoiceResponse()
+    try:
+        app.logger.info("Voice endpoint called")
+        resp = VoiceResponse()
 
-    if 'SpeechResult' in request.values:
-        # Get the transcribed speech
-        user_input = request.values['SpeechResult']
+        if 'SpeechResult' in request.values:
+            # Get the transcribed speech
+            user_input = request.values['SpeechResult']
+            app.logger.info(f"Received speech input: {user_input}")
 
-        # Get AI response
-        ai_response = get_ai_response(user_input)
+            # Get AI response
+            ai_response = get_ai_response(user_input)
+            app.logger.info(f"AI response: {ai_response}")
 
-        # Say the AI response and gather next input
-        gather = Gather(input='speech', action='/voice', method='POST')
-        gather.say(ai_response)
-        resp.append(gather)
-    else:
-        # Initial greeting
-        gather = Gather(input='speech', action='/voice', method='POST')
-        gather.say("Hello! I'm your fleet management assistant. How can I help you today?")
-        resp.append(gather)
+            # Say the AI response and gather next input
+            gather = Gather(input='speech', action='/voice', method='POST', language='en-US')
+            gather.say(ai_response, voice='alice')
+            resp.append(gather)
+        else:
+            # Initial greeting
+            app.logger.info("Sending initial greeting")
+            gather = Gather(input='speech', action='/voice', method='POST', language='en-US')
+            gather.say(
+                "Hello! I'm your fleet management assistant. How can I help you today?",
+                voice='alice'
+            )
+            resp.append(gather)
 
-    return str(resp)
+        # Add a default action if no input is received
+        resp.redirect('/voice')
+
+        app.logger.info("Voice response created successfully")
+        return str(resp)
+    except Exception as e:
+        app.logger.error(f"Error in voice endpoint: {str(e)}")
+        # Create a response that communicates the error to the caller
+        error_response = VoiceResponse()
+        error_response.say("I apologize, but I'm having trouble processing your request. Please try again later.")
+        return str(error_response)
 
 def get_unread_message_count():
     if not current_user.is_authenticated:
