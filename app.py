@@ -240,21 +240,21 @@ def make_call(truck_id):
         if truck.user_id != current_user.id:
             return jsonify({'error': 'Unauthorized'}), 403
 
+        # Format the phone number to E.164 format
+        to_number = request.json.get('to_number')
+        if not to_number.startswith('+'):
+            to_number = '+1' + to_number  # Assuming US numbers
+
         # Initialize Twilio client
         client = Client(
             os.environ.get('TWILIO_ACCOUNT_SID'),
             os.environ.get('TWILIO_AUTH_TOKEN')
         )
 
-        # Get the base URL for the voice endpoint
-        base_url = request.url_root.rstrip('/')
-        if request.is_secure:
-            base_url = base_url.replace('http://', 'https://')
-
-        # Make the call using our voice endpoint
+        # Make the call using Twilio's demo TwiML
         call = client.calls.create(
-            url=f"{base_url}/voice",  # Our TwiML endpoint
-            to=request.json.get('to_number'),  # Driver's phone number
+            url='http://demo.twilio.com/docs/voice.xml',
+            to=to_number,
             from_=os.environ.get('TWILIO_PHONE_NUMBER')
         )
 
