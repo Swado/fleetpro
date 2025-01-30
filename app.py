@@ -263,7 +263,7 @@ def voice():
         if 'SpeechResult' not in request.values:
             # Initiate conversation with ElevenLabs Convai agent
             agent_id = "kIJtewstoJnssPcE7t9p"
-            convai_url = "https://api.elevenlabs.io/v1/text-to-speech/21m00Tcm4TlvDq8ikWAM"
+            convai_url = "https://api.elevenlabs.io/v1/chat"
 
             headers = {
                 "Accept": "application/json",
@@ -271,39 +271,45 @@ def voice():
                 "Content-Type": "application/json"
             }
 
-            # Initial greeting data
+            # Send initial greeting request to agent
             data = {
-                "text": "Welcome to Express 360 Fleet Management. I am your AI assistant. How can I help you today?",
-                "model_id": "eleven_monolingual_v1",
-                "voice_settings": {
-                    "stability": 0.5,
-                    "similarity_boost": 0.75
-                }
+                "agent_id": agent_id,
+                "messages": [{
+                    "role": "user",
+                    "content": "Greet the user as a fleet management assistant"
+                }]
             }
 
             try:
-                app.logger.info("Sending request to ElevenLabs API")
+                app.logger.info("Sending request to ElevenLabs Convai API")
                 agent_response = requests.post(
                     convai_url,
                     headers=headers,
                     json=data
                 )
-                app.logger.info(f"ElevenLabs API response status: {agent_response.status_code}")
+                app.logger.info(f"ElevenLabs Convai API response status: {agent_response.status_code}")
 
                 if agent_response.status_code == 200:
-                    # Save the audio response
-                    audio_filename = f"temp_audio_{os.getpid()}.mp3"
-                    with open(os.path.join(app.root_path, 'static', 'audio', audio_filename), 'wb') as f:
-                        f.write(agent_response.content)
+                    response_data = agent_response.json()
+                    if response_data.get('audio'):
+                        # Save the audio response
+                        audio_filename = f"temp_audio_{os.getpid()}.mp3"
+                        audio_path = os.path.join(app.root_path, 'static', 'audio', audio_filename)
+                        with open(audio_path, 'wb') as f:
+                            f.write(response_data['audio'])
 
-                    # Play the saved audio file
-                    audio_url = url_for('static', filename=f'audio/{audio_filename}', _external=True)
-                    resp.play(audio_url)
+                        # Play the saved audio file
+                        audio_url = url_for('static', filename=f'audio/{audio_filename}', _external=True)
+                        app.logger.info(f"Playing audio from URL: {audio_url}")
+                        resp.play(audio_url)
+                    else:
+                        app.logger.error("No audio in Convai response")
+                        resp.say("Welcome to Express 360 Fleet Management. How can I assist you today?", voice='alice')
                 else:
-                    app.logger.error(f"ElevenLabs API error: {agent_response.text}")
+                    app.logger.error(f"Convai API error: {agent_response.text}")
                     resp.say("Welcome to Express 360 Fleet Management. How can I assist you today?", voice='alice')
             except Exception as e:
-                app.logger.error(f"Error with ElevenLabs API: {str(e)}")
+                app.logger.error(f"Error with Convai API: {str(e)}")
                 resp.say("Welcome to Express 360 Fleet Management. How can I assist you today?", voice='alice')
 
             # Set up for speech input after greeting
@@ -323,7 +329,7 @@ def voice():
 
             # Send to ElevenLabs Convai agent
             agent_id = "kIJtewstoJnssPcE7t9p"
-            convai_url = "https://api.elevenlabs.io/v1/text-to-speech/21m00Tcm4TlvDq8ikWAM"
+            convai_url = "https://api.elevenlabs.io/v1/chat"
 
             headers = {
                 "Accept": "application/json",
@@ -331,13 +337,13 @@ def voice():
                 "Content-Type": "application/json"
             }
 
+            # Send the speech to Convai agent
             data = {
-                "text": "I understand your question. Let me help you with that. What specific information do you need about our fleet management system?",
-                "model_id": "eleven_monolingual_v1",
-                "voice_settings": {
-                    "stability": 0.5,
-                    "similarity_boost": 0.75
-                }
+                "agent_id": agent_id,
+                "messages": [{
+                    "role": "user",
+                    "content": speech_text
+                }]
             }
 
             try:
@@ -348,19 +354,26 @@ def voice():
                 )
 
                 if agent_response.status_code == 200:
-                    # Save the audio response
-                    audio_filename = f"temp_audio_{os.getpid()}.mp3"
-                    with open(os.path.join(app.root_path, 'static', 'audio', audio_filename), 'wb') as f:
-                        f.write(agent_response.content)
+                    response_data = agent_response.json()
+                    if response_data.get('audio'):
+                        # Save the audio response
+                        audio_filename = f"temp_audio_{os.getpid()}.mp3"
+                        audio_path = os.path.join(app.root_path, 'static', 'audio', audio_filename)
+                        with open(audio_path, 'wb') as f:
+                            f.write(response_data['audio'])
 
-                    # Play the saved audio file
-                    audio_url = url_for('static', filename=f'audio/{audio_filename}', _external=True)
-                    resp.play(audio_url)
+                        # Play the saved audio file
+                        audio_url = url_for('static', filename=f'audio/{audio_filename}', _external=True)
+                        app.logger.info(f"Playing audio from URL: {audio_url}")
+                        resp.play(audio_url)
+                    else:
+                        app.logger.error("No audio in Convai response")
+                        resp.say("I'm having trouble generating a voice response. Please try again.", voice='alice')
                 else:
-                    app.logger.error(f"ElevenLabs API error: {agent_response.text}")
-                    resp.say("I'm having trouble generating a voice response. Please try again.", voice='alice')
+                    app.logger.error(f"Convai API error: {agent_response.text}")
+                    resp.say("I encountered an error. Please try again.", voice='alice')
             except Exception as e:
-                app.logger.error(f"Error with ElevenLabs API: {str(e)}")
+                app.logger.error(f"Error with Convai API: {str(e)}")
                 resp.say("I encountered an error. Please try again.", voice='alice')
 
             # Set up for next input
