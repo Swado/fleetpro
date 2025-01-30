@@ -261,7 +261,38 @@ def voice():
 
         # If this is the initial request (no speech result)
         if 'SpeechResult' not in request.values:
-            # Set up for speech input
+            # Initiate conversation with ElevenLabs Convai agent
+            agent_id = "kIJtewstoJnssPcE7t9p"
+            convai_url = f"https://elevenlabs.io/api/convai-agent/{agent_id}/chat"
+
+            headers = {
+                "Authorization": f"Bearer {os.environ.get('ELEVEN_LABS_API_KEY')}",
+                "Content-Type": "application/json"
+            }
+
+            # Send initial greeting request to agent
+            agent_response = requests.post(
+                convai_url,
+                headers=headers,
+                json={"text": "Start the conversation with a greeting as a fleet management assistant"}
+            )
+
+            if agent_response.status_code == 200:
+                app.logger.info("Successfully received initial greeting from ElevenLabs agent")
+                response_data = agent_response.json()
+                response_audio_url = response_data.get('audio_url')
+
+                if response_audio_url:
+                    app.logger.info(f"Playing initial greeting audio from URL: {response_audio_url}")
+                    resp.play(response_audio_url)
+                else:
+                    app.logger.warning("No audio URL in agent response for initial greeting")
+                    resp.say("Welcome to Xpress360 Fleet Management. How can I assist you today?", voice='alice')
+            else:
+                app.logger.error(f"Agent error during greeting: {agent_response.status_code}")
+                resp.say("Welcome to Xpress360 Fleet Management. How can I assist you today?", voice='alice')
+
+            # Set up for speech input after greeting
             gather = Gather(
                 input='speech',
                 action='/voice',
@@ -272,7 +303,7 @@ def voice():
             resp.append(gather)
             app.logger.info("Initial gather appended to response")
         else:
-            # Get the speech input
+            # Handle user's speech input
             speech_text = request.values['SpeechResult']
             app.logger.info(f"Received speech: {speech_text}")
 
