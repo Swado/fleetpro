@@ -295,6 +295,7 @@ def voice():
                         # Save the audio response
                         audio_filename = f"temp_audio_{os.getpid()}.mp3"
                         audio_path = os.path.join(app.root_path, 'static', 'audio', audio_filename)
+                        os.makedirs(os.path.dirname(audio_path), exist_ok=True)
                         with open(audio_path, 'wb') as f:
                             f.write(response_data['audio'])
 
@@ -350,15 +351,18 @@ def voice():
                 agent_response = requests.post(
                     convai_url,
                     headers=headers,
-                    json=data
+                    json=data,
+                    timeout=10  # Add timeout to prevent hanging
                 )
 
                 if agent_response.status_code == 200:
                     response_data = agent_response.json()
+                    app.logger.info(f"Convai API response: {response_data}")
                     if response_data.get('audio'):
                         # Save the audio response
                         audio_filename = f"temp_audio_{os.getpid()}.mp3"
                         audio_path = os.path.join(app.root_path, 'static', 'audio', audio_filename)
+                        os.makedirs(os.path.dirname(audio_path), exist_ok=True)
                         with open(audio_path, 'wb') as f:
                             f.write(response_data['audio'])
 
@@ -374,6 +378,7 @@ def voice():
                     resp.say("I encountered an error. Please try again.", voice='alice')
             except Exception as e:
                 app.logger.error(f"Error with Convai API: {str(e)}")
+                app.logger.exception("Full traceback:")
                 resp.say("I encountered an error. Please try again.", voice='alice')
 
             # Set up for next input
