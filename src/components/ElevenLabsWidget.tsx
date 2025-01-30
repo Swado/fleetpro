@@ -24,14 +24,16 @@ export default function ElevenLabsWidget({ agentId = "kIJtewstoJnssPcE7t9p", cla
   const widgetRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
-    // Load ElevenLabs script
-    const script = document.createElement('script')
-    script.src = "https://elevenlabs.io/convai-widget/index.js"
-    script.async = true
-    document.body.appendChild(script)
+    // Prevent multiple script insertions
+    if (!document.querySelector(`script[src="https://elevenlabs.io/convai-widget/index.js"]`)) {
+      const script = document.createElement('script')
+      script.src = "https://elevenlabs.io/convai-widget/index.js"
+      script.async = true
+      document.body.appendChild(script)
+    }
 
     return () => {
-      document.body.removeChild(script)
+      // Cleanup if necessary
     }
   }, [])
 
