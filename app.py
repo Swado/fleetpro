@@ -251,7 +251,7 @@ def make_call(truck_id):
 
 @app.route('/voice', methods=['GET', 'POST'])
 def voice():
-    """Handle incoming voice calls with ElevenLabs Convai integration."""
+    """Handle incoming voice calls with ElevenLabs text-to-speech."""
     try:
         app.logger.info("Voice endpoint called")
         app.logger.info(f"Request method: {request.method}")
@@ -261,59 +261,54 @@ def voice():
 
         # If this is the initial request (no speech result)
         if 'SpeechResult' not in request.values:
-            # Initiate conversation with ElevenLabs Convai agent
-            agent_id = "kIJtewstoJnssPcE7t9p"
-            convai_url = "https://api.elevenlabs.io/v1/chat"
-
+            # Initial greeting using ElevenLabs
             headers = {
                 "Accept": "application/json",
                 "xi-api-key": os.environ.get('ELEVEN_LABS_API_KEY'),
                 "Content-Type": "application/json"
             }
 
-            # Send initial greeting request to agent
+            # Initial greeting data
             data = {
-                "agent_id": agent_id,
-                "messages": [{
-                    "role": "user",
-                    "content": "Greet the user as a fleet management assistant"
-                }]
+                "text": "Welcome to Express 360 Fleet Management. How can I assist you today?",
+                "model_id": "eleven_monolingual_v1",
+                "voice_settings": {
+                    "stability": 0.5,
+                    "similarity_boost": 0.75
+                }
             }
 
             try:
-                app.logger.info("Sending request to ElevenLabs Convai API")
-                agent_response = requests.post(
-                    convai_url,
+                app.logger.info("Sending request to ElevenLabs TTS API")
+                tts_response = requests.post(
+                    "https://api.elevenlabs.io/v1/text-to-speech/21m00Tcm4TlvDq8ikWAM",
                     headers=headers,
                     json=data
                 )
-                app.logger.info(f"ElevenLabs Convai API response status: {agent_response.status_code}")
+                app.logger.info(f"ElevenLabs TTS API response status: {tts_response.status_code}")
 
-                if agent_response.status_code == 200:
-                    response_data = agent_response.json()
-                    if response_data.get('audio'):
-                        # Save the audio response
-                        audio_filename = f"temp_audio_{os.getpid()}.mp3"
-                        audio_path = os.path.join(app.root_path, 'static', 'audio', audio_filename)
-                        os.makedirs(os.path.dirname(audio_path), exist_ok=True)
-                        with open(audio_path, 'wb') as f:
-                            f.write(response_data['audio'])
+                if tts_response.status_code == 200:
+                    # Save the audio response
+                    audio_filename = f"temp_audio_{os.getpid()}.mp3"
+                    audio_path = os.path.join(app.root_path, 'static', 'audio', audio_filename)
+                    os.makedirs(os.path.dirname(audio_path), exist_ok=True)
 
-                        # Play the saved audio file
-                        audio_url = url_for('static', filename=f'audio/{audio_filename}', _external=True)
-                        app.logger.info(f"Playing audio from URL: {audio_url}")
-                        resp.play(audio_url)
-                    else:
-                        app.logger.error("No audio in Convai response")
-                        resp.say("Welcome to Express 360 Fleet Management. How can I assist you today?", voice='alice')
+                    with open(audio_path, 'wb') as f:
+                        f.write(tts_response.content)
+
+                    # Play the saved audio file
+                    audio_url = url_for('static', filename=f'audio/{audio_filename}', _external=True)
+                    app.logger.info(f"Playing audio from URL: {audio_url}")
+                    resp.play(audio_url)
                 else:
-                    app.logger.error(f"Convai API error: {agent_response.text}")
+                    app.logger.error(f"ElevenLabs TTS API error: {tts_response.text}")
                     resp.say("Welcome to Express 360 Fleet Management. How can I assist you today?", voice='alice')
             except Exception as e:
-                app.logger.error(f"Error with Convai API: {str(e)}")
+                app.logger.error(f"Error with ElevenLabs TTS API: {str(e)}")
+                app.logger.exception("Full traceback:")
                 resp.say("Welcome to Express 360 Fleet Management. How can I assist you today?", voice='alice')
 
-            # Set up for speech input after greeting
+            # Set up for speech input
             gather = Gather(
                 input='speech',
                 action='/voice',
@@ -328,56 +323,51 @@ def voice():
             speech_text = request.values['SpeechResult']
             app.logger.info(f"Received speech: {speech_text}")
 
-            # Send to ElevenLabs Convai agent
-            agent_id = "kIJtewstoJnssPcE7t9p"
-            convai_url = "https://api.elevenlabs.io/v1/chat"
+            # Process speech and generate AI response (mock response for now)
+            ai_response = "I understand your question. How can I help you with our fleet management system?"
 
+            # Convert AI response to speech
             headers = {
                 "Accept": "application/json",
                 "xi-api-key": os.environ.get('ELEVEN_LABS_API_KEY'),
                 "Content-Type": "application/json"
             }
 
-            # Send the speech to Convai agent
             data = {
-                "agent_id": agent_id,
-                "messages": [{
-                    "role": "user",
-                    "content": speech_text
-                }]
+                "text": ai_response,
+                "model_id": "eleven_monolingual_v1",
+                "voice_settings": {
+                    "stability": 0.5,
+                    "similarity_boost": 0.75
+                }
             }
 
             try:
-                agent_response = requests.post(
-                    convai_url,
+                tts_response = requests.post(
+                    "https://api.elevenlabs.io/v1/text-to-speech/21m00Tcm4TlvDq8ikWAM",
                     headers=headers,
                     json=data,
-                    timeout=10  # Add timeout to prevent hanging
+                    timeout=10
                 )
 
-                if agent_response.status_code == 200:
-                    response_data = agent_response.json()
-                    app.logger.info(f"Convai API response: {response_data}")
-                    if response_data.get('audio'):
-                        # Save the audio response
-                        audio_filename = f"temp_audio_{os.getpid()}.mp3"
-                        audio_path = os.path.join(app.root_path, 'static', 'audio', audio_filename)
-                        os.makedirs(os.path.dirname(audio_path), exist_ok=True)
-                        with open(audio_path, 'wb') as f:
-                            f.write(response_data['audio'])
+                if tts_response.status_code == 200:
+                    # Save the audio response
+                    audio_filename = f"temp_audio_{os.getpid()}.mp3"
+                    audio_path = os.path.join(app.root_path, 'static', 'audio', audio_filename)
+                    os.makedirs(os.path.dirname(audio_path), exist_ok=True)
 
-                        # Play the saved audio file
-                        audio_url = url_for('static', filename=f'audio/{audio_filename}', _external=True)
-                        app.logger.info(f"Playing audio from URL: {audio_url}")
-                        resp.play(audio_url)
-                    else:
-                        app.logger.error("No audio in Convai response")
-                        resp.say("I'm having trouble generating a voice response. Please try again.", voice='alice')
+                    with open(audio_path, 'wb') as f:
+                        f.write(tts_response.content)
+
+                    # Play the saved audio file
+                    audio_url = url_for('static', filename=f'audio/{audio_filename}', _external=True)
+                    app.logger.info(f"Playing audio from URL: {audio_url}")
+                    resp.play(audio_url)
                 else:
-                    app.logger.error(f"Convai API error: {agent_response.text}")
-                    resp.say("I encountered an error. Please try again.", voice='alice')
+                    app.logger.error(f"ElevenLabs TTS API error: {tts_response.text}")
+                    resp.say("I'm having trouble generating a voice response. Please try again.", voice='alice')
             except Exception as e:
-                app.logger.error(f"Error with Convai API: {str(e)}")
+                app.logger.error(f"Error with ElevenLabs TTS API: {str(e)}")
                 app.logger.exception("Full traceback:")
                 resp.say("I encountered an error. Please try again.", voice='alice')
 
