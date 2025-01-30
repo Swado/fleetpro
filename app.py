@@ -1,5 +1,6 @@
 import os
 import logging
+from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, Response, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
@@ -249,21 +250,81 @@ def make_call(truck_id):
             'message': 'An unexpected error occurred'
         }), 500
 
+def generate_elevenlabs_audio(text, voice_id="21m00Tcm4TlvDq8ikWAM"):
+    """Generate audio using ElevenLabs API and save it to a public URL."""
+    try:
+        headers = {
+            "Accept": "application/json",
+            "xi-api-key": os.environ.get('ELEVEN_LABS_API_KEY'),
+            "Content-Type": "application/json"
+        }
+
+        data = {
+            "text": text,
+            "model_id": "eleven_monolingual_v1",
+            "voice_settings": {
+                "stability": 0.5,
+                "similarity_boost": 0.75
+            }
+        }
+
+        app.logger.info("Sending request to ElevenLabs API")
+        tts_response = requests.post(
+            f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}/stream",
+            json=data,
+            headers=headers
+        )
+
+        if tts_response.status_code != 200:
+            app.logger.error(f"ElevenLabs API Error: {tts_response.text}")
+            return None
+
+        # Create audio directory if it doesn't exist
+        audio_dir = os.path.join(app.root_path, 'static', 'audio')
+        os.makedirs(audio_dir, exist_ok=True)
+
+        # Generate unique filename
+        timestamp = datetime.utcnow().strftime('%Y%m%d_%H%M%S')
+        audio_filename = f"response_{timestamp}.mp3"
+        audio_path = os.path.join(audio_dir, audio_filename)
+
+        # Save the audio file
+        with open(audio_path, 'wb') as f:
+            f.write(tts_response.content)
+
+        # Generate public URL
+        base_url = request.url_root.rstrip('/')
+        if not base_url.startswith('https'):
+            base_url = base_url.replace('http://', 'https://')
+
+        return f"{base_url}/static/audio/{audio_filename}"
+
+    except Exception as e:
+        app.logger.error(f"Error generating audio: {str(e)}")
+        return None
+
 @app.route("/handle-twilio-call", methods=['GET', 'POST'])
 def handle_twilio_call():
-    """Handle incoming Twilio voice calls with a simple response."""
+    """Handle incoming Twilio voice calls."""
     try:
-        app.logger.info("Twilio call endpoint called")
+        app.logger.info("Handling Twilio call")
         app.logger.info(f"Request form data: {request.form}")
 
         # Create TwiML response
         resp = VoiceResponse()
 
-        # Add a simple message
-        resp.say("Hello! Welcome to Xpress360 Fleet Management. How can I assist you today?", 
-                voice='alice')
+        # Generate welcome message using ElevenLabs
+        welcome_text = "Welcome to Xpress360 Fleet Management. How can I assist you today?"
+        audio_url = generate_elevenlabs_audio(welcome_text)
 
-        # Gather the caller's speech input
+        if audio_url:
+            # Play the generated audio
+            resp.play(audio_url)
+        else:
+            # Fallback to Twilio's text-to-speech if ElevenLabs fails
+            resp.say(welcome_text, voice='alice')
+
+        # Set up speech input gathering
         gather = Gather(
             input='speech',
             action='/handle-response',
@@ -273,15 +334,13 @@ def handle_twilio_call():
         )
         resp.append(gather)
 
-        app.logger.info(f"Sending TwiML response: {str(resp)}")
         return Response(str(resp), mimetype='text/xml')
 
     except Exception as e:
-        app.logger.error(f"Error in Twilio call handler: {str(e)}")
-        app.logger.exception("Full traceback:")
-        error_response = VoiceResponse()
-        error_response.say("I encountered an error. Please try again.", voice='alice')
-        return Response(str(error_response), mimetype='text/xml')
+        app.logger.error(f"Error in call handler: {str(e)}")
+        error_resp = VoiceResponse()
+        error_resp.say("An error occurred. Please try again later.", voice='alice')
+        return Response(str(error_resp), mimetype='text/xml')
 
 @app.route("/handle-response", methods=['POST'])
 def handle_response():
@@ -290,18 +349,32 @@ def handle_response():
         app.logger.info("Handling voice response")
         app.logger.info(f"Request form data: {request.form}")
 
-        # Get the user's speech input
         user_speech = request.form.get('SpeechResult')
         app.logger.info(f"User said: {user_speech}")
 
-        # Create a new TwiML response
         resp = VoiceResponse()
 
         if user_speech:
-            # Respond to the user's input
-            resp.say(f"You said: {user_speech}. Thank you for your message.", voice='alice')
+            # Generate response using ElevenLabs
+            response_text = f"You said: {user_speech}. I'll process your request."
+            audio_url = generate_elevenlabs_audio(response_text)
+
+            if audio_url:
+                resp.play(audio_url)
+            else:
+                resp.say(response_text, voice='alice')
         else:
-            resp.say("I didn't catch that. Please try again.", voice='alice')
+            resp.say("I didn't catch that. Could you please repeat?", voice='alice')
+
+        # Add another gather for continued conversation
+        gather = Gather(
+            input='speech',
+            action='/handle-response',
+            method='POST',
+            timeout=3,
+            speechTimeout='auto'
+        )
+        resp.append(gather)
 
         return Response(str(resp), mimetype='text/xml')
 
@@ -311,7 +384,7 @@ def handle_response():
         error_resp.say("An error occurred processing your request.", voice='alice')
         return Response(str(error_resp), mimetype='text/xml')
 
-# Route to serve audio files
+# Keep the existing serve_audio route for serving the audio files
 @app.route('/static/audio/<path:filename>')
 def serve_audio(filename):
     """Serve audio files with correct content type"""
