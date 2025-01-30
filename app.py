@@ -249,74 +249,9 @@ def make_call(truck_id):
             'message': 'An unexpected error occurred'
         }), 500
 
-def generate_elevenlabs_audio(text):
-    """Generate audio using ElevenLabs API"""
-    try:
-        ELEVEN_LABS_API_KEY = os.environ.get("ELEVEN_LABS_API_KEY")
-        if not ELEVEN_LABS_API_KEY:
-            app.logger.error("ElevenLabs API key is missing")
-            return None
-
-        VOICE_ID = "21m00Tcm4TlvDq8ikWAM"  # Rachel voice
-        url = f"https://api.elevenlabs.io/v1/text-to-speech/{VOICE_ID}/stream"
-
-        headers = {
-            "Accept": "audio/mpeg",
-            "Content-Type": "application/json",
-            "xi-api-key": ELEVEN_LABS_API_KEY
-        }
-
-        data = {
-            "text": text,
-            "model_id": "eleven_monolingual_v1",
-            "voice_settings": {
-                "stability": 0.5,
-                "similarity_boost": 0.5,
-                "style": 0.5,
-                "use_speaker_boost": True
-            }
-        }
-
-        app.logger.debug(f"Making request to ElevenLabs API with text: {text}")
-        app.logger.debug(f"Using ElevenLabs API key: {ELEVEN_LABS_API_KEY[:4]}...")
-        app.logger.debug(f"Request URL: {url}")
-        app.logger.debug(f"Request headers: {headers}")
-
-        response = requests.post(url, json=data, headers=headers)
-        app.logger.debug(f"ElevenLabs API response status: {response.status_code}")
-
-        if response.status_code != 200:
-            app.logger.error(f"ElevenLabs API error: {response.status_code} - {response.text}")
-            return None
-
-        # Save the audio file in the static folder
-        static_folder = os.path.join(app.root_path, 'static', 'audio')
-        os.makedirs(static_folder, exist_ok=True)
-
-        audio_filename = f"temp_audio_{hash(text)}.mp3"
-        audio_path = os.path.join(static_folder, audio_filename)
-
-        with open(audio_path, "wb") as f:
-            f.write(response.content)
-
-        # Verify the file was created and has content
-        if os.path.exists(audio_path) and os.path.getsize(audio_path) > 0:
-            app.logger.debug(f"Audio file created successfully at {audio_path}")
-            audio_url = f"audio/{audio_filename}"
-            app.logger.debug(f"Returning audio URL: {audio_url}")
-            return audio_url
-        else:
-            app.logger.error("Failed to create audio file or file is empty")
-            return None
-
-    except Exception as e:
-        app.logger.error(f"Error generating ElevenLabs audio: {str(e)}")
-        app.logger.exception("Full traceback:")
-        return None
-
 @app.route('/voice', methods=['GET', 'POST'])
 def voice():
-    """Handle incoming voice calls with ElevenLabs integration."""
+    """Handle incoming voice calls with ElevenLabs Convai integration."""
     try:
         app.logger.info("Voice endpoint called")
         app.logger.info(f"Request method: {request.method}")
@@ -324,44 +259,64 @@ def voice():
 
         resp = VoiceResponse()
 
-        # Connect to ElevenLabs Convai agent
-        agent_id = "kIJtewstoJnssPcE7t9p"
-        convai_url = f"https://elevenlabs.io/api/convai-agent/{agent_id}/chat"
-
-        headers = {
-            "Authorization": f"Bearer {os.environ.get('ELEVEN_LABS_API_KEY')}",
-            "Content-Type": "application/json"
-        }
-
-        if 'SpeechResult' in request.values:
+        # If this is the initial request (no speech result)
+        if 'SpeechResult' not in request.values:
+            # Set up for speech input
+            gather = Gather(
+                input='speech',
+                action='/voice',
+                method='POST',
+                timeout=3,
+                speechTimeout='auto'
+            )
+            resp.append(gather)
+            app.logger.info("Initial gather appended to response")
+        else:
+            # Get the speech input
             speech_text = request.values['SpeechResult']
             app.logger.info(f"Received speech: {speech_text}")
 
+            # Send to ElevenLabs Convai agent
+            agent_id = "kIJtewstoJnssPcE7t9p"
+            convai_url = f"https://elevenlabs.io/api/convai-agent/{agent_id}/chat"
+
+            headers = {
+                "Authorization": f"Bearer {os.environ.get('ELEVEN_LABS_API_KEY')}",
+                "Content-Type": "application/json"
+            }
+
             # Send the speech to ElevenLabs Convai agent
-            agent_response = requests.post(convai_url, 
+            agent_response = requests.post(
+                convai_url,
                 headers=headers,
                 json={"text": speech_text}
             )
 
             if agent_response.status_code == 200:
-                response_audio_url = agent_response.json().get('audio_url')
+                app.logger.info("Successfully received response from ElevenLabs agent")
+                response_data = agent_response.json()
+                response_audio_url = response_data.get('audio_url')
+
                 if response_audio_url:
+                    app.logger.info(f"Playing audio response from URL: {response_audio_url}")
                     resp.play(response_audio_url)
                 else:
-                    app.logger.warning("No audio URL in agent response, falling back to Twilio voice")
-                    resp.say("I apologize, but I'm having trouble generating voice. Please try again.", voice='alice')
+                    app.logger.warning("No audio URL in agent response")
+                    resp.say("I'm having trouble generating a voice response. Please try again.", voice='alice')
             else:
                 app.logger.error(f"Agent error: {agent_response.status_code}")
-                resp.say("I apologize, but I encountered an error. Please try again.", voice='alice')
+                app.logger.error(f"Agent response: {agent_response.text}")
+                resp.say("I encountered an error. Please try again.", voice='alice')
 
-        gather = Gather(
-            input='speech',
-            action='/voice',
-            method='POST',
-            timeout=3,
-            speechTimeout='auto'
-        )
-        resp.append(gather)
+            # Set up for next input
+            gather = Gather(
+                input='speech',
+                action='/voice',
+                method='POST',
+                timeout=3,
+                speechTimeout='auto'
+            )
+            resp.append(gather)
 
         app.logger.info("Voice response created successfully")
         app.logger.info(f"Response TwiML: {str(resp)}")
@@ -371,7 +326,7 @@ def voice():
         app.logger.error(f"Error in voice endpoint: {str(e)}")
         app.logger.exception("Full traceback:")
         error_response = VoiceResponse()
-        error_response.say("I apologize, but I encountered an error. Please try again.", voice='alice')
+        error_response.say("I encountered an error. Please try again.", voice='alice')
         return str(error_response)
 
 @app.route('/static/audio/<path:filename>')
