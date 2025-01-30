@@ -264,7 +264,7 @@ def handle_twilio_call():
 
         if not user_speech:
             # Initial greeting
-            ai_response_text = "Hello, how can I assist with your trucking needs today?"
+            ai_response_text = "Hello! Welcome to Xpress360 Fleet Management. How can I assist you today?"
         else:
             # Process user speech (mock response for now)
             app.logger.info(f"Received speech: {user_speech}")
@@ -272,27 +272,35 @@ def handle_twilio_call():
 
         # Convert text to speech using ElevenLabs
         headers = {
-            "Authorization": f"Bearer {os.environ.get('ELEVEN_LABS_API_KEY')}",
+            "Accept": "application/json",
+            "xi-api-key": os.environ.get('ELEVEN_LABS_API_KEY'),
             "Content-Type": "application/json"
         }
 
         data = {
             "text": ai_response_text,
-            "voice_id": "21m00Tcm4TlvDq8ikWAM"  # Default voice ID
+            "model_id": "eleven_monolingual_v1",
+            "voice_settings": {
+                "stability": 0.5,
+                "similarity_boost": 0.75
+            }
         }
 
         app.logger.info("Sending request to ElevenLabs API")
         tts_response = requests.post(
-            "https://api.elevenlabs.io/v1/text-to-speech",
+            "https://api.elevenlabs.io/v1/text-to-speech/21m00Tcm4TlvDq8ikWAM",
             json=data,
             headers=headers
         )
 
+        # Create temporary audio directory if it doesn't exist
+        audio_dir = os.path.join(app.root_path, 'static', 'audio')
+        os.makedirs(audio_dir, exist_ok=True)
+
         if tts_response.status_code == 200:
             # Save the audio response
             audio_filename = f"temp_audio_{os.getpid()}.mp3"
-            audio_path = os.path.join(app.root_path, 'static', 'audio', audio_filename)
-            os.makedirs(os.path.dirname(audio_path), exist_ok=True)
+            audio_path = os.path.join(audio_dir, audio_filename)
 
             with open(audio_path, 'wb') as f:
                 f.write(tts_response.content)
@@ -305,7 +313,7 @@ def handle_twilio_call():
             resp.play(audio_url)
         else:
             app.logger.error(f"ElevenLabs API error: {tts_response.text}")
-            resp.say("I encountered an error. Please try again.", voice='alice')
+            resp.say("I encountered an error generating the voice response. Please try again.", voice='alice')
 
         # Set up for next speech input
         gather = Gather(
