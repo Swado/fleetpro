@@ -249,9 +249,9 @@ def make_call(truck_id):
             'message': 'An unexpected error occurred'
         }), 500
 
-@app.route("/handle-twilio-call", methods=["POST"])
+@app.route("/handle-twilio-call", methods=['GET', 'POST'])
 def handle_twilio_call():
-    """Handle incoming Twilio calls with ElevenLabs text-to-speech."""
+    """Handle incoming Twilio voice calls with a simple response."""
     try:
         app.logger.info("Twilio call endpoint called")
         app.logger.info(f"Request form data: {request.form}")
@@ -259,73 +259,14 @@ def handle_twilio_call():
         # Create TwiML response
         resp = VoiceResponse()
 
-        # Get transcribed speech if available
-        user_speech = request.form.get("SpeechResult")
+        # Add a simple message
+        resp.say("Hello! Welcome to Xpress360 Fleet Management. How can I assist you today?", 
+                voice='alice')
 
-        if not user_speech:
-            # Initial greeting
-            ai_response_text = "Hello! Welcome to Xpress360 Fleet Management. How can I assist you today?"
-        else:
-            # Process user speech (mock response for now)
-            app.logger.info(f"Received speech: {user_speech}")
-            ai_response_text = "I understand your request. How else can I help you with fleet management?"
-
-        # Convert text to speech using ElevenLabs
-        headers = {
-            "Accept": "application/json",
-            "xi-api-key": os.environ.get('ELEVEN_LABS_API_KEY'),
-            "Content-Type": "application/json"
-        }
-
-        data = {
-            "text": ai_response_text,
-            "model_id": "eleven_monolingual_v1",
-            "voice_settings": {
-                "stability": 0.5,
-                "similarity_boost": 0.75
-            }
-        }
-
-        app.logger.info("Sending request to ElevenLabs API")
-        VOICE_ID = "21m00Tcm4TlvDq8ikWAM"  # Rachel voice
-        tts_response = requests.post(
-            f"https://api.elevenlabs.io/v1/text-to-speech/{VOICE_ID}/stream",
-            json=data,
-            headers=headers
-        )
-
-        app.logger.info(f"ElevenLabs API Response Status: {tts_response.status_code}")
-        if tts_response.status_code != 200:
-            app.logger.error(f"ElevenLabs API Error Response: {tts_response.text}")
-            raise Exception("Failed to generate speech from ElevenLabs")
-
-        # Create temporary audio directory if it doesn't exist
-        audio_dir = os.path.join(app.root_path, 'static', 'audio')
-        os.makedirs(audio_dir, exist_ok=True)
-
-        # Save the audio response
-        audio_filename = f"temp_audio_{os.getpid()}.mp3"
-        audio_path = os.path.join(audio_dir, audio_filename)
-
-        with open(audio_path, 'wb') as f:
-            f.write(tts_response.content)
-
-        # Create public URL for the audio file
-        audio_url = request.url_root.rstrip('/') + url_for('static', filename=f'audio/{audio_filename}')
-        # Force HTTPS as Twilio requires it
-        if not audio_url.startswith('https'):
-            audio_url = audio_url.replace('http://', 'https://')
-
-        app.logger.info(f"Audio file saved at: {audio_path}")
-        app.logger.info(f"Playing audio from URL: {audio_url}")
-
-        # Play the audio file
-        resp.play(audio_url)
-
-        # Set up for next speech input
+        # Gather the caller's speech input
         gather = Gather(
             input='speech',
-            action='/handle-twilio-call',
+            action='/handle-response',
             method='POST',
             timeout=3,
             speechTimeout='auto'
@@ -333,14 +274,42 @@ def handle_twilio_call():
         resp.append(gather)
 
         app.logger.info(f"Sending TwiML response: {str(resp)}")
-        return str(resp)
+        return Response(str(resp), mimetype='text/xml')
 
     except Exception as e:
         app.logger.error(f"Error in Twilio call handler: {str(e)}")
         app.logger.exception("Full traceback:")
         error_response = VoiceResponse()
         error_response.say("I encountered an error. Please try again.", voice='alice')
-        return str(error_response)
+        return Response(str(error_response), mimetype='text/xml')
+
+@app.route("/handle-response", methods=['POST'])
+def handle_response():
+    """Handle the caller's speech input."""
+    try:
+        app.logger.info("Handling voice response")
+        app.logger.info(f"Request form data: {request.form}")
+
+        # Get the user's speech input
+        user_speech = request.form.get('SpeechResult')
+        app.logger.info(f"User said: {user_speech}")
+
+        # Create a new TwiML response
+        resp = VoiceResponse()
+
+        if user_speech:
+            # Respond to the user's input
+            resp.say(f"You said: {user_speech}. Thank you for your message.", voice='alice')
+        else:
+            resp.say("I didn't catch that. Please try again.", voice='alice')
+
+        return Response(str(resp), mimetype='text/xml')
+
+    except Exception as e:
+        app.logger.error(f"Error handling response: {str(e)}")
+        error_resp = VoiceResponse()
+        error_resp.say("An error occurred processing your request.", voice='alice')
+        return Response(str(error_resp), mimetype='text/xml')
 
 # Route to serve audio files
 @app.route('/static/audio/<path:filename>')
