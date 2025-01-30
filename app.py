@@ -223,7 +223,7 @@ def make_call(truck_id):
 
         # Make the call using our voice endpoint
         call = client.calls.create(
-            url=f"{base_url}/voice",  # Our TwiML endpoint
+            url=f"{base_url}/handle-twilio-call",  # Our TwiML endpoint
             to=to_number,
             from_=os.environ.get('TWILIO_PHONE_NUMBER')
         )
@@ -249,149 +249,85 @@ def make_call(truck_id):
             'message': 'An unexpected error occurred'
         }), 500
 
-@app.route('/voice', methods=['GET', 'POST'])
-def voice():
-    """Handle incoming voice calls with ElevenLabs text-to-speech."""
+@app.route("/handle-twilio-call", methods=["POST"])
+def handle_twilio_call():
+    """Handle incoming Twilio calls with ElevenLabs text-to-speech."""
     try:
-        app.logger.info("Voice endpoint called")
-        app.logger.info(f"Request method: {request.method}")
-        app.logger.info(f"Request values: {request.values}")
+        app.logger.info("Twilio call endpoint called")
+        app.logger.info(f"Request form data: {request.form}")
 
+        # Create TwiML response
         resp = VoiceResponse()
 
-        # If this is the initial request (no speech result)
-        if 'SpeechResult' not in request.values:
-            # Initial greeting using ElevenLabs
-            headers = {
-                "Accept": "application/json",
-                "xi-api-key": os.environ.get('ELEVEN_LABS_API_KEY'),
-                "Content-Type": "application/json"
-            }
+        # Get transcribed speech if available
+        user_speech = request.form.get("SpeechResult")
 
-            # Initial greeting data
-            data = {
-                "text": "Welcome to Express 360 Fleet Management. How can I assist you today?",
-                "model_id": "eleven_monolingual_v1",
-                "voice_settings": {
-                    "stability": 0.5,
-                    "similarity_boost": 0.75
-                }
-            }
-
-            try:
-                app.logger.info("Sending request to ElevenLabs TTS API")
-                tts_response = requests.post(
-                    "https://api.elevenlabs.io/v1/text-to-speech/21m00Tcm4TlvDq8ikWAM",
-                    headers=headers,
-                    json=data
-                )
-                app.logger.info(f"ElevenLabs TTS API response status: {tts_response.status_code}")
-
-                if tts_response.status_code == 200:
-                    # Save the audio response
-                    audio_filename = f"temp_audio_{os.getpid()}.mp3"
-                    audio_path = os.path.join(app.root_path, 'static', 'audio', audio_filename)
-                    os.makedirs(os.path.dirname(audio_path), exist_ok=True)
-
-                    with open(audio_path, 'wb') as f:
-                        f.write(tts_response.content)
-
-                    # Play the saved audio file
-                    audio_url = url_for('static', filename=f'audio/{audio_filename}', _external=True)
-                    app.logger.info(f"Playing audio from URL: {audio_url}")
-                    resp.play(audio_url)
-                else:
-                    app.logger.error(f"ElevenLabs TTS API error: {tts_response.text}")
-                    resp.say("Welcome to Express 360 Fleet Management. How can I assist you today?", voice='alice')
-            except Exception as e:
-                app.logger.error(f"Error with ElevenLabs TTS API: {str(e)}")
-                app.logger.exception("Full traceback:")
-                resp.say("Welcome to Express 360 Fleet Management. How can I assist you today?", voice='alice')
-
-            # Set up for speech input
-            gather = Gather(
-                input='speech',
-                action='/voice',
-                method='POST',
-                timeout=3,
-                speechTimeout='auto'
-            )
-            resp.append(gather)
-            app.logger.info("Initial gather appended to response")
+        if not user_speech:
+            # Initial greeting
+            ai_response_text = "Hello, how can I assist with your trucking needs today?"
         else:
-            # Handle user's speech input
-            speech_text = request.values['SpeechResult']
-            app.logger.info(f"Received speech: {speech_text}")
+            # Process user speech (mock response for now)
+            app.logger.info(f"Received speech: {user_speech}")
+            ai_response_text = "I understand your request. How else can I help you with fleet management?"
 
-            # Process speech and generate AI response (mock response for now)
-            ai_response = "I understand your question. How can I help you with our fleet management system?"
+        # Convert text to speech using ElevenLabs
+        headers = {
+            "Authorization": f"Bearer {os.environ.get('ELEVEN_LABS_API_KEY')}",
+            "Content-Type": "application/json"
+        }
 
-            # Convert AI response to speech
-            headers = {
-                "Accept": "application/json",
-                "xi-api-key": os.environ.get('ELEVEN_LABS_API_KEY'),
-                "Content-Type": "application/json"
-            }
+        data = {
+            "text": ai_response_text,
+            "voice_id": "21m00Tcm4TlvDq8ikWAM"  # Default voice ID
+        }
 
-            data = {
-                "text": ai_response,
-                "model_id": "eleven_monolingual_v1",
-                "voice_settings": {
-                    "stability": 0.5,
-                    "similarity_boost": 0.75
-                }
-            }
+        app.logger.info("Sending request to ElevenLabs API")
+        tts_response = requests.post(
+            "https://api.elevenlabs.io/v1/text-to-speech",
+            json=data,
+            headers=headers
+        )
 
-            try:
-                tts_response = requests.post(
-                    "https://api.elevenlabs.io/v1/text-to-speech/21m00Tcm4TlvDq8ikWAM",
-                    headers=headers,
-                    json=data,
-                    timeout=10
-                )
+        if tts_response.status_code == 200:
+            # Save the audio response
+            audio_filename = f"temp_audio_{os.getpid()}.mp3"
+            audio_path = os.path.join(app.root_path, 'static', 'audio', audio_filename)
+            os.makedirs(os.path.dirname(audio_path), exist_ok=True)
 
-                if tts_response.status_code == 200:
-                    # Save the audio response
-                    audio_filename = f"temp_audio_{os.getpid()}.mp3"
-                    audio_path = os.path.join(app.root_path, 'static', 'audio', audio_filename)
-                    os.makedirs(os.path.dirname(audio_path), exist_ok=True)
+            with open(audio_path, 'wb') as f:
+                f.write(tts_response.content)
 
-                    with open(audio_path, 'wb') as f:
-                        f.write(tts_response.content)
+            # Create public URL for the audio file
+            audio_url = url_for('static', filename=f'audio/{audio_filename}', _external=True)
+            app.logger.info(f"Playing audio from URL: {audio_url}")
 
-                    # Play the saved audio file
-                    audio_url = url_for('static', filename=f'audio/{audio_filename}', _external=True)
-                    app.logger.info(f"Playing audio from URL: {audio_url}")
-                    resp.play(audio_url)
-                else:
-                    app.logger.error(f"ElevenLabs TTS API error: {tts_response.text}")
-                    resp.say("I'm having trouble generating a voice response. Please try again.", voice='alice')
-            except Exception as e:
-                app.logger.error(f"Error with ElevenLabs TTS API: {str(e)}")
-                app.logger.exception("Full traceback:")
-                resp.say("I encountered an error. Please try again.", voice='alice')
+            # Play the audio file
+            resp.play(audio_url)
+        else:
+            app.logger.error(f"ElevenLabs API error: {tts_response.text}")
+            resp.say("I encountered an error. Please try again.", voice='alice')
 
-            # Set up for next input
-            gather = Gather(
-                input='speech',
-                action='/voice',
-                method='POST',
-                timeout=3,
-                speechTimeout='auto'
-            )
-            resp.append(gather)
+        # Set up for next speech input
+        gather = Gather(
+            input='speech',
+            action='/handle-twilio-call',
+            method='POST',
+            timeout=3,
+            speechTimeout='auto'
+        )
+        resp.append(gather)
 
-        app.logger.info("Voice response created successfully")
-        app.logger.info(f"Response TwiML: {str(resp)}")
+        app.logger.info(f"Sending TwiML response: {str(resp)}")
         return str(resp)
 
     except Exception as e:
-        app.logger.error(f"Error in voice endpoint: {str(e)}")
+        app.logger.error(f"Error in Twilio call handler: {str(e)}")
         app.logger.exception("Full traceback:")
         error_response = VoiceResponse()
         error_response.say("I encountered an error. Please try again.", voice='alice')
         return str(error_response)
 
+# Route to serve audio files
 @app.route('/static/audio/<path:filename>')
 def serve_audio(filename):
     """Serve audio files with correct content type"""
