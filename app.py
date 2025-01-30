@@ -287,33 +287,40 @@ def handle_twilio_call():
         }
 
         app.logger.info("Sending request to ElevenLabs API")
+        VOICE_ID = "21m00Tcm4TlvDq8ikWAM"  # Rachel voice
         tts_response = requests.post(
-            "https://api.elevenlabs.io/v1/text-to-speech/21m00Tcm4TlvDq8ikWAM",
+            f"https://api.elevenlabs.io/v1/text-to-speech/{VOICE_ID}/stream",
             json=data,
             headers=headers
         )
+
+        app.logger.info(f"ElevenLabs API Response Status: {tts_response.status_code}")
+        if tts_response.status_code != 200:
+            app.logger.error(f"ElevenLabs API Error Response: {tts_response.text}")
+            raise Exception("Failed to generate speech from ElevenLabs")
 
         # Create temporary audio directory if it doesn't exist
         audio_dir = os.path.join(app.root_path, 'static', 'audio')
         os.makedirs(audio_dir, exist_ok=True)
 
-        if tts_response.status_code == 200:
-            # Save the audio response
-            audio_filename = f"temp_audio_{os.getpid()}.mp3"
-            audio_path = os.path.join(audio_dir, audio_filename)
+        # Save the audio response
+        audio_filename = f"temp_audio_{os.getpid()}.mp3"
+        audio_path = os.path.join(audio_dir, audio_filename)
 
-            with open(audio_path, 'wb') as f:
-                f.write(tts_response.content)
+        with open(audio_path, 'wb') as f:
+            f.write(tts_response.content)
 
-            # Create public URL for the audio file
-            audio_url = url_for('static', filename=f'audio/{audio_filename}', _external=True)
-            app.logger.info(f"Playing audio from URL: {audio_url}")
+        # Create public URL for the audio file
+        audio_url = request.url_root.rstrip('/') + url_for('static', filename=f'audio/{audio_filename}')
+        # Force HTTPS as Twilio requires it
+        if not audio_url.startswith('https'):
+            audio_url = audio_url.replace('http://', 'https://')
 
-            # Play the audio file
-            resp.play(audio_url)
-        else:
-            app.logger.error(f"ElevenLabs API error: {tts_response.text}")
-            resp.say("I encountered an error generating the voice response. Please try again.", voice='alice')
+        app.logger.info(f"Audio file saved at: {audio_path}")
+        app.logger.info(f"Playing audio from URL: {audio_url}")
+
+        # Play the audio file
+        resp.play(audio_url)
 
         # Set up for next speech input
         gather = Gather(
