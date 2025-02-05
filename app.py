@@ -1,17 +1,11 @@
 import os
 import logging
 from datetime import datetime
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, Response, send_from_directory
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, Response, send_from_directory, session
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from flask_login import LoginManager, login_required, current_user
 from sqlalchemy.orm import DeclarativeBase
 import urllib.parse
-from twilio.rest import Client
-from twilio.base.exceptions import TwilioRestException
-from twilio.twiml.voice_response import VoiceResponse, Gather
-import requests
-
-logging.basicConfig(level=logging.DEBUG)
 
 class Base(DeclarativeBase):
     pass
@@ -37,366 +31,9 @@ login_manager.login_view = 'login'
 login_manager.login_message = 'Please log in to access this page.'
 login_manager.login_message_category = 'warning'
 
-
-def get_unread_message_count():
-    if not current_user.is_authenticated:
-        return 0
-    from models import Message
-    return Message.query.filter_by(receiver_id=current_user.id, is_read=False).count()
-
-app.jinja_env.globals.update(get_unread_message_count=get_unread_message_count)
-
-@app.route('/')
-def index():
-    if current_user.is_authenticated:
-        return redirect(url_for('dashboard'))
-    return render_template('index.html')
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if current_user.is_authenticated:
-        return redirect(url_for('dashboard'))
-
-    if request.method == 'POST':
-        from models import User
-        username = request.form.get('username')
-        password = request.form.get('password')
-        user = User.query.filter_by(username=username).first()
-
-        if user and user.check_password(password):
-            login_user(user)
-            flash('Logged in successfully.')
-            next_page = request.args.get('next')
-            return redirect(next_page or url_for('dashboard'))
-        flash('Invalid username or password')
-
-    return render_template('login.html')
-
-@app.route('/dashboard')
-@login_required
-def dashboard():
-    from models import Truck, Message
-    trucks = Truck.query.filter_by(user_id=current_user.id).all()
-    active_trucks = len([t for t in trucks if t.status == 'active'])
-    unread_messages = Message.query.filter_by(receiver_id=current_user.id, is_read=False).count()
-    return render_template('dashboard.html', 
-                         trucks=trucks,
-                         active_trucks=active_trucks,
-                         truck_count=len(trucks),
-                         unread_count=unread_messages)
-
-@app.route('/messages')
-@login_required
-def messages():
-    from models import Message
-    received_messages = Message.query.filter_by(receiver_id=current_user.id).order_by(Message.timestamp.desc()).all()
-    return render_template('messages.html', messages=received_messages)
-
-@app.route('/logout')
-@login_required
-def logout():
-    logout_user()
-    return redirect(url_for('index'))
-
-from flask import jsonify
-
-@app.route('/api/messages/<int:message_id>')
-@login_required
-def get_message(message_id):
-    from models import Message
-    message = Message.query.get_or_404(message_id)
-
-    if message.receiver_id != current_user.id:
-        return jsonify({'error': 'Unauthorized'}), 403
-
-    return jsonify({
-        'subject': message.subject,
-        'sender': message.sender.username,
-        'timestamp': message.timestamp.strftime('%m/%d/%Y %H:%M'),
-        'content': message.content,
-        'is_read': message.is_read,
-        'truck': f"{message.related_truck.plate_number} - {message.related_truck.driver_name}" if message.related_truck else None
-    })
-
-@app.route('/api/messages/<int:message_id>/read', methods=['POST'])
-@login_required
-def mark_message_read(message_id):
-    from models import Message
-    message = Message.query.get_or_404(message_id)
-
-    if message.receiver_id != current_user.id:
-        return jsonify({'error': 'Unauthorized'}), 403
-
-    if not message.is_read:
-        message.is_read = True
-        db.session.commit()
-
-    return jsonify({'status': 'success'})
-
-@app.route('/send_message', methods=['POST'])
-@login_required
-def send_message():
-    from models import Message
-
-    receiver_id = request.form.get('receiver_id')
-    subject = request.form.get('subject')
-    content = request.form.get('content')
-    related_truck_id = request.form.get('related_truck_id')
-    message_type = request.form.get('message_type', 'normal')
-
-    if not all([receiver_id, subject, content]):
-        flash('All required fields must be filled out.', 'error')
-        return redirect(url_for('messages'))
-
-    message = Message(
-        sender_id=current_user.id,
-        receiver_id=receiver_id,
-        subject=subject,
-        content=content,
-        related_truck_id=related_truck_id if related_truck_id else None,
-        message_type=message_type
-    )
-
-    db.session.add(message)
-    db.session.commit()
-
-    flash('Message sent successfully.', 'success')
-    return redirect(url_for('messages'))
-
-@app.context_processor
-def utility_processor():
-    def get_users_for_messaging():
-        from models import User
-        return User.query.filter(User.id != current_user.id).all()
-
-    def get_user_trucks():
-        from models import Truck
-        return Truck.query.filter_by(user_id=current_user.id).all()
-
-    return dict(users=get_users_for_messaging, trucks=get_user_trucks)
-
-
-@app.route('/trucks/<int:truck_id>')
-@login_required
-def truck_detail(truck_id):
-    from models import Truck
-    truck = Truck.query.get_or_404(truck_id)
-    if truck.user_id != current_user.id:
-        flash('Access denied.', 'error')
-        return redirect(url_for('dashboard'))
-    return render_template('truck_detail.html', truck=truck)
-
-@app.route('/api/make_call/<int:truck_id>', methods=['POST'])
-@login_required
-def make_call(truck_id):
-    try:
-        from models import Truck
-        truck = Truck.query.get_or_404(truck_id)
-
-        # Verify truck belongs to current user
-        if truck.user_id != current_user.id:
-            return jsonify({'error': 'Unauthorized'}), 403
-
-        # Format the phone number to E.164 format
-        to_number = request.json.get('to_number')
-        if not to_number:
-            app.logger.error("No phone number provided")
-            return jsonify({
-                'status': 'error',
-                'message': 'Phone number is required'
-            }), 400
-
-        if not to_number.startswith('+'):
-            to_number = '+1' + to_number  # Assuming US numbers
-
-        app.logger.info(f"Initiating call to {to_number} for truck {truck_id}")
-
-        # Initialize Twilio client
-        client = Client(
-            os.environ.get('TWILIO_ACCOUNT_SID'),
-            os.environ.get('TWILIO_AUTH_TOKEN')
-        )
-
-        # Get the base URL for the voice endpoint
-        base_url = request.url_root.rstrip('/')
-        if request.is_secure:
-            base_url = base_url.replace('http://', 'https://')
-
-        # Make the call using our voice endpoint
-        call = client.calls.create(
-            url=f"{base_url}/handle-twilio-call",  # Our TwiML endpoint
-            to=to_number,
-            from_=os.environ.get('TWILIO_PHONE_NUMBER')
-        )
-
-        app.logger.info(f"Call initiated successfully with SID: {call.sid}")
-
-        return jsonify({
-            'status': 'success',
-            'call_sid': call.sid,
-            'message': f'Initiating call to driver of truck {truck.plate_number}'
-        })
-
-    except TwilioRestException as e:
-        app.logger.error(f"Twilio error: {str(e)}")
-        return jsonify({
-            'status': 'error',
-            'message': 'Failed to initiate call. Please try again.'
-        }), 500
-    except Exception as e:
-        app.logger.error(f"Error making call: {str(e)}")
-        return jsonify({
-            'status': 'error',
-            'message': 'An unexpected error occurred'
-        }), 500
-
-def generate_elevenlabs_audio(text, voice_id="21m00Tcm4TlvDq8ikWAM"):
-    """Generate audio using ElevenLabs API and save it to a public URL."""
-    try:
-        headers = {
-            "Accept": "application/json",
-            "xi-api-key": os.environ.get('ELEVEN_LABS_API_KEY'),
-            "Content-Type": "application/json"
-        }
-
-        data = {
-            "text": text,
-            "model_id": "eleven_monolingual_v1",
-            "voice_settings": {
-                "stability": 0.5,
-                "similarity_boost": 0.75
-            }
-        }
-
-        app.logger.info("Sending request to ElevenLabs API")
-        tts_response = requests.post(
-            f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}/stream",
-            json=data,
-            headers=headers
-        )
-
-        if tts_response.status_code != 200:
-            app.logger.error(f"ElevenLabs API Error: {tts_response.text}")
-            return None
-
-        # Create audio directory if it doesn't exist
-        audio_dir = os.path.join(app.root_path, 'static', 'audio')
-        os.makedirs(audio_dir, exist_ok=True)
-
-        # Generate unique filename
-        timestamp = datetime.utcnow().strftime('%Y%m%d_%H%M%S')
-        audio_filename = f"response_{timestamp}.mp3"
-        audio_path = os.path.join(audio_dir, audio_filename)
-
-        # Save the audio file
-        with open(audio_path, 'wb') as f:
-            f.write(tts_response.content)
-
-        # Generate public URL
-        base_url = request.url_root.rstrip('/')
-        if not base_url.startswith('https'):
-            base_url = base_url.replace('http://', 'https://')
-
-        return f"{base_url}/static/audio/{audio_filename}"
-
-    except Exception as e:
-        app.logger.error(f"Error generating audio: {str(e)}")
-        return None
-
-@app.route("/handle-twilio-call", methods=['GET', 'POST'])
-def handle_twilio_call():
-    """Handle incoming Twilio voice calls."""
-    try:
-        app.logger.info("Handling Twilio call")
-        app.logger.info(f"Request form data: {request.form}")
-
-        # Create TwiML response
-        resp = VoiceResponse()
-
-        # Generate welcome message using ElevenLabs
-        welcome_text = "Welcome to Xpress360 Fleet Management. How can I assist you today?"
-        audio_url = generate_elevenlabs_audio(welcome_text)
-
-        if audio_url:
-            # Play the generated audio
-            resp.play(audio_url)
-        else:
-            # Fallback to Twilio's text-to-speech if ElevenLabs fails
-            resp.say(welcome_text, voice='alice')
-
-        # Set up speech input gathering
-        gather = Gather(
-            input='speech',
-            action='/handle-response',
-            method='POST',
-            timeout=3,
-            speechTimeout='auto'
-        )
-        resp.append(gather)
-
-        return Response(str(resp), mimetype='text/xml')
-
-    except Exception as e:
-        app.logger.error(f"Error in call handler: {str(e)}")
-        error_resp = VoiceResponse()
-        error_resp.say("An error occurred. Please try again later.", voice='alice')
-        return Response(str(error_resp), mimetype='text/xml')
-
-@app.route("/handle-response", methods=['POST'])
-def handle_response():
-    """Handle the caller's speech input."""
-    try:
-        app.logger.info("Handling voice response")
-        app.logger.info(f"Request form data: {request.form}")
-
-        user_speech = request.form.get('SpeechResult')
-        app.logger.info(f"User said: {user_speech}")
-
-        resp = VoiceResponse()
-
-        if user_speech:
-            # Generate response using ElevenLabs
-            response_text = f"You said: {user_speech}. I'll process your request."
-            audio_url = generate_elevenlabs_audio(response_text)
-
-            if audio_url:
-                resp.play(audio_url)
-            else:
-                resp.say(response_text, voice='alice')
-        else:
-            resp.say("I didn't catch that. Could you please repeat?", voice='alice')
-
-        # Add another gather for continued conversation
-        gather = Gather(
-            input='speech',
-            action='/handle-response',
-            method='POST',
-            timeout=3,
-            speechTimeout='auto'
-        )
-        resp.append(gather)
-
-        return Response(str(resp), mimetype='text/xml')
-
-    except Exception as e:
-        app.logger.error(f"Error handling response: {str(e)}")
-        error_resp = VoiceResponse()
-        error_resp.say("An error occurred processing your request.", voice='alice')
-        return Response(str(error_resp), mimetype='text/xml')
-
-# Keep the existing serve_audio route for serving the audio files
-@app.route('/static/audio/<path:filename>')
-def serve_audio(filename):
-    """Serve audio files with correct content type"""
-    return send_from_directory(
-        os.path.join(app.root_path, 'static', 'audio'),
-        filename,
-        mimetype='audio/mpeg'
-    )
-
 with app.app_context():
     # Import models after app creation to avoid circular imports
-    from models import User, Truck, Message
+    from models import User, Truck, Message, TripHistory
     db.create_all()
 
     def create_admin_user():
@@ -418,3 +55,22 @@ with app.app_context():
             db.session.rollback()
 
     create_admin_user()
+
+# Register the utility function for templates
+def get_unread_message_count():
+    if not current_user.is_authenticated:
+        return 0
+    from models import Message
+    return Message.query.filter_by(receiver_id=current_user.id, is_read=False).count()
+
+app.jinja_env.globals.update(get_unread_message_count=get_unread_message_count)
+
+
+@app.route('/static/audio/<path:filename>')
+def serve_audio(filename):
+    """Serve audio files with correct content type"""
+    return send_from_directory(
+        os.path.join(app.root_path, 'static', 'audio'),
+        filename,
+        mimetype='audio/mpeg'
+    )

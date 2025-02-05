@@ -33,9 +33,10 @@
                                     data-bs-toggle="tab" 
                                     data-bs-target="#truck-content-{{ truck.id }}" 
                                     type="button" 
-                                    role="tab"
-                                    style="color: {% if truck.status == 'active' %}#2ecc71{% else %}#e74c3c{% endif %};">
-                                {{ truck.plate_number }} - {{ truck.driver_name }}
+                                    role="tab">
+                                <span class="driver-name" style="color: {% if truck.status == 'active' %}#2ecc71{% elif truck.status == 'maintenance' %}#e67e22{% else %}#e74c3c{% endif %};">
+                                    {{ truck.plate_number }} - {{ truck.driver_name }}
+                                </span>
                             </button>
                         </li>
                         {% endfor %}
@@ -48,13 +49,19 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <h4>{{ truck.plate_number }}</h4>
-                                    <p><strong>Driver:</strong> {{ truck.driver_name }}</p>
+                                    <p>
+                                        <strong>Driver:</strong>
+                                        <span style="color: {% if truck.status == 'active' %}#2ecc71{% elif truck.status == 'maintenance' %}#e67e22{% else %}#e74c3c{% endif %};">
+                                            {{ truck.driver_name }}
+                                        </span>
+                                    </p>
                                     <p><strong>Model:</strong> {{ truck.model }}</p>
                                     <p><strong>Year:</strong> {{ truck.year }}</p>
                                     <p>
                                         <strong>Status:</strong>
                                         <span class="truck-status" data-status="{{ truck.status }}">
-                                            <i class="fas fa-circle"></i> {{ truck.status|title }}
+                                            <i class="fas fa-circle" style="color: {% if truck.status == 'active' %}#2ecc71{% elif truck.status == 'maintenance' %}#e67e22{% else %}#e74c3c{% endif %};"></i>
+                                            {{ truck.status|title }}
                                         </span>
                                     </p>
                                     <p>
@@ -124,27 +131,95 @@
         </div>
     </div>
 
+    <!-- Fleet Services Section -->
     <div class="row mt-4">
         <div class="col-md-12">
             <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">Fleet Location Map</h5>
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Fleet Services</h5>
                 </div>
                 <div class="card-body">
-                    <div id="fleet-map" style="height: 400px;"></div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <a href="{{ url_for('fleet_services') }}" class="text-decoration-none">
+                                <div class="service-card insurance-card">
+                                    <i class="fas fa-shield-alt fa-3x mb-3"></i>
+                                    <h4>Insurance Shopping</h4>
+                                    <p>Compare and select from top fleet insurance providers</p>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="{{ url_for('fleet_services') }}" class="text-decoration-none">
+                                <div class="service-card legal-card">
+                                    <i class="fas fa-gavel fa-3x mb-3"></i>
+                                    <h4>24/7 Legal Support</h4>
+                                    <p>Access nationwide legal assistance for your drivers</p>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="{{ url_for('fleet_services') }}" class="text-decoration-none">
+                                <div class="service-card payment-card">
+                                    <i class="fas fa-money-bill-wave fa-3x mb-3"></i>
+                                    <h4>Instant Payments</h4>
+                                    <p>Manage driver payroll and repair payments efficiently</p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-{% endblock %}
+
+<style>
+.service-card {
+    padding: 2rem;
+    border-radius: 10px;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.insurance-card {
+    background-color: #ebfbf0;
+}
+
+.legal-card {
+    background-color: #e8f4fc;
+}
+
+.payment-card {
+    background-color: #fff9e6;
+}
+
+.service-card i {
+    color: #2c3e50;
+}
+
+.trip-card {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.driver-name {
+    font-weight: bold;
+}
+</style>
 
 {% block extra_js %}
-<!-- Load required JavaScript libraries -->
+{{ super() }}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
-<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize Fleet Status Chart
@@ -174,35 +249,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Initialize Map
-    const map = L.map('fleet-map').setView([39.8283, -98.5795], 4);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
-
-    // Add truck markers to map
-    const trucks = [
-        {% for truck in trucks %}
-        {% if truck.current_latitude and truck.current_longitude %}
-        {
-            lat: {{ truck.current_latitude }},
-            lng: {{ truck.current_longitude }},
-            plateNumber: "{{ truck.plate_number }}",
-            driverName: "{{ truck.driver_name }}",
-            status: "{{ truck.status }}"
-        },
-        {% endif %}
-        {% endfor %}
-    ];
-
-    trucks.forEach(truck => {
-        const marker = L.marker([truck.lat, truck.lng]).addTo(map);
-        marker.bindPopup(`
-            <strong>${truck.plateNumber}</strong><br>
-            Driver: ${truck.driverName}<br>
-            Status: ${truck.status}
-        `);
-    });
     window.initiateCall = function(truckId, phoneNumber, driverName) {
         if (confirm(`Do you want to call ${driverName}?`)) {
             fetch(`/api/make_call/${truckId}`, {
@@ -214,12 +260,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     to_number: phoneNumber
                 })
             })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
                     alert(data.message);
@@ -235,4 +276,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+{% endblock %}
+
 {% endblock %}

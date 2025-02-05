@@ -7,7 +7,7 @@
     <!-- Navigation Buttons -->
     <div class="nav-buttons">
         <button class="nav-btn">HOME</button>
-        <button class="nav-btn login-trigger" onclick="toggleLoginForm()">LOGIN</button>
+        <button class="nav-btn" onclick="toggleLoginForm()">LOGIN</button>
         <button class="nav-btn" onclick="toggleAbout()">ABOUT</button>
     </div>
 
@@ -49,15 +49,15 @@
 
     <!-- Fleet Services Buttons -->
     <div class="fleet-services">
-        <button class="service-btn insurance-btn" onclick="window.location.href='/insurance'">
+        <button class="service-btn insurance-btn" onclick="window.location.href='/fleet-services'">
             <i class="fas fa-shield-alt"></i>
             Fleet Insurance Shopping
         </button>
-        <button class="service-btn legal-btn" onclick="window.location.href='/legal-support'">
+        <button class="service-btn legal-btn" onclick="window.location.href='/fleet-services'">
             <i class="fas fa-gavel"></i>
             24/7 Driver Legal Support
         </button>
-        <button class="service-btn payment-btn" onclick="window.location.href='/payments'">
+        <button class="service-btn payment-btn" onclick="window.location.href='/fleet-services'">
             <i class="fas fa-money-bill-wave"></i>
             Instant Payments
         </button>
@@ -72,12 +72,13 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.7);
     z-index: 1000;
+    transition: all 0.3s ease;
 }
 
 .login-modal-content {
-    position: absolute;
+    position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -94,6 +95,11 @@
     top: 10px;
     font-size: 24px;
     cursor: pointer;
+    color: #666;
+}
+
+.close-btn:hover {
+    color: #000;
 }
 
 .fleet-services {
@@ -113,7 +119,7 @@
     color: white;
     font-weight: bold;
     cursor: pointer;
-    transition: transform 0.2s;
+    transition: transform 0.2s, box-shadow 0.2s;
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -121,6 +127,7 @@
 
 .service-btn:hover {
     transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .insurance-btn {
@@ -144,7 +151,11 @@
 <script>
 function toggleLoginForm() {
     const modal = document.getElementById('loginModal');
-    modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
+    if (modal.style.display === 'block') {
+        modal.style.display = 'none';
+    } else {
+        modal.style.display = 'block';
+    }
 }
 
 function toggleAbout() {
@@ -154,7 +165,7 @@ function toggleAbout() {
 // Close modal when clicking outside
 window.onclick = function(event) {
     const modal = document.getElementById('loginModal');
-    if (event.target == modal) {
+    if (event.target === modal) {
         modal.style.display = 'none';
     }
 }

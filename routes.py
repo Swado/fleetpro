@@ -1,13 +1,18 @@
 import os
-from flask import render_template, redirect, url_for, flash, request, jsonify, session
+from datetime import datetime, timedelta
+from flask import render_template, redirect, url_for, flash, request, jsonify, session, Response, send_from_directory
 from flask_login import login_user, logout_user, login_required, current_user
 from app import app, db
 from models import User, Truck, TripHistory, Message
-from datetime import datetime, timedelta
-import logging
-from sqlalchemy import func
 from services.ai_service import AIFleetAssistant
 from services.gmail_service import gmail_service
+import logging
+from sqlalchemy import func
+from twilio.rest import Client
+from twilio.base.exceptions import TwilioRestException
+from twilio.twiml.voice_response import VoiceResponse, Gather
+import requests
+import random
 
 ai_assistant = AIFleetAssistant()
 
@@ -24,7 +29,31 @@ US_STATES = [
 def index():
     if current_user.is_authenticated:
         return redirect(url_for('dashboard'))
-    return redirect(url_for('login'))
+    return render_template('login.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard'))
+
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        user = User.query.filter_by(username=username).first()
+
+        if user and user.check_password(password):
+            login_user(user)
+            session['is_demo'] = False
+            # Initialize email notification status
+            session['email_enabled'] = False
+            logging.info(f"User {username} logged in successfully")
+            next_page = request.args.get('next')
+            return redirect(next_page or url_for('dashboard'))
+
+        flash('Invalid username or password')
+        logging.warning(f"Failed login attempt for username: {username}")
+
+    return render_template('login.html')
 
 @app.route('/demo')
 def demo_login():
@@ -43,45 +72,16 @@ def demo_login():
         from create_test_data import add_trucks_for_user
         add_trucks_for_user('demo', num_trucks=5)
 
-        # Add sample trips for the trucks
-        from add_sample_trips import add_sample_trips
-        add_sample_trips()
-
     login_user(demo_user)
     session['is_demo'] = True
     flash('Welcome to the demo! Feel free to explore all features.')
     return redirect(url_for('dashboard'))
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if current_user.is_authenticated:
-        return redirect(url_for('dashboard'))
-
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        logging.debug(f"Login attempt for username: {username}")
-
-        user = User.query.filter_by(username=username).first()
-        if user and user.check_password(password):
-            login_user(user)
-            session['is_demo'] = False
-            # Initialize email notification status
-            session['email_enabled'] = False
-            logging.info(f"User {username} logged in successfully")
-            next_page = request.args.get('next')
-            return redirect(next_page if next_page else url_for('dashboard'))
-
-        flash('Invalid username or password')
-        logging.warning(f"Failed login attempt for username: {username}")
-
-    return render_template('login.html')
-
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('login'))
+    return redirect(url_for('index'))
 
 @app.route('/dashboard')
 @login_required
@@ -337,3 +337,111 @@ def utility_processor():
         return 0
 
     return dict(get_unread_message_count=get_unread_message_count)
+
+@app.route('/fleet-services')
+@login_required
+def fleet_services():
+    # Test data for insurance plans
+    insurance_plans = [
+        {
+            'provider': 'SafeFleet Insurance Co.',
+            'coverage': 'Comprehensive Commercial Fleet Coverage',
+            'monthly_premium': 1250.00,
+            'deductible': 1000.00
+        },
+        {
+            'provider': 'TruckGuard Insurance',
+            'coverage': 'Premium Fleet Protection Plus',
+            'monthly_premium': 1450.00,
+            'deductible': 750.00
+        },
+        {
+            'provider': 'FleetSecure Partners',
+            'coverage': 'Ultimate Fleet Shield',
+            'monthly_premium': 1650.00,
+            'deductible': 500.00
+        }
+    ]
+
+    # Test data for legal support
+    lawyers = [
+        {
+            'name': 'Johnson & Associates',
+            'specialization': 'Transportation Law',
+            'location': 'Chicago, IL',
+            'monthly_rate': 2500.00
+        },
+        {
+            'name': 'Freeman Legal Group',
+            'specialization': 'Commercial Fleet Defense',
+            'location': 'Dallas, TX',
+            'monthly_rate': 2200.00
+        },
+        {
+            'name': 'Martinez Law Firm',
+            'specialization': 'Driver Rights & Compliance',
+            'location': 'Los Angeles, CA',
+            'monthly_rate': 2800.00
+        }
+    ]
+
+    # Test data for payments
+    current_pay_period = f"{datetime.now().strftime('%B %d')} - {(datetime.now() + timedelta(days=14)).strftime('%B %d, %Y')}"
+    next_payment_date = (datetime.now() + timedelta(days=7)).strftime('%B %d, %Y')
+    pending_repair_invoices = random.randint(3, 8)
+    outstanding_amount = random.uniform(5000, 15000)
+    processed_amount = random.uniform(20000, 50000)
+
+    return render_template('fleet_services.html',
+                         insurance_plans=insurance_plans,
+                         lawyers=lawyers,
+                         current_pay_period=current_pay_period,
+                         next_payment_date=next_payment_date,
+                         pending_repair_invoices=pending_repair_invoices,
+                         outstanding_amount=outstanding_amount,
+                         processed_amount=processed_amount)
+
+@app.route('/add_sample_trips')
+@login_required
+def add_sample_trips():
+    if not session.get('is_demo'):
+        trucks = Truck.query.filter_by(user_id=current_user.id).all()
+        states = ['CA', 'TX', 'FL', 'NY', 'IL', 'PA', 'OH', 'GA', 'NC', 'MI']
+        cities = {
+            'CA': ['Los Angeles', 'San Francisco', 'San Diego'],
+            'TX': ['Houston', 'Dallas', 'Austin'],
+            'FL': ['Miami', 'Orlando', 'Tampa'],
+            'NY': ['New York City', 'Buffalo', 'Albany'],
+            'IL': ['Chicago', 'Springfield', 'Rockford']
+        }
+
+        for truck in trucks:
+            # Add 5 sample trips for each truck
+            for _ in range(5):
+                start_state = random.choice(states)
+                end_state = random.choice(states)
+
+                start_city = random.choice(cities.get(start_state, ['City 1', 'City 2', 'City 3']))
+                end_city = random.choice(cities.get(end_state, ['City 1', 'City 2', 'City 3']))
+
+                start_date = datetime.now() - timedelta(days=random.randint(1, 90))
+
+                trip = TripHistory(
+                    truck_id=truck.id,
+                    start_city=start_city,
+                    start_state=start_state,
+                    end_city=end_city,
+                    end_state=end_state,
+                    start_date=start_date,
+                    end_date=start_date + timedelta(days=random.randint(1, 5)),
+                    status=random.choice(['completed', 'in_progress']),
+                    distance=random.uniform(100, 1000),
+                    runtime_hours=random.uniform(10, 50),
+                    idle_time_hours=random.uniform(2, 10)
+                )
+                db.session.add(trip)
+
+        db.session.commit()
+        flash('Sample trips added successfully')
+
+    return redirect(url_for('dashboard'))

@@ -1,4 +1,5 @@
 from app import app
+import routes  # Add this import to ensure routes are registered
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
