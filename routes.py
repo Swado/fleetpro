@@ -347,19 +347,46 @@ def fleet_services():
             'provider': 'SafeFleet Insurance Co.',
             'coverage': 'Comprehensive Commercial Fleet Coverage',
             'monthly_premium': 1250.00,
-            'deductible': 1000.00
+            'deductible': 1000.00,
+            'features': ['24/7 Roadside Assistance', 'Cargo Protection', 'Liability Coverage'],
+            'rating': 4.8,
+            'contact': 'John Smith (866) 555-0123'
         },
         {
             'provider': 'TruckGuard Insurance',
             'coverage': 'Premium Fleet Protection Plus',
             'monthly_premium': 1450.00,
-            'deductible': 750.00
+            'deductible': 750.00,
+            'features': ['Accident Forgiveness', 'Medical Payments', 'Property Damage'],
+            'rating': 4.6,
+            'contact': 'Mary Johnson (866) 555-0124'
         },
         {
             'provider': 'FleetSecure Partners',
             'coverage': 'Ultimate Fleet Shield',
             'monthly_premium': 1650.00,
-            'deductible': 500.00
+            'deductible': 500.00,
+            'features': ['Full Gap Coverage', 'New Vehicle Replacement', 'Personal Injury Protection'],
+            'rating': 4.9,
+            'contact': 'Robert Davis (866) 555-0125'
+        },
+        {
+            'provider': 'National Fleet Insurance',
+            'coverage': 'Essential Fleet Coverage',
+            'monthly_premium': 1150.00,
+            'deductible': 1500.00,
+            'features': ['Basic Liability', 'Collision Coverage', 'Uninsured Motorist'],
+            'rating': 4.5,
+            'contact': 'Sarah Wilson (866) 555-0126'
+        },
+        {
+            'provider': 'TransGuard Insurance',
+            'coverage': 'Elite Fleet Protection',
+            'monthly_premium': 1850.00,
+            'deductible': 250.00,
+            'features': ['International Coverage', 'Zero Depreciation', 'Driver Life Insurance'],
+            'rating': 4.7,
+            'contact': 'Michael Brown (866) 555-0127'
         }
     ]
 
@@ -369,37 +396,93 @@ def fleet_services():
             'name': 'Johnson & Associates',
             'specialization': 'Transportation Law',
             'location': 'Chicago, IL',
-            'monthly_rate': 2500.00
+            'monthly_rate': 2500.00,
+            'services': ['Accident Defense', 'Regulatory Compliance', 'Driver Rights'],
+            'rating': 4.9,
+            'response_time': '15 minutes',
+            'languages': ['English', 'Spanish']
         },
         {
             'name': 'Freeman Legal Group',
             'specialization': 'Commercial Fleet Defense',
             'location': 'Dallas, TX',
-            'monthly_rate': 2200.00
+            'monthly_rate': 2200.00,
+            'services': ['Insurance Claims', 'Contract Disputes', 'Employment Law'],
+            'rating': 4.7,
+            'response_time': '30 minutes',
+            'languages': ['English', 'Chinese']
         },
         {
             'name': 'Martinez Law Firm',
             'specialization': 'Driver Rights & Compliance',
             'location': 'Los Angeles, CA',
-            'monthly_rate': 2800.00
+            'monthly_rate': 2800.00,
+            'services': ['DOT Compliance', 'Hours of Service', 'Safety Regulations'],
+            'rating': 4.8,
+            'response_time': '20 minutes',
+            'languages': ['English', 'Spanish', 'Portuguese']
+        },
+        {
+            'name': 'East Coast Transport Law',
+            'specialization': 'Fleet Litigation',
+            'location': 'New York, NY',
+            'monthly_rate': 3000.00,
+            'services': ['Civil Litigation', 'Risk Management', 'Policy Review'],
+            'rating': 4.9,
+            'response_time': '10 minutes',
+            'languages': ['English', 'French']
+        },
+        {
+            'name': 'Pacific Fleet Attorneys',
+            'specialization': 'Cargo & Transportation',
+            'location': 'Seattle, WA',
+            'monthly_rate': 2400.00,
+            'services': ['Cargo Claims', 'Cross-Border Operations', 'Environmental Compliance'],
+            'rating': 4.6,
+            'response_time': '25 minutes',
+            'languages': ['English', 'Korean', 'Japanese']
         }
     ]
 
-    # Test data for payments
+    # Test data for payments and invoices
     current_pay_period = f"{datetime.now().strftime('%B %d')} - {(datetime.now() + timedelta(days=14)).strftime('%B %d, %Y')}"
     next_payment_date = (datetime.now() + timedelta(days=7)).strftime('%B %d, %Y')
-    pending_repair_invoices = random.randint(3, 8)
-    outstanding_amount = random.uniform(5000, 15000)
-    processed_amount = random.uniform(20000, 50000)
+
+    payment_data = {
+        'driver_payroll': {
+            'pending_payments': random.randint(5, 15),
+            'total_pending': random.uniform(15000, 45000),
+            'early_payment_fee': '1.5%',
+            'next_scheduled': next_payment_date,
+            'payment_methods': ['Direct Deposit', 'PayPal', 'Wire Transfer']
+        },
+        'repair_invoices': {
+            'pending': random.randint(3, 8),
+            'approved': random.randint(5, 12),
+            'rejected': random.randint(1, 3),
+            'total_pending': random.uniform(5000, 15000),
+            'total_approved': random.uniform(8000, 25000),
+            'preferred_vendors': ['National Truck Service', 'FleetFix Pro', 'Diesel Doctors']
+        },
+        'invoice_tracking': {
+            'outstanding': random.uniform(5000, 15000),
+            'processed': random.uniform(20000, 50000),
+            'overdue': random.uniform(2000, 8000),
+            'aging_brackets': {
+                '0-30 days': random.uniform(3000, 8000),
+                '31-60 days': random.uniform(2000, 5000),
+                '61-90 days': random.uniform(1000, 3000),
+                '90+ days': random.uniform(500, 2000)
+            }
+        }
+    }
 
     return render_template('fleet_services.html',
                          insurance_plans=insurance_plans,
                          lawyers=lawyers,
                          current_pay_period=current_pay_period,
                          next_payment_date=next_payment_date,
-                         pending_repair_invoices=pending_repair_invoices,
-                         outstanding_amount=outstanding_amount,
-                         processed_amount=processed_amount)
+                         payment_data=payment_data)
 
 @app.route('/add_sample_trips')
 @login_required
