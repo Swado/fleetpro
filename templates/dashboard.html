@@ -33,8 +33,7 @@
                                     data-bs-toggle="tab" 
                                     data-bs-target="#truck-content-{{ truck.id }}" 
                                     type="button" 
-                                    role="tab"
-                                    style="color: {% if truck.status == 'active' %}#2ecc71{% else %}#e74c3c{% endif %};">
+                                    role="tab">
                                 {{ truck.plate_number }} - {{ truck.driver_name }}
                             </button>
                         </li>
@@ -140,46 +139,19 @@
 {% endblock %}
 
 {% block extra_js %}
+<!-- Load required JavaScript libraries -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const map = L.map('fleet-map').setView([39.8283, -98.5795], 4); 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
-
-    const trucks = [
-        {% for truck in trucks %}
-        {% if truck.current_latitude and truck.current_longitude %}
-        {
-            lat: {{ truck.current_latitude }},
-            lng: {{ truck.current_longitude }},
-            plateNumber: "{{ truck.plate_number }}",
-            driverName: "{{ truck.driver_name }}",
-            status: "{{ truck.status }}",
-            destination: "{{ truck.destination_city + ', ' + truck.destination_state if truck.destination_city else 'No active destination' }}"
-        },
-        {% endif %}
-        {% endfor %}
-    ];
-
-    trucks.forEach(truck => {
-        const marker = L.marker([truck.lat, truck.lng]).addTo(map);
-        marker.bindPopup(`
-            <strong>${truck.plateNumber}</strong><br>
-            Driver: ${truck.driverName}<br>
-            Status: ${truck.status}<br>
-            Destination: ${truck.destination}
-        `);
-    });
-
+    // Initialize Fleet Status Chart
+    const ctx = document.getElementById('fleetStatusChart').getContext('2d');
     const activeCount = {{ active_trucks }};
     const totalCount = {{ truck_count }};
     const inactiveCount = totalCount - activeCount;
 
-    const ctx = document.getElementById('fleetStatusChart').getContext('2d');
     new Chart(ctx, {
         type: 'doughnut',
         data: {
@@ -193,7 +165,6 @@ document.addEventListener('DOMContentLoaded', function() {
         options: {
             responsive: true,
             maintainAspectRatio: true,
-            cutout: '70%',
             plugins: {
                 legend: {
                     position: 'bottom'
@@ -202,24 +173,35 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    window.openAIChat = function(truckId) {
-        const widget = document.querySelector('elevenlabs-convai');
-        if (widget) {
-            // Make sure the widget is visible
-            widget.style.display = 'block';
-            // Set the context for the current truck
-            widget.setAttribute('data-context', 
-                `You are a fleet management assistant helping with truck ${truckId}. ` +
-                `You can help with maintenance schedules, route planning, and any other fleet management related questions.`
-            );
-            // Programmatically click the widget to open it
-            const chatButton = widget.shadowRoot.querySelector('.chat-button');
-            if (chatButton) {
-                chatButton.click();
-            }
-        }
-    };
+    // Initialize Map
+    const map = L.map('fleet-map').setView([39.8283, -98.5795], 4);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
 
+    // Add truck markers to map
+    const trucks = [
+        {% for truck in trucks %}
+        {% if truck.current_latitude and truck.current_longitude %}
+        {
+            lat: {{ truck.current_latitude }},
+            lng: {{ truck.current_longitude }},
+            plateNumber: "{{ truck.plate_number }}",
+            driverName: "{{ truck.driver_name }}",
+            status: "{{ truck.status }}"
+        },
+        {% endif %}
+        {% endfor %}
+    ];
+
+    trucks.forEach(truck => {
+        const marker = L.marker([truck.lat, truck.lng]).addTo(map);
+        marker.bindPopup(`
+            <strong>${truck.plateNumber}</strong><br>
+            Driver: ${truck.driverName}<br>
+            Status: ${truck.status}
+        `);
+    });
     window.initiateCall = function(truckId, phoneNumber, driverName) {
         if (confirm(`Do you want to call ${driverName}?`)) {
             fetch(`/api/make_call/${truckId}`, {
