@@ -3,169 +3,189 @@
 {% block title %}Dashboard - Truck Management System{% endblock %}
 
 {% block content %}
-<div class="container py-4">
-    <div class="row">
-        <div class="col-md-12">
-            <div class="dashboard-header">
-                <h1 class="mb-3">Welcome, {{ current_user.username }}</h1>
-                <p class="text-muted">Here's an overview of your truck fleet</p>
-            </div>
+<div class="container-fluid">
+    <!-- Service Navigation -->
+    <div class="service-navigation">
+        <div class="nav nav-tabs" role="tablist">
+            <a class="nav-link active" href="{{ url_for('dashboard') }}">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+            <a class="nav-link" href="{{ url_for('fleet_services') }}#insurance">
+                <i class="fas fa-shield-alt"></i> Insurance
+            </a>
+            <a class="nav-link" href="{{ url_for('fleet_services') }}#legal">
+                <i class="fas fa-gavel"></i> Legal Support
+            </a>
+            <a class="nav-link" href="{{ url_for('fleet_services') }}#payments">
+                <i class="fas fa-money-bill-wave"></i> Payments
+            </a>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-md-4">
-            <div class="stats-card">
-                <h3>Fleet Status</h3>
-                <div class="chart-container">
-                    <canvas id="fleetStatusChart"></canvas>
+    <div class="container py-4">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="dashboard-header">
+                    <h1 class="mb-3">Welcome, {{ current_user.username }}</h1>
+                    <p class="text-muted">Here's an overview of your truck fleet</p>
                 </div>
             </div>
         </div>
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-body">
-                    <ul class="nav nav-tabs" id="truckTabs" role="tablist">
-                        {% for truck in trucks %}
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link {% if loop.first %}active{% endif %}" 
-                                    id="truck-tab-{{ truck.id }}" 
-                                    data-bs-toggle="tab" 
-                                    data-bs-target="#truck-content-{{ truck.id }}" 
-                                    type="button" 
-                                    role="tab">
-                                <span class="driver-name" style="color: {% if truck.status == 'active' %}#2ecc71{% elif truck.status == 'maintenance' %}#e67e22{% else %}#e74c3c{% endif %};">
-                                    {{ truck.plate_number }} - {{ truck.driver_name }}
-                                </span>
-                            </button>
-                        </li>
-                        {% endfor %}
-                    </ul>
-                    <div class="tab-content mt-3" id="truckTabsContent">
-                        {% for truck in trucks %}
-                        <div class="tab-pane fade {% if loop.first %}show active{% endif %}" 
-                             id="truck-content-{{ truck.id }}" 
-                             role="tabpanel">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <h4>{{ truck.plate_number }}</h4>
-                                    <p>
-                                        <strong>Driver:</strong>
-                                        <span style="color: {% if truck.status == 'active' %}#2ecc71{% elif truck.status == 'maintenance' %}#e67e22{% else %}#e74c3c{% endif %};">
-                                            {{ truck.driver_name }}
-                                        </span>
-                                    </p>
-                                    <p><strong>Model:</strong> {{ truck.model }}</p>
-                                    <p><strong>Year:</strong> {{ truck.year }}</p>
-                                    <p>
-                                        <strong>Status:</strong>
-                                        <span class="truck-status" data-status="{{ truck.status }}">
-                                            <i class="fas fa-circle" style="color: {% if truck.status == 'active' %}#2ecc71{% elif truck.status == 'maintenance' %}#e67e22{% else %}#e74c3c{% endif %};"></i>
-                                            {{ truck.status|title }}
-                                        </span>
-                                    </p>
-                                    <p>
-                                        <strong>Last Maintenance:</strong> 
-                                        {% if truck.last_maintenance %}
-                                            {{ truck.last_maintenance.strftime('%Y-%m-%d') }}
-                                        {% else %}
-                                            Not Available
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="stats-card">
+                    <h3>Fleet Status</h3>
+                    <div class="chart-container">
+                        <canvas id="fleetStatusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <ul class="nav nav-tabs" id="truckTabs" role="tablist">
+                            {% for truck in trucks %}
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link {% if loop.first %}active{% endif %}" 
+                                        id="truck-tab-{{ truck.id }}" 
+                                        data-bs-toggle="tab" 
+                                        data-bs-target="#truck-content-{{ truck.id }}" 
+                                        type="button" 
+                                        role="tab">
+                                    <span class="driver-name" style="color: {% if truck.status == 'active' %}#2ecc71{% elif truck.status == 'maintenance' %}#e67e22{% else %}#e74c3c{% endif %};">
+                                        {{ truck.plate_number }} - {{ truck.driver_name }}
+                                    </span>
+                                </button>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        <div class="tab-content mt-3" id="truckTabsContent">
+                            {% for truck in trucks %}
+                            <div class="tab-pane fade {% if loop.first %}show active{% endif %}" 
+                                 id="truck-content-{{ truck.id }}" 
+                                 role="tabpanel">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h4>{{ truck.plate_number }}</h4>
+                                        <p>
+                                            <strong>Driver:</strong>
+                                            <span style="color: {% if truck.status == 'active' %}#2ecc71{% elif truck.status == 'maintenance' %}#e67e22{% else %}#e74c3c{% endif %};">
+                                                {{ truck.driver_name }}
+                                            </span>
+                                        </p>
+                                        <p><strong>Model:</strong> {{ truck.model }}</p>
+                                        <p><strong>Year:</strong> {{ truck.year }}</p>
+                                        <p>
+                                            <strong>Status:</strong>
+                                            <span class="truck-status" data-status="{{ truck.status }}">
+                                                <i class="fas fa-circle" style="color: {% if truck.status == 'active' %}#2ecc71{% elif truck.status == 'maintenance' %}#e67e22{% else %}#e74c3c{% endif %};"></i>
+                                                {{ truck.status|title }}
+                                            </span>
+                                        </p>
+                                        <p>
+                                            <strong>Last Maintenance:</strong> 
+                                            {% if truck.last_maintenance %}
+                                                {{ truck.last_maintenance.strftime('%Y-%m-%d') }}
+                                            {% else %}
+                                                Not Available
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        {% if truck.destination_city %}
+                                        <p>
+                                            <strong>Current Destination:</strong>
+                                            {{ truck.destination_city }}, {{ truck.destination_state }}
+                                        </p>
                                         {% endif %}
-                                    </p>
-                                </div>
-                                <div class="col-md-6">
-                                    {% if truck.destination_city %}
-                                    <p>
-                                        <strong>Current Destination:</strong>
-                                        {{ truck.destination_city }}, {{ truck.destination_state }}
-                                    </p>
-                                    {% endif %}
-                                    <div class="btn-group">
-                                        <a href="{{ url_for('truck_detail', truck_id=truck.id) }}" 
-                                           class="btn btn-primary">
-                                            <i class="fas fa-eye"></i> View Details
-                                        </a>
-                                        {% if truck.driver_phone %}
-                                        <button class="btn btn-success" onclick="initiateCall('{{ truck.id }}', '{{ truck.driver_phone }}', '{{ truck.driver_name }}')">
-                                            <i class="fas fa-phone"></i> Call Driver
-                                        </button>
-                                        {% endif %}
+                                        <div class="btn-group">
+                                            <a href="{{ url_for('truck_detail', truck_id=truck.id) }}" 
+                                               class="btn btn-primary">
+                                                <i class="fas fa-eye"></i> View Details
+                                            </a>
+                                            {% if truck.driver_phone %}
+                                            <button class="btn btn-success" onclick="initiateCall('{{ truck.id }}', '{{ truck.driver_phone }}', '{{ truck.driver_name }}')">
+                                                <i class="fas fa-phone"></i> Call Driver
+                                            </button>
+                                            {% endif %}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div class="trip-history mt-4">
-                                <h5>Recent Trips</h5>
-                                {% for trip in truck.trips %}
-                                <div class="trip-card">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <h6>{{ trip.start_city }}, {{ trip.start_state }} to {{ trip.end_city }}, {{ trip.end_state }}</h6>
+                                <div class="trip-history mt-4">
+                                    <h5>Recent Trips</h5>
+                                    {% for trip in truck.trips %}
+                                    <div class="trip-card">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h6>{{ trip.start_city }}, {{ trip.start_state }} to {{ trip.end_city }}, {{ trip.end_state }}</h6>
+                                                <small class="text-muted">
+                                                    Started: {{ trip.start_date.strftime('%Y-%m-%d') }}
+                                                    {% if trip.end_date %}
+                                                    | Ended: {{ trip.end_date.strftime('%Y-%m-%d') }}
+                                                    {% endif %}
+                                                </small>
+                                            </div>
+                                            <span class="badge bg-{{ 'success' if trip.status == 'completed' else 'warning' }}">
+                                                {{ trip.status|title }}
+                                            </span>
+                                        </div>
+                                        <div class="mt-2">
                                             <small class="text-muted">
-                                                Started: {{ trip.start_date.strftime('%Y-%m-%d') }}
-                                                {% if trip.end_date %}
-                                                | Ended: {{ trip.end_date.strftime('%Y-%m-%d') }}
-                                                {% endif %}
+                                                Distance: {{ "%.1f"|format(trip.distance) }} miles |
+                                                Runtime: {{ "%.1f"|format(trip.runtime_hours) }} hours
                                             </small>
                                         </div>
-                                        <span class="badge bg-{{ 'success' if trip.status == 'completed' else 'warning' }}">
-                                            {{ trip.status|title }}
-                                        </span>
                                     </div>
-                                    <div class="mt-2">
-                                        <small class="text-muted">
-                                            Distance: {{ "%.1f"|format(trip.distance) }} miles |
-                                            Runtime: {{ "%.1f"|format(trip.runtime_hours) }} hours
-                                        </small>
-                                    </div>
+                                    {% else %}
+                                    <p class="text-muted">No trip history available</p>
+                                    {% endfor %}
                                 </div>
-                                {% else %}
-                                <p class="text-muted">No trip history available</p>
-                                {% endfor %}
                             </div>
+                            {% endfor %}
                         </div>
-                        {% endfor %}
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Fleet Services Section -->
-    <div class="row mt-4">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">Fleet Services</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <a href="{{ url_for('fleet_services') }}" class="text-decoration-none">
-                                <div class="service-card insurance-card">
-                                    <i class="fas fa-shield-alt fa-3x mb-3"></i>
-                                    <h4>Insurance Shopping</h4>
-                                    <p>Compare and select from top fleet insurance providers</p>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="col-md-4">
-                            <a href="{{ url_for('fleet_services') }}" class="text-decoration-none">
-                                <div class="service-card legal-card">
-                                    <i class="fas fa-gavel fa-3x mb-3"></i>
-                                    <h4>24/7 Legal Support</h4>
-                                    <p>Access nationwide legal assistance for your drivers</p>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="col-md-4">
-                            <a href="{{ url_for('fleet_services') }}" class="text-decoration-none">
-                                <div class="service-card payment-card">
-                                    <i class="fas fa-money-bill-wave fa-3x mb-3"></i>
-                                    <h4>Instant Payments</h4>
-                                    <p>Manage driver payroll and repair payments efficiently</p>
-                                </div>
-                            </a>
+        <!-- Fleet Services Section -->
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Fleet Services</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <a href="{{ url_for('fleet_services') }}" class="text-decoration-none">
+                                    <div class="service-card insurance-card">
+                                        <i class="fas fa-shield-alt fa-3x mb-3"></i>
+                                        <h4>Insurance Shopping</h4>
+                                        <p>Compare and select from top fleet insurance providers</p>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-4">
+                                <a href="{{ url_for('fleet_services') }}" class="text-decoration-none">
+                                    <div class="service-card legal-card">
+                                        <i class="fas fa-gavel fa-3x mb-3"></i>
+                                        <h4>24/7 Legal Support</h4>
+                                        <p>Access nationwide legal assistance for your drivers</p>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-4">
+                                <a href="{{ url_for('fleet_services') }}" class="text-decoration-none">
+                                    <div class="service-card payment-card">
+                                        <i class="fas fa-money-bill-wave fa-3x mb-3"></i>
+                                        <h4>Instant Payments</h4>
+                                        <p>Manage driver payroll and repair payments efficiently</p>
+                                    </div>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -175,6 +195,33 @@
 </div>
 
 <style>
+.service-navigation {
+    background: #f8f9fa;
+    padding: 1rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #dee2e6;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.service-navigation .nav-link {
+    color: #495057;
+    padding: 0.8rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.service-navigation .nav-link.active {
+    color: #007bff;
+    font-weight: 500;
+}
+
+.service-navigation .nav-link i {
+    font-size: 1.1rem;
+}
+
 .trip-card {
     background-color: #f8f9fa;
     padding: 1rem;

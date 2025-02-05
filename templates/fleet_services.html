@@ -3,23 +3,35 @@
 {% block title %}Fleet Services - Xpress360{% endblock %}
 
 {% block content %}
-<div class="container py-4">
-    <div class="row">
-        <div class="col-md-12 mb-4">
-            <h2>Fleet Management Services</h2>
-            <p class="text-muted">Comprehensive solutions for your fleet management needs</p>
-        </div>
+<!-- Service Navigation -->
+<div class="service-navigation">
+    <div class="nav nav-tabs" role="tablist">
+        <a class="nav-link" href="{{ url_for('dashboard') }}">
+            <i class="fas fa-tachometer-alt"></i> Dashboard
+        </a>
+        <a class="nav-link" href="#insurance">
+            <i class="fas fa-shield-alt"></i> Insurance
+        </a>
+        <a class="nav-link" href="#legal">
+            <i class="fas fa-gavel"></i> Legal Support
+        </a>
+        <a class="nav-link" href="#payments">
+            <i class="fas fa-money-bill-wave"></i> Payments
+        </a>
     </div>
+</div>
 
-    <div class="row">
-        <!-- Insurance Plans -->
-        <div class="col-md-12 mb-4">
-            <div class="card">
-                <div class="card-header bg-success text-white">
-                    <h4 class="mb-0"><i class="fas fa-shield-alt"></i> Insurance Plans</h4>
-                </div>
-                <div class="card-body">
-                    <div class="row">
+<div class="container py-4">
+    <!-- Insurance Section -->
+    <div id="insurance" class="section">
+        <div class="row">
+            <div class="col-md-12 mb-4">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h4 class="mb-0"><i class="fas fa-shield-alt"></i> Insurance Plans</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
                         {% for plan in insurance_plans %}
                         <div class="col-md-6 mb-4">
                             <div class="plan-card">
@@ -48,126 +60,132 @@
                             </div>
                         </div>
                         {% endfor %}
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Legal Support -->
-        <div class="col-md-12 mb-4">
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0"><i class="fas fa-gavel"></i> Legal Support</h4>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        {% for lawyer in lawyers %}
-                        <div class="col-md-6 mb-4">
-                            <div class="lawyer-card">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <h5 class="mb-0">{{ lawyer.name }}</h5>
-                                    <span class="badge bg-primary">
-                                        <i class="fas fa-star"></i> {{ lawyer.rating }}
-                                    </span>
+    <!-- Legal Support Section -->
+    <div id="legal" class="section">
+        <div class="row">
+            <div class="col-md-12 mb-4">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0"><i class="fas fa-gavel"></i> Legal Support</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            {% for lawyer in lawyers %}
+                            <div class="col-md-6 mb-4">
+                                <div class="lawyer-card">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h5 class="mb-0">{{ lawyer.name }}</h5>
+                                        <span class="badge bg-primary">
+                                            <i class="fas fa-star"></i> {{ lawyer.rating }}
+                                        </span>
+                                    </div>
+                                    <p class="mb-2"><strong>Specialization:</strong> {{ lawyer.specialization }}</p>
+                                    <p class="mb-2"><strong>Location:</strong> {{ lawyer.location }}</p>
+                                    <p class="mb-2"><strong>Monthly Rate:</strong> ${{ "%.2f"|format(lawyer.monthly_rate) }}</p>
+                                    <p class="mb-2"><strong>Response Time:</strong> {{ lawyer.response_time }}</p>
+                                    <div class="services-list mb-3">
+                                        <strong>Services:</strong>
+                                        <ul class="list-unstyled">
+                                            {% for service in lawyer.services %}
+                                            <li><i class="fas fa-check text-primary"></i> {{ service }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                    <p class="mb-2">
+                                        <strong>Languages:</strong> {{ lawyer.languages|join(', ') }}
+                                    </p>
+                                    <button class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-video"></i> Schedule Consultation
+                                    </button>
                                 </div>
-                                <p class="mb-2"><strong>Specialization:</strong> {{ lawyer.specialization }}</p>
-                                <p class="mb-2"><strong>Location:</strong> {{ lawyer.location }}</p>
-                                <p class="mb-2"><strong>Monthly Rate:</strong> ${{ "%.2f"|format(lawyer.monthly_rate) }}</p>
-                                <p class="mb-2"><strong>Response Time:</strong> {{ lawyer.response_time }}</p>
-                                <div class="services-list mb-3">
-                                    <strong>Services:</strong>
-                                    <ul class="list-unstyled">
-                                        {% for service in lawyer.services %}
-                                        <li><i class="fas fa-check text-primary"></i> {{ service }}</li>
-                                        {% endfor %}
-                                    </ul>
-                                </div>
-                                <p class="mb-2">
-                                    <strong>Languages:</strong> {{ lawyer.languages|join(', ') }}
-                                </p>
-                                <button class="btn btn-outline-primary btn-sm">
-                                    <i class="fas fa-video"></i> Schedule Consultation
-                                </button>
                             </div>
+                            {% endfor %}
                         </div>
-                        {% endfor %}
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Instant Payments -->
-        <div class="col-md-12 mb-4">
-            <div class="card">
-                <div class="card-header bg-warning">
-                    <h4 class="mb-0"><i class="fas fa-money-bill-wave"></i> Instant Payments</h4>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <!-- Driver Payroll -->
-                        <div class="col-md-4">
-                            <div class="payment-section">
-                                <h5>Driver Payroll</h5>
-                                <p>Current Pay Period: {{ current_pay_period }}</p>
-                                <p>Next Payment: {{ payment_data.driver_payroll.next_scheduled }}</p>
-                                <hr>
-                                <p><strong>Pending Payments:</strong> {{ payment_data.driver_payroll.pending_payments }}</p>
-                                <p><strong>Total Pending:</strong> ${{ "%.2f"|format(payment_data.driver_payroll.total_pending) }}</p>
-                                <p><strong>Early Payment Fee:</strong> {{ payment_data.driver_payroll.early_payment_fee }}</p>
-                                <div class="mb-3">
-                                    <strong>Payment Methods:</strong>
-                                    <ul class="list-unstyled">
-                                        {% for method in payment_data.driver_payroll.payment_methods %}
-                                        <li><i class="fas fa-check text-warning"></i> {{ method }}</li>
-                                        {% endfor %}
-                                    </ul>
-                                </div>
-                                <button class="btn btn-warning btn-sm">Process Early Payment</button>
-                            </div>
-                        </div>
-
-                        <!-- Repair Payments -->
-                        <div class="col-md-4">
-                            <div class="payment-section">
-                                <h5>Repair Payments</h5>
-                                <div class="repair-stats mb-3">
-                                    <p><strong>Pending:</strong> {{ payment_data.repair_invoices.pending }}</p>
-                                    <p><strong>Approved:</strong> {{ payment_data.repair_invoices.approved }}</p>
-                                    <p><strong>Rejected:</strong> {{ payment_data.repair_invoices.rejected }}</p>
+    <!-- Payments Section -->
+    <div id="payments" class="section">
+        <div class="row">
+            <div class="col-md-12 mb-4">
+                <div class="card">
+                    <div class="card-header bg-warning">
+                        <h4 class="mb-0"><i class="fas fa-money-bill-wave"></i> Instant Payments</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="payment-section">
+                                    <h5>Driver Payroll</h5>
+                                    <p>Current Pay Period: {{ current_pay_period }}</p>
+                                    <p>Next Payment: {{ payment_data.driver_payroll.next_scheduled }}</p>
                                     <hr>
-                                    <p><strong>Total Pending:</strong> ${{ "%.2f"|format(payment_data.repair_invoices.total_pending) }}</p>
-                                    <p><strong>Total Approved:</strong> ${{ "%.2f"|format(payment_data.repair_invoices.total_approved) }}</p>
+                                    <p><strong>Pending Payments:</strong> {{ payment_data.driver_payroll.pending_payments }}</p>
+                                    <p><strong>Total Pending:</strong> ${{ "%.2f"|format(payment_data.driver_payroll.total_pending) }}</p>
+                                    <p><strong>Early Payment Fee:</strong> {{ payment_data.driver_payroll.early_payment_fee }}</p>
+                                    <div class="mb-3">
+                                        <strong>Payment Methods:</strong>
+                                        <ul class="list-unstyled">
+                                            {% for method in payment_data.driver_payroll.payment_methods %}
+                                            <li><i class="fas fa-check text-warning"></i> {{ method }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                    <button class="btn btn-warning btn-sm">Process Early Payment</button>
                                 </div>
-                                <div class="preferred-vendors mb-3">
-                                    <strong>Preferred Vendors:</strong>
-                                    <ul class="list-unstyled">
-                                        {% for vendor in payment_data.repair_invoices.preferred_vendors %}
-                                        <li><i class="fas fa-tools text-warning"></i> {{ vendor }}</li>
-                                        {% endfor %}
-                                    </ul>
-                                </div>
-                                <button class="btn btn-warning btn-sm">View Repair Invoices</button>
                             </div>
-                        </div>
 
-                        <!-- Invoice Tracking -->
-                        <div class="col-md-4">
-                            <div class="payment-section">
-                                <h5>Invoice Tracking</h5>
-                                <div class="invoice-summary mb-3">
-                                    <p><strong>Outstanding:</strong> ${{ "%.2f"|format(payment_data.invoice_tracking.outstanding) }}</p>
-                                    <p><strong>Processed:</strong> ${{ "%.2f"|format(payment_data.invoice_tracking.processed) }}</p>
-                                    <p><strong>Overdue:</strong> ${{ "%.2f"|format(payment_data.invoice_tracking.overdue) }}</p>
+                            <div class="col-md-4">
+                                <div class="payment-section">
+                                    <h5>Repair Payments</h5>
+                                    <div class="repair-stats mb-3">
+                                        <p><strong>Pending:</strong> {{ payment_data.repair_invoices.pending }}</p>
+                                        <p><strong>Approved:</strong> {{ payment_data.repair_invoices.approved }}</p>
+                                        <p><strong>Rejected:</strong> {{ payment_data.repair_invoices.rejected }}</p>
+                                        <hr>
+                                        <p><strong>Total Pending:</strong> ${{ "%.2f"|format(payment_data.repair_invoices.total_pending) }}</p>
+                                        <p><strong>Total Approved:</strong> ${{ "%.2f"|format(payment_data.repair_invoices.total_approved) }}</p>
+                                    </div>
+                                    <div class="preferred-vendors mb-3">
+                                        <strong>Preferred Vendors:</strong>
+                                        <ul class="list-unstyled">
+                                            {% for vendor in payment_data.repair_invoices.preferred_vendors %}
+                                            <li><i class="fas fa-tools text-warning"></i> {{ vendor }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                    <button class="btn btn-warning btn-sm">View Repair Invoices</button>
                                 </div>
-                                <div class="aging-brackets mb-3">
-                                    <strong>Aging Analysis:</strong>
-                                    <ul class="list-unstyled">
-                                        {% for period, amount in payment_data.invoice_tracking.aging_brackets.items() %}
-                                        <li>{{ period }}: ${{ "%.2f"|format(amount) }}</li>
-                                        {% endfor %}
-                                    </ul>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="payment-section">
+                                    <h5>Invoice Tracking</h5>
+                                    <div class="invoice-summary mb-3">
+                                        <p><strong>Outstanding:</strong> ${{ "%.2f"|format(payment_data.invoice_tracking.outstanding) }}</p>
+                                        <p><strong>Processed:</strong> ${{ "%.2f"|format(payment_data.invoice_tracking.processed) }}</p>
+                                        <p><strong>Overdue:</strong> ${{ "%.2f"|format(payment_data.invoice_tracking.overdue) }}</p>
+                                    </div>
+                                    <div class="aging-brackets mb-3">
+                                        <strong>Aging Analysis:</strong>
+                                        <ul class="list-unstyled">
+                                            {% for period, amount in payment_data.invoice_tracking.aging_brackets.items() %}
+                                            <li>{{ period }}: ${{ "%.2f"|format(amount) }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                    <button class="btn btn-warning btn-sm">Manage Invoices</button>
                                 </div>
-                                <button class="btn btn-warning btn-sm">Manage Invoices</button>
                             </div>
                         </div>
                     </div>
@@ -178,6 +196,37 @@
 </div>
 
 <style>
+.service-navigation {
+    background: #f8f9fa;
+    padding: 1rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #dee2e6;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.service-navigation .nav-link {
+    color: #495057;
+    padding: 0.8rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.service-navigation .nav-link.active {
+    color: #007bff;
+    font-weight: 500;
+}
+
+.service-navigation .nav-link i {
+    font-size: 1.1rem;
+}
+
+.section {
+    scroll-margin-top: 100px;
+}
+
 .plan-card, .lawyer-card, .payment-section {
     border: 1px solid #e0e0e0;
     padding: 1.5rem;
