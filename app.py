@@ -25,6 +25,9 @@ app.secret_key = os.environ.get("FLASK_SECRET_KEY") or "dev_key_only_for_develop
 database_url = os.environ.get("DATABASE_URL")
 if database_url and database_url.startswith("postgres://"):
     database_url = database_url.replace("postgres://", "postgresql://", 1)
+    parsed = urllib.parse.urlparse(database_url)
+    if parsed.password:
+        database_url = database_url.replace(parsed.password, urllib.parse.quote(parsed.password))
 
 app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
@@ -40,10 +43,23 @@ login_manager.login_view = 'login'
 login_manager.login_message = 'Please log in to access this page.'
 login_manager.login_message_category = 'warning'
 
+# Register the utility function for templates before importing routes
+def get_unread_message_count():
+    if not current_user.is_authenticated:
+        return 0
+    try:
+        from models import Message
+        return Message.query.filter_by(receiver_id=current_user.id, is_read=False).count()
+    except Exception:
+        return 0
+
+app.jinja_env.globals.update(get_unread_message_count=get_unread_message_count)
+
+# Import models after initializing extensions
+from models import User, Truck, Message, TripHistory
+
 with app.app_context():
     try:
-        # Import models after app creation to avoid circular imports
-        from models import User, Truck, Message, TripHistory
         logger.info("Creating database tables...")
         db.create_all()
         logger.info("Database tables created successfully")
@@ -70,18 +86,11 @@ with app.app_context():
     except Exception as e:
         logger.error(f"Error during database initialization: {e}")
 
-# Register the utility function for templates
-def get_unread_message_count():
-    if not current_user.is_authenticated:
-        return 0
-    from models import Message
-    return Message.query.filter_by(receiver_id=current_user.id, is_read=False).count()
-
-app.jinja_env.globals.update(get_unread_message_count=get_unread_message_count)
+# Import routes after initializing everything else
+import routes  # noqa: F401
 
 @app.route('/static/audio/<path:filename>')
 def serve_audio(filename):
-    """Serve audio files with correct content type"""
     return send_from_directory(
         os.path.join(app.root_path, 'static', 'audio'),
         filename,

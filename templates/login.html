@@ -46,22 +46,6 @@
             </form>
         </div>
     </div>
-
-    <!-- Fleet Services Buttons -->
-    <div class="fleet-services">
-        <button class="service-btn insurance-btn" onclick="window.location.href='/fleet-services'">
-            <i class="fas fa-shield-alt"></i>
-            Fleet Insurance Shopping
-        </button>
-        <button class="service-btn legal-btn" onclick="window.location.href='/fleet-services'">
-            <i class="fas fa-gavel"></i>
-            24/7 Driver Legal Support
-        </button>
-        <button class="service-btn payment-btn" onclick="window.location.href='/fleet-services'">
-            <i class="fas fa-money-bill-wave"></i>
-            Instant Payments
-        </button>
-    </div>
 </div>
 
 <style>
@@ -75,13 +59,13 @@
     background-color: rgba(0, 0, 0, 0.7);
     z-index: 1000;
     transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .login-modal-content {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    position: relative;
     background-color: white;
     padding: 2rem;
     border-radius: 10px;
@@ -102,48 +86,44 @@
     color: #000;
 }
 
-.fleet-services {
+.nav-buttons {
     position: fixed;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 20px;
+    right: 20px;
     display: flex;
-    gap: 1rem;
-    z-index: 100;
+    gap: 10px;
 }
 
-.service-btn {
-    padding: 1rem 2rem;
+.nav-btn {
+    padding: 8px 16px;
     border: none;
-    border-radius: 8px;
+    border-radius: 4px;
+    background-color: #007bff;
     color: white;
-    font-weight: bold;
     cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+    transition: background-color 0.2s;
 }
 
-.service-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+.nav-btn:hover {
+    background-color: #0056b3;
 }
 
-.insurance-btn {
-    background-color: #2ecc71;
+.company-title {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
 }
 
-.legal-btn {
-    background-color: #3498db;
+.company-title h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
 }
 
-.payment-btn {
-    background-color: #f1c40f;
-}
-
-.service-btn i {
+.company-subtitle {
     font-size: 1.2rem;
+    color: #666;
 }
 </style>
 
@@ -151,11 +131,7 @@
 <script>
 function toggleLoginForm() {
     const modal = document.getElementById('loginModal');
-    if (modal.style.display === 'block') {
-        modal.style.display = 'none';
-    } else {
-        modal.style.display = 'block';
-    }
+    modal.style.display = modal.style.display === 'none' ? 'flex' : 'none';
 }
 
 function toggleAbout() {
