@@ -43,7 +43,7 @@ export default function LoginPage() {
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <Image
-          src="/images/truck-background.webp"
+          src="/static/images/truck-background.webp"
           alt="Truck Fleet Background"
           fill
           className="object-cover"
