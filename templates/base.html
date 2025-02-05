@@ -32,21 +32,46 @@
             <a class="navbar-brand" href="{{ url_for('dashboard') }}">
                 <i class="fas fa-truck"></i> Xpress360
             </a>
-            <div class="navbar-nav ms-auto">
-                <!-- Messages Link -->
-                <a class="nav-item nav-link position-relative" href="{{ url_for('messages') }}">
-                    <i class="fas fa-envelope"></i> Messages
-                    {% set unread_count = get_unread_message_count() %}
-                    {% if unread_count > 0 %}
-                    <span class="badge bg-danger message-badge">{{ unread_count }}</span>
-                    {% endif %}
-                </a>
-                <span class="nav-item nav-link text-light">
-                    <i class="fas fa-user"></i> {{ current_user.username }}
-                </span>
-                <a class="nav-item nav-link" href="{{ url_for('logout') }}">
-                    <i class="fas fa-sign-out-alt"></i> Logout
-                </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link{% if request.endpoint == 'dashboard' %} active{% endif %}" href="{{ url_for('dashboard') }}">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link{% if request.endpoint == 'fleet_services' %} active{% endif %}" href="{{ url_for('fleet_services') }}">
+                            <i class="fas fa-truck-moving"></i> Fleet Services
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link{% if request.endpoint == 'achievements' %} active{% endif %}" href="{{ url_for('achievements') }}">
+                            <i class="fas fa-trophy"></i> Achievements
+                            {% if current_user.level > 1 %}
+                            <span class="badge bg-warning">Level {{ current_user.level }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                </ul>
+                <div class="navbar-nav">
+                    <!-- Messages Link -->
+                    <a class="nav-item nav-link position-relative" href="{{ url_for('messages') }}">
+                        <i class="fas fa-envelope"></i> Messages
+                        {% set unread_count = get_unread_message_count() %}
+                        {% if unread_count > 0 %}
+                        <span class="badge bg-danger message-badge">{{ unread_count }}</span>
+                        {% endif %}
+                    </a>
+                    <span class="nav-item nav-link text-light">
+                        <i class="fas fa-user"></i> {{ current_user.username }}
+                    </span>
+                    <a class="nav-item nav-link" href="{{ url_for('logout') }}">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
             </div>
         </div>
     </nav>

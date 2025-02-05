@@ -1,0 +1,274 @@
+{% extends "base.html" %}
+
+{% block title %}Achievements & Rewards - Xpress360{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Navigation Tabs -->
+    <div class="nav-tabs-container">
+        <div class="nav nav-tabs" role="tablist">
+            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#achievements" type="button" role="tab">
+                <i class="fas fa-trophy"></i> Achievements
+            </button>
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#rewards" type="button" role="tab">
+                <i class="fas fa-gift"></i> Rewards
+            </button>
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#leaderboard" type="button" role="tab">
+                <i class="fas fa-crown"></i> Leaderboard
+            </button>
+        </div>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+        <!-- Achievements Tab -->
+        <div class="tab-pane fade show active" id="achievements">
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <!-- User Progress Overview -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="fas fa-chart-line"></i> Your Progress</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span>Total Points:</span>
+                                <span class="badge bg-success">{{ current_user.points }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span>Level:</span>
+                                <span class="badge bg-info">{{ current_user.level }}</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" style="width: {{ (current_user.points % 1000) / 10 }}%"></div>
+                            </div>
+                            <small class="text-muted">{{ 1000 - (current_user.points % 1000) }} points to next level</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-8">
+                    <!-- Available Achievements -->
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="fas fa-medal"></i> Available Achievements</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                {% for achievement in achievements %}
+                                <div class="col-md-6 mb-4">
+                                    <div class="achievement-card {% if achievement in current_user.achievements %}achieved{% endif %}">
+                                        <div class="achievement-icon">
+                                            <i class="fas {{ achievement.icon }}"></i>
+                                        </div>
+                                        <div class="achievement-content">
+                                            <h5>{{ achievement.name }}</h5>
+                                            <p>{{ achievement.description }}</p>
+                                            <div class="achievement-progress">
+                                                {% set progress = get_achievement_progress(current_user, achievement) %}
+                                                <div class="progress">
+                                                    <div class="progress-bar" role="progressbar" style="width: {{ progress }}%"></div>
+                                                </div>
+                                                <small>{{ progress }}% Complete</small>
+                                            </div>
+                                            <div class="achievement-points">
+                                                <span class="badge bg-warning text-dark">
+                                                    <i class="fas fa-star"></i> {{ achievement.points }} points
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rewards Tab -->
+        <div class="tab-pane fade" id="rewards">
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-warning">
+                            <h5 class="mb-0"><i class="fas fa-gift"></i> Available Rewards</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                {% for reward in rewards %}
+                                <div class="col-md-4 mb-4">
+                                    <div class="reward-card">
+                                        <div class="reward-icon">
+                                            <i class="fas {{ reward.icon }}"></i>
+                                        </div>
+                                        <div class="reward-content">
+                                            <h5>{{ reward.name }}</h5>
+                                            <p>{{ reward.description }}</p>
+                                            <div class="points-required">
+                                                <span class="badge bg-info">
+                                                    Required Points: {{ reward.points_required }}
+                                                </span>
+                                            </div>
+                                            <button class="btn btn-primary mt-3 {% if current_user.points < reward.points_required %}disabled{% endif %}"
+                                                    onclick="redeemReward({{ reward.id }})">
+                                                Redeem Reward
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Leaderboard Tab -->
+        <div class="tab-pane fade" id="leaderboard">
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0"><i class="fas fa-trophy"></i> Top Performers</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Rank</th>
+                                            <th>Driver</th>
+                                            <th>Points</th>
+                                            <th>Level</th>
+                                            <th>Achievements</th>
+                                            <th>Performance</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for user in leaderboard %}
+                                        <tr {% if user.id == current_user.id %}class="table-success"{% endif %}>
+                                            <td>{{ loop.index }}</td>
+                                            <td>{{ user.username }}</td>
+                                            <td>{{ user.points }}</td>
+                                            <td>{{ user.level }}</td>
+                                            <td>{{ user.achievements|length }}</td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="progress flex-grow-1" style="height: 8px;">
+                                                        <div class="progress-bar" role="progressbar" 
+                                                             style="width: {{ user.safety_score }}%"></div>
+                                                    </div>
+                                                    <span class="ms-2">{{ "%.1f"|format(user.safety_score) }}%</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.nav-tabs-container {
+    background: #f8f9fa;
+    padding: 1rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #dee2e6;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.achievement-card {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+    transition: transform 0.2s;
+    position: relative;
+    overflow: hidden;
+}
+
+.achievement-card.achieved {
+    border-color: #28a745;
+    background-color: #f0fff4;
+}
+
+.achievement-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: #6c757d;
+}
+
+.achieved .achievement-icon {
+    color: #28a745;
+}
+
+.achievement-progress {
+    margin: 1rem 0;
+}
+
+.reward-card {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 1.5rem;
+    background-color: #fff;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.reward-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.reward-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: #ffc107;
+}
+
+.points-required {
+    margin-top: 1rem;
+}
+
+.progress {
+    height: 8px;
+    margin: 0.5rem 0;
+}
+</style>
+
+<script>
+function redeemReward(rewardId) {
+    if (confirm('Are you sure you want to redeem this reward?')) {
+        fetch(`/api/rewards/${rewardId}/redeem`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Reward redeemed successfully!');
+                location.reload();
+            } else {
+                alert(data.error || 'Failed to redeem reward');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while redeeming the reward');
+        });
+    }
+}
+</script>
+{% endblock %}

@@ -4,6 +4,7 @@ from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, Response, send_from_directory, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_required, current_user
+from flask_migrate import Migrate
 from sqlalchemy.orm import DeclarativeBase
 import urllib.parse
 
@@ -16,6 +17,7 @@ class Base(DeclarativeBase):
 
 db = SQLAlchemy(model_class=Base)
 login_manager = LoginManager()
+migrate = Migrate()
 
 # create the app
 app = Flask(__name__)
@@ -39,6 +41,8 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 # Initialize extensions
 db.init_app(app)
 login_manager.init_app(app)
+migrate.init_app(app, db)
+
 login_manager.login_view = 'login'
 login_manager.login_message = 'Please log in to access this page.'
 login_manager.login_message_category = 'warning'

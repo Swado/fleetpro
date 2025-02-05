@@ -3,16 +3,17 @@ from datetime import datetime, timedelta
 from flask import render_template, redirect, url_for, flash, request, jsonify, session, Response, send_from_directory
 from flask_login import login_user, logout_user, login_required, current_user
 from app import app, db
-from models import User, Truck, TripHistory, Message
+from models import User, Truck, TripHistory, Message, Achievement, Reward, DriverAchievement, DriverReward
 from services.ai_service import AIFleetAssistant
 from services.gmail_service import gmail_service
 import logging
-from sqlalchemy import func
+from sqlalchemy import func, desc
 from twilio.rest import Client
 from twilio.base.exceptions import TwilioRestException
 from twilio.twiml.voice_response import VoiceResponse, Gather
 import requests
 import random
+import json
 
 ai_assistant = AIFleetAssistant()
 
@@ -480,3 +481,162 @@ def add_sample_trips():
         flash('Sample trips added successfully')
 
     return redirect(url_for('dashboard'))
+
+@app.route('/achievements')
+@login_required
+def achievements():
+    # Get all achievements
+    achievements = Achievement.query.all()
+    rewards = Reward.query.filter_by(active=True).all()
+
+    # Get top 10 users for leaderboard
+    leaderboard = User.query.order_by(desc(User.points)).limit(10).all()
+
+    return render_template('gamification.html',
+                         achievements=achievements,
+                         rewards=rewards,
+                         leaderboard=leaderboard)
+
+@app.template_filter('get_achievement_progress')
+def get_achievement_progress(user, achievement):
+    """Calculate the progress for a specific achievement"""
+    driver_achievement = DriverAchievement.query.filter_by(
+        user_id=user.id,
+        achievement_id=achievement.id
+    ).first()
+
+    if driver_achievement:
+        return driver_achievement.progress
+    return 0
+
+@app.route('/api/rewards/<int:reward_id>/redeem', methods=['POST'])
+@login_required
+def redeem_reward(reward_id):
+    reward = Reward.query.get_or_404(reward_id)
+
+    # Check if user has enough points
+    if current_user.points < reward.points_required:
+        return jsonify({
+            'success': False,
+            'error': 'Not enough points to redeem this reward'
+        }), 400
+
+    # Create new driver reward
+    driver_reward = DriverReward(
+        user_id=current_user.id,
+        reward_id=reward_id,
+        status='pending'
+    )
+
+    # Deduct points
+    current_user.points -= reward.points_required
+
+    try:
+        db.session.add(driver_reward)
+        db.session.commit()
+        return jsonify({'success': True})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'error': 'Failed to redeem reward'
+        }), 500
+
+# Add achievement progress update function for automatic tracking
+def update_achievement_progress(user_id):
+    """Update progress for all achievements based on user's current stats"""
+    user = User.query.get(user_id)
+    achievements = Achievement.query.all()
+
+    for achievement in achievements:
+        # Create or get existing driver achievement
+        driver_achievement = DriverAchievement.query.filter_by(
+            user_id=user_id,
+            achievement_id=achievement.id
+        ).first()
+
+        if not driver_achievement:
+            driver_achievement = DriverAchievement(
+                user_id=user_id,
+                achievement_id=achievement.id,
+                progress=0
+            )
+            db.session.add(driver_achievement)
+
+        # Calculate progress based on achievement criteria
+        progress = calculate_achievement_progress(user, achievement)
+        driver_achievement.progress = progress
+
+        # If progress is 100% and achievement not already earned
+        if progress >= 100 and not driver_achievement.earned_at:
+            driver_achievement.earned_at = datetime.utcnow()
+            user.points += achievement.points
+            # Level up if enough points
+            user.level = (user.points // 1000) + 1
+
+            # Create a congratulatory message
+            message = Message(
+                sender_id=user.id,
+                receiver_id=user.id,
+                subject=f"Achievement Unlocked: {achievement.name}",
+                content=f"Congratulations! You've earned the '{achievement.name}' achievement and {achievement.points} points!\n\n{achievement.description}",
+                message_type='achievement',
+                is_read=False
+            )
+            db.session.add(message)
+
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        logging.error(f"Error updating achievements: {e}")
+
+def calculate_achievement_progress(user, achievement):
+    """Calculate progress for a specific achievement based on its criteria"""
+    criteria = json.loads(achievement.criteria)
+
+    # Calculate progress based on achievement category
+    if achievement.category == 'safety':
+        duration_days = criteria.get('duration_days', 30)
+        min_safety_score = criteria.get('min_safety_score', 100)
+        if user.safety_score >= min_safety_score:
+            return 100
+        return (user.safety_score / min_safety_score) * 100
+
+    elif achievement.category == 'efficiency':
+        efficiency_improvement = criteria.get('efficiency_improvement', 10)
+        if user.fuel_efficiency:
+            # Assuming fleet average is 6 MPG
+            fleet_average = 6
+            improvement = ((user.fuel_efficiency - fleet_average) / fleet_average) * 100
+            if improvement >= efficiency_improvement:
+                return 100
+            return (improvement / efficiency_improvement) * 100
+        return 0
+
+    elif achievement.category == 'delivery':
+        required_deliveries = criteria.get('deliveries', 50)
+        # Count completed trips
+        completed_trips = TripHistory.query.join(Truck).filter(
+            Truck.user_id == user.id,
+            TripHistory.status == 'completed'
+        ).count()
+        return min(100, (completed_trips / required_deliveries) * 100)
+
+    elif achievement.category == 'distance':
+        required_miles = criteria.get('miles', 10000)
+        return min(100, (user.total_distance / required_miles) * 100)
+
+    elif achievement.category == 'maintenance':
+        duration_days = criteria.get('duration_days', 90)
+        # Check if all trucks have been maintained within the last 90 days
+        well_maintained_trucks = Truck.query.filter(
+            Truck.user_id == user.id,
+            Truck.last_maintenance >= datetime.utcnow() - timedelta(days=duration_days)
+        ).count()
+        total_trucks = Truck.query.filter_by(user_id=user.id).count()
+        if total_trucks == 0:
+            return 0
+        return (well_maintained_trucks / total_trucks) * 100
+
+    return 0

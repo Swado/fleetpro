@@ -7,21 +7,102 @@ from datetime import datetime
 def load_user(id):
     return User.query.get(int(id))
 
+class Achievement(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    points = db.Column(db.Integer, default=0)
+    icon = db.Column(db.String(50))  # Font Awesome icon class
+    category = db.Column(db.String(50))  # e.g., 'efficiency', 'safety', 'maintenance'
+    criteria = db.Column(db.Text)  # JSON string of criteria to earn achievement
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    earned_by = db.relationship('DriverAchievement', back_populates='achievement')
+    users = db.relationship('User', 
+                          secondary='driver_achievement',
+                          back_populates='achievements',
+                          overlaps="driver_achievements,earned_by")
+
+class Reward(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    points_required = db.Column(db.Integer, default=0)
+    icon = db.Column(db.String(50))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    active = db.Column(db.Boolean, default=True)
+
+    redeemed_by = db.relationship('DriverReward', back_populates='reward')
+    users = db.relationship('User', 
+                          secondary='driver_reward',
+                          back_populates='rewards',
+                          overlaps="driver_rewards,redeemed_by")
+
+class DriverAchievement(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    achievement_id = db.Column(db.Integer, db.ForeignKey('achievement.id'), nullable=False)
+    earned_at = db.Column(db.DateTime, default=datetime.utcnow)
+    progress = db.Column(db.Float, default=0.0)  # Progress towards achievement (0-100)
+
+    user = db.relationship('User', 
+                         back_populates='driver_achievements',
+                         overlaps="achievements")
+    achievement = db.relationship('Achievement', 
+                               back_populates='earned_by',
+                               overlaps="users")
+
+class DriverReward(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    reward_id = db.Column(db.Integer, db.ForeignKey('reward.id'), nullable=False)
+    redeemed_at = db.Column(db.DateTime, default=datetime.utcnow)
+    status = db.Column(db.String(20), default='pending')  # pending, approved, rejected
+
+    user = db.relationship('User', 
+                         back_populates='driver_rewards',
+                         overlaps="rewards")
+    reward = db.relationship('Reward', 
+                          back_populates='redeemed_by',
+                          overlaps="users")
+
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(256))
     trucks = db.relationship('Truck', backref='owner', lazy=True)
-    # Add relationships for sent and received messages
-    sent_messages = db.relationship('Message', 
+    sent_messages = db.relationship('Message',
                                   foreign_keys='Message.sender_id',
-                                  backref='sender', 
+                                  backref='sender',
                                   lazy=True)
     received_messages = db.relationship('Message',
                                       foreign_keys='Message.receiver_id',
                                       backref='receiver',
                                       lazy=True)
+    points = db.Column(db.Integer, default=0)
+    level = db.Column(db.Integer, default=1)
+    total_distance = db.Column(db.Float, default=0.0)  # Total miles driven
+    fuel_efficiency = db.Column(db.Float)  # Average MPG
+    safety_score = db.Column(db.Float, default=100.0)  # 0-100 scale
+    on_time_delivery_rate = db.Column(db.Float, default=100.0)  # Percentage
+
+    # Relationships for gamification
+    driver_achievements = db.relationship('DriverAchievement', 
+                                       back_populates='user',
+                                       overlaps="achievements")
+    driver_rewards = db.relationship('DriverReward', 
+                                  back_populates='user',
+                                  overlaps="rewards")
+
+    achievements = db.relationship('Achievement',
+                                secondary='driver_achievement',
+                                back_populates='users',
+                                overlaps="driver_achievements,earned_by")
+    rewards = db.relationship('Reward',
+                           secondary='driver_reward',
+                           back_populates='users',
+                           overlaps="driver_rewards,redeemed_by")
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -41,7 +122,7 @@ class Truck(db.Model):
     destination_state = db.Column(db.String(2))
     destination_set_at = db.Column(db.DateTime)
     driver_name = db.Column(db.String(100))
-    driver_phone = db.Column(db.String(20))  # Add this field
+    driver_phone = db.Column(db.String(20))
     insurance_expiry = db.Column(db.DateTime)
     current_latitude = db.Column(db.Float)
     current_longitude = db.Column(db.Float)
