@@ -22,7 +22,13 @@
                 <div class="truck-info mt-3">
                     <p><strong>Model:</strong> {{ truck.model }}</p>
                     <p><strong>Year:</strong> {{ truck.year }}</p>
-                    <p><strong>Last Maintenance:</strong> {{ truck.last_maintenance.strftime('%Y-%m-%d') }}</p>
+                    <p><strong>Last Maintenance:</strong> 
+                        {% if truck.last_maintenance %}
+                            {{ truck.last_maintenance.strftime('%Y-%m-%d') }}
+                        {% else %}
+                            Not Available
+                        {% endif %}
+                    </p>
                 </div>
             </div>
 
