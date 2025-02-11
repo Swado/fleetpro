@@ -20,7 +20,7 @@ login_manager = LoginManager()
 migrate = Migrate()
 
 # create the app
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static', static_url_path='/static')
 app.secret_key = os.environ.get("FLASK_SECRET_KEY") or "dev_key_only_for_development"
 
 # Database configuration
@@ -92,6 +92,23 @@ with app.app_context():
 
 # Import routes after initializing everything else
 import routes  # noqa: F401
+
+# Static file serving routes
+@app.route('/static/<path:filename>')
+def serve_static(filename):
+    return send_from_directory(app.static_folder, filename)
+
+@app.route('/static/images/<path:filename>')
+def serve_images(filename):
+    return send_from_directory(os.path.join(app.static_folder, 'images'), filename)
+
+@app.route('/static/css/<path:filename>')
+def serve_css(filename):
+    return send_from_directory(os.path.join(app.static_folder, 'css'), filename)
+
+@app.route('/static/js/<path:filename>')
+def serve_js(filename):
+    return send_from_directory(os.path.join(app.static_folder, 'js'), filename)
 
 @app.route('/static/audio/<path:filename>')
 def serve_audio(filename):
