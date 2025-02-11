@@ -4,18 +4,27 @@ import logging
 
 class AIFleetAssistant:
     def __init__(self):
-        # Ensure OPENAI_API_KEY is available
-        api_key = os.environ.get('OPENAI_API_KEY')
-        if not api_key:
-            logging.error("OpenAI API key not found in environment variables")
-            raise ValueError("OPENAI_API_KEY environment variable must be set")
-
-        self.client = OpenAI(api_key=api_key)
-        self.model = "gpt-3.5-turbo"  # Using GPT-3.5-turbo for better availability
-        logging.info(f"Initializing AI Fleet Assistant with model: {self.model}")
+        try:
+            # Ensure OPENAI_API_KEY is available
+            api_key = os.environ.get('OPENAI_API_KEY')
+            if api_key:
+                self.client = OpenAI(api_key=api_key)
+                self.model = "gpt-3.5-turbo"  # Using GPT-3.5-turbo for better availability
+                logging.info(f"Initializing AI Fleet Assistant with model: {self.model}")
+            else:
+                logging.warning("OpenAI API key not found in environment variables")
+                self.client = None
+                self.model = None
+        except Exception as e:
+            logging.error(f"Error initializing AI Fleet Assistant: {e}")
+            self.client = None
+            self.model = None
 
     def get_route_suggestion(self, start_city, start_state, destination_city, destination_state, truck_data):
         """Get AI-powered route suggestions and insights."""
+        if not self.client:
+            return "AI features are not available. Please configure OpenAI API key."
+
         try:
             prompt = f"""As a fleet management AI assistant, analyze the following route:
 From: {start_city}, {start_state}
@@ -55,6 +64,9 @@ Keep the response concise and practical."""
 
     def analyze_performance(self, truck_performance_data):
         """Analyze truck performance data and provide insights."""
+        if not self.client:
+            return "AI features are not available. Please configure OpenAI API key."
+
         try:
             prompt = f"""Analyze the following truck performance metrics:
 Runtime Hours (avg): {truck_performance_data.get('avg_runtime', 0):.2f} hours/day
