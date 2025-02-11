@@ -5,8 +5,14 @@ import type { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
 
+// The secret is required for handling JWT signing/encryption
+if (!process.env.NEXTAUTH_SECRET) {
+  throw new Error('Please provide process.env.NEXTAUTH_SECRET')
+}
+
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
+  secret: process.env.NEXTAUTH_SECRET,
   providers: [
     CredentialsProvider({
       name: 'credentials',
@@ -43,24 +49,44 @@ export const authOptions: NextAuthOptions = {
   ],
   session: {
     strategy: 'jwt',
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   pages: {
     signIn: '/login',
+    error: '/login', // Error code passed in query string as ?error=
   },
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id
+    async jwt({ token, user, account }) {
+      // Ensure we have a valid token object
+      if (!token) {
+        throw new Error('Invalid token in JWT callback')
       }
+
+      if (user) {
+        // Only update token if we have user data
+        token.id = user.id
+        token.email = user.email
+        token.name = user.name
+      }
+
       return token
     },
     async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id as string
+      // Ensure we have a valid session object
+      if (!session?.user) {
+        throw new Error('Invalid session in session callback')
       }
+
+      // Add additional user info to the session
+      session.user.id = token.id as string
+      session.user.email = token.email as string
+      session.user.name = token.name as string
+
       return session
     },
   },
+  // Enable debug messages in development
+  debug: process.env.NODE_ENV === 'development',
 }
 
 const handler = NextAuth(authOptions)
