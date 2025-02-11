@@ -32,6 +32,20 @@
             </div>
         </div>
 
+        <!-- Fleet Map Section -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-map-marked-alt"></i> Fleet Location Tracking</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="fleet-map" style="height: 400px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="row">
             <div class="col-md-4">
                 <div class="stats-card">
@@ -149,7 +163,6 @@
                 </div>
             </div>
         </div>
-
         <!-- Fleet Services Section -->
         <div class="row mt-4">
             <div class="col-md-12">
@@ -194,49 +207,12 @@
     </div>
 </div>
 
-<style>
-.service-navigation {
-    background: #f8f9fa;
-    padding: 1rem;
-    margin-bottom: 2rem;
-    border-bottom: 1px solid #dee2e6;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-}
-
-.service-navigation .nav-link {
-    color: #495057;
-    padding: 0.8rem 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.service-navigation .nav-link.active {
-    color: #007bff;
-    font-weight: 500;
-}
-
-.service-navigation .nav-link i {
-    font-size: 1.1rem;
-}
-
-.trip-card {
-    background-color: #f8f9fa;
-    padding: 1rem;
-    border-radius: 8px;
-    margin-bottom: 1rem;
-}
-
-.driver-name {
-    font-weight: bold;
-}
-</style>
-
 {% block extra_js %}
 {{ super() }}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize Fleet Status Chart
@@ -265,6 +241,28 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
+
+    // Initialize Fleet Map
+    const map = L.map('fleet-map').setView([39.8283, -98.5795], 4);  // Center of USA
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Add markers for each truck
+    {% for truck in trucks %}
+    {% if truck.current_latitude and truck.current_longitude %}
+    const marker{{ truck.id }} = L.marker([{{ truck.current_latitude }}, {{ truck.current_longitude }}])
+        .addTo(map)
+        .bindPopup(`
+            <strong>{{ truck.plate_number }}</strong><br>
+            Driver: {{ truck.driver_name }}<br>
+            Status: {{ truck.status|title }}<br>
+            {% if truck.destination_city %}
+            Destination: {{ truck.destination_city }}, {{ truck.destination_state }}
+            {% endif %}
+        `);
+    {% endif %}
+    {% endfor %}
 
     window.initiateCall = function(truckId, phoneNumber, driverName) {
         if (confirm(`Do you want to call ${driverName}?`)) {

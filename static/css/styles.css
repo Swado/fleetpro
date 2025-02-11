@@ -751,3 +751,22 @@ elevenlabs-convai {
 .trip-history {
     margin-top: 20px;
 }
+
+/* Map related styles */
+#fleet-map {
+    height: 400px;
+    width: 100%;
+    border-radius: 8px;
+    border: 2px solid var(--primary-color);
+    margin-top: 20px;
+    z-index: 1;
+}
+
+.leaflet-popup-content {
+    font-size: 0.9em;
+    line-height: 1.4;
+}
+
+.leaflet-popup-content strong {
+    color: var(--primary-color);
+}
