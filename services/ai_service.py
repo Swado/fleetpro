@@ -4,13 +4,20 @@ import logging
 
 class AIFleetAssistant:
     def __init__(self):
-        self.client = OpenAI(api_key=os.environ.get('OPENAI_API_KEY'))
+        # Ensure OPENAI_API_KEY is available
+        api_key = os.environ.get('OPENAI_API_KEY')
+        if not api_key:
+            logging.error("OpenAI API key not found in environment variables")
+            raise ValueError("OPENAI_API_KEY environment variable must be set")
+
+        self.client = OpenAI(api_key=api_key)
         self.model = "gpt-3.5-turbo"  # Using GPT-3.5-turbo for better availability
         logging.info(f"Initializing AI Fleet Assistant with model: {self.model}")
 
     def get_route_suggestion(self, start_city, start_state, destination_city, destination_state, truck_data):
         """Get AI-powered route suggestions and insights."""
-        prompt = f"""As a fleet management AI assistant, analyze the following route:
+        try:
+            prompt = f"""As a fleet management AI assistant, analyze the following route:
 From: {start_city}, {start_state}
 To: {destination_city}, {destination_state}
 
@@ -26,7 +33,6 @@ Provide:
 4. Maintenance recommendations based on the trip
 Keep the response concise and practical."""
 
-        try:
             logging.debug(f"Sending route suggestion request for {start_city} to {destination_city}")
             response = self.client.chat.completions.create(
                 model=self.model,
@@ -39,7 +45,7 @@ Keep the response concise and practical."""
         except Exception as e:
             logging.error(f"Error generating route suggestions: {str(e)}", exc_info=True)
             error_msg = str(e)
-            if "API key" in error_msg.lower():
+            if "api_key" in error_msg.lower():
                 return "API configuration error. Please check your API key configuration."
             elif "model" in error_msg.lower():
                 return "AI model temporarily unavailable. Try using a different model."
@@ -74,7 +80,7 @@ Keep the response focused on actionable insights."""
         except Exception as e:
             logging.error(f"Error analyzing performance: {str(e)}", exc_info=True)
             error_msg = str(e)
-            if "API key" in error_msg.lower():
+            if "api_key" in error_msg.lower():
                 return "API configuration error. Please check your API key configuration."
             elif "model" in error_msg.lower():
                 return "AI model temporarily unavailable. Try using a different model."

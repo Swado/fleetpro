@@ -43,72 +43,72 @@ SAMPLE_MESSAGES = [
 # Sample achievements data
 ACHIEVEMENTS = [
     {
-        'name': 'Safety First',
-        'description': 'Maintain a perfect safety score for 30 days',
-        'points': 500,
-        'icon': 'fa-shield-check',
-        'category': 'safety',
-        'criteria': '{"duration_days": 30, "min_safety_score": 100}'
-    },
-    {
-        'name': 'Fuel Master',
-        'description': 'Achieve 10% better fuel efficiency than fleet average',
-        'points': 300,
+        'name': 'Fuel Efficiency Master',
+        'description': 'Achieve 15% better fuel efficiency than fleet average',
+        'points': 750,
         'icon': 'fa-gas-pump',
         'category': 'efficiency',
-        'criteria': '{"efficiency_improvement": 10}'
+        'criteria': '{"efficiency_improvement": 15}'
     },
     {
-        'name': 'On-Time Champion',
-        'description': 'Complete 50 deliveries on time',
-        'points': 400,
-        'icon': 'fa-clock-check',
-        'category': 'delivery',
-        'criteria': '{"deliveries": 50, "on_time_rate": 100}'
+        'name': 'Route Optimizer',
+        'description': 'Complete 20 trips with optimal route adherence',
+        'points': 500,
+        'icon': 'fa-route',
+        'category': 'efficiency',
+        'criteria': '{"optimal_routes": 20}'
     },
     {
-        'name': 'Distance Milestone',
-        'description': 'Drive 10,000 miles safely',
+        'name': 'Green Fleet Champion',
+        'description': 'Maintain idle time below 10% for 30 days',
         'points': 600,
-        'icon': 'fa-road',
-        'category': 'distance',
-        'criteria': '{"miles": 10000}'
+        'icon': 'fa-leaf',
+        'category': 'efficiency',
+        'criteria': '{"max_idle_percentage": 10, "duration_days": 30}'
     },
     {
-        'name': 'Maintenance Pro',
-        'description': 'Keep truck maintenance schedule perfect for 90 days',
+        'name': 'Time Management Pro',
+        'description': 'Complete 25 deliveries ahead of schedule',
         'points': 450,
-        'icon': 'fa-wrench',
-        'category': 'maintenance',
-        'criteria': '{"duration_days": 90, "maintenance_score": 100}'
+        'icon': 'fa-clock',
+        'category': 'efficiency',
+        'criteria': '{"early_deliveries": 25}'
+    },
+    {
+        'name': 'Distance Warrior',
+        'description': 'Drive 10,000 miles with optimal fuel consumption',
+        'points': 800,
+        'icon': 'fa-road',
+        'category': 'efficiency',
+        'criteria': '{"miles": 10000, "min_mpg": 7.5}'
     }
 ]
 
 # Sample rewards data
 REWARDS = [
     {
-        'name': 'Extra Day Off',
-        'description': 'Earn a paid day off',
+        'name': 'Efficiency Bonus',
+        'description': '$200 fuel card reward for exceptional fuel efficiency',
         'points_required': 1000,
-        'icon': 'fa-calendar-check'
+        'icon': 'fa-award'
     },
     {
-        'name': 'Fuel Bonus',
-        'description': '$100 fuel card bonus',
+        'name': 'Premium Route Priority',
+        'description': 'Priority access to premium routes for 1 month',
         'points_required': 800,
-        'icon': 'fa-credit-card'
+        'icon': 'fa-star'
     },
     {
-        'name': 'Premium Parking',
-        'description': 'Reserved parking spot for 1 month',
-        'points_required': 600,
-        'icon': 'fa-parking'
+        'name': 'Performance Recognition',
+        'description': 'Featured driver of the month on company dashboard',
+        'points_required': 1500,
+        'icon': 'fa-trophy'
     },
     {
-        'name': 'Maintenance Credit',
-        'description': '$200 credit for truck customization',
-        'points_required': 1200,
-        'icon': 'fa-tools'
+        'name': 'Vehicle Upgrade',
+        'description': 'First choice on next fleet vehicle upgrade',
+        'points_required': 2000,
+        'icon': 'fa-truck'
     }
 ]
 

@@ -595,6 +595,74 @@ def calculate_achievement_progress(user, achievement):
     """Calculate progress for a specific achievement based on its criteria"""
     criteria = json.loads(achievement.criteria)
 
+    if achievement.category == 'efficiency':
+        if 'efficiency_improvement' in criteria:
+            improvement_target = criteria.get('efficiency_improvement', 15)
+            if user.fuel_efficiency:
+                # Calculate improvement compared to fleet average (6 MPG is baseline)
+                fleet_average = 6
+                improvement = ((user.fuel_efficiency - fleet_average) / fleet_average) * 100
+                return min(100, (improvement / improvement_target) * 100)
+            return 0
+
+        elif 'optimal_routes' in criteria:
+            required_routes = criteria.get('optimal_routes', 20)
+            # Count trips with minimal deviation from suggested route
+            optimized_trips = TripHistory.query.join(Truck).filter(
+                Truck.user_id == user.id,
+                TripHistory.status == 'completed',
+                TripHistory.route_deviation < 0.1  # Less than 10% deviation
+            ).count()
+            return min(100, (optimized_trips / required_routes) * 100)
+
+        elif 'max_idle_percentage' in criteria:
+            max_idle = criteria.get('max_idle_percentage', 10)
+            duration_days = criteria.get('duration_days', 30)
+
+            # Get trips from last X days
+            recent_trips = TripHistory.query.join(Truck).filter(
+                Truck.user_id == user.id,
+                TripHistory.start_date >= datetime.utcnow() - timedelta(days=duration_days)
+            ).all()
+
+            if not recent_trips:
+                return 0
+
+            # Calculate average idle percentage
+            total_idle_time = sum(trip.idle_time_hours for trip in recent_trips)
+            total_runtime = sum(trip.runtime_hours for trip in recent_trips)
+
+            if total_runtime == 0:
+                return 0
+
+            idle_percentage = (total_idle_time / total_runtime) * 100
+            if idle_percentage <= max_idle:
+                return 100
+            return max(0, ((max_idle / idle_percentage) * 100))
+
+        elif 'early_deliveries' in criteria:
+            required_deliveries = criteria.get('early_deliveries', 25)
+            # Count trips completed ahead of schedule
+            early_trips = TripHistory.query.join(Truck).filter(
+                Truck.user_id == user.id,
+                TripHistory.status == 'completed',
+                TripHistory.end_date < TripHistory.scheduled_arrival
+            ).count()
+            return min(100, (early_trips / required_deliveries) * 100)
+
+        elif 'miles' in criteria and 'min_mpg' in criteria:
+            required_miles = criteria.get('miles', 10000)
+            min_mpg = criteria.get('min_mpg', 7.5)
+
+            if not user.fuel_efficiency or user.fuel_efficiency < min_mpg:
+                return min(100, (user.total_distance / required_miles) * 50)
+            return min(100, (user.total_distance / required_miles) * 100)
+
+    # Assuming a parent class exists for other categories.  This is a guess based on the edited code.  Without the original parent class, it's not possible to provide a perfect implementation.
+    #return super().calculate_achievement_progress(user, achievement)
+    # Fallback to original behavior for other categories if no parent class exists.
+    criteria = json.loads(achievement.criteria)
+
     # Calculate progress based on achievement category
     if achievement.category == 'safety':
         duration_days = criteria.get('duration_days', 30)
@@ -602,17 +670,6 @@ def calculate_achievement_progress(user, achievement):
         if user.safety_score >= min_safety_score:
             return 100
         return (user.safety_score / min_safety_score) * 100
-
-    elif achievement.category == 'efficiency':
-        efficiency_improvement = criteria.get('efficiency_improvement', 10)
-        if user.fuel_efficiency:
-            # Assuming fleet average is 6 MPG
-            fleet_average = 6
-            improvement = ((user.fuel_efficiency - fleet_average) / fleet_average) * 100
-            if improvement >= efficiency_improvement:
-                return 100
-            return (improvement / efficiency_improvement) * 100
-        return 0
 
     elif achievement.category == 'delivery':
         required_deliveries = criteria.get('deliveries', 50)
