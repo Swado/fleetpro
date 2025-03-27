@@ -55,6 +55,11 @@
                             {% endif %}
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link{% if request.endpoint == 'nextload_page' %} active{% endif %}" href="{{ url_for('nextload_page') }}">
+                            <i class="fas fa-search"></i> NextLoad
+                        </a>
+                    </li>
                 </ul>
                 <div class="navbar-nav">
                     <!-- Messages Link -->

@@ -6,6 +6,7 @@ from app import app, db
 from models import User, Truck, TripHistory, Message, Achievement, Reward, DriverAchievement, DriverReward
 from services.ai_service import AIFleetAssistant
 from services.gmail_service import gmail_service
+from services.nextload_scraper import NextloadScraper
 import logging
 from sqlalchemy import func, desc
 from twilio.rest import Client
@@ -696,4 +697,90 @@ def calculate_achievement_progress(user, achievement):
             return 0
         return (well_maintained_trucks / total_trucks) * 100
 
-    return 0
+# Initialize the NextLoad scraper as a global object (will be created on first use)
+nextload_scraper = None
+
+@app.route('/nextload')
+@login_required
+def nextload_page():
+    """Render the NextLoad integration page with search form"""
+    return render_template('nextload.html', states=US_STATES)
+
+@app.route('/api/nextload/search', methods=['POST'])
+@login_required
+def search_nextload():
+    """API endpoint to search for loads on NextLoad.com"""
+    global nextload_scraper
+    
+    try:
+        data = request.json
+        origin_state = data.get('origin_state')
+        destination_state = data.get('destination_state')
+        equipment_type = data.get('equipment_type')
+        
+        # Initialize scraper if it doesn't exist
+        if nextload_scraper is None:
+            nextload_scraper = NextloadScraper()
+            
+        # Perform the search
+        loads = nextload_scraper.search_loads(
+            origin_state=origin_state, 
+            destination_state=destination_state,
+            equipment_type=equipment_type
+        )
+        
+        return jsonify({
+            'success': True,
+            'loads': loads
+        })
+        
+    except Exception as e:
+        logging.error(f"Error during NextLoad search: {e}", exc_info=True)
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+        
+@app.route('/api/nextload/details/<string:load_id>')
+@login_required
+def get_nextload_details(load_id):
+    """API endpoint to get details about a specific load on NextLoad.com"""
+    global nextload_scraper
+    
+    try:
+        # Initialize scraper if it doesn't exist
+        if nextload_scraper is None:
+            nextload_scraper = NextloadScraper()
+            
+        # Get the load details
+        details = nextload_scraper.get_load_details(load_id)
+        
+        if details:
+            return jsonify({
+                'success': True,
+                'details': details
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Load details not found'
+            }), 404
+            
+    except Exception as e:
+        logging.error(f"Error getting NextLoad details: {e}", exc_info=True)
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+# Cleanup function to ensure WebDriver is closed
+@app.teardown_appcontext
+def close_nextload_scraper(exception=None):
+    """Ensure the NextLoad scraper is properly closed when the app context ends"""
+    global nextload_scraper
+    if nextload_scraper is not None:
+        try:
+            nextload_scraper.close()
+            nextload_scraper = None
+        except Exception as e:
+            logging.error(f"Error closing NextLoad scraper: {e}")
