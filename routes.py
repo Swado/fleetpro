@@ -27,6 +27,60 @@ US_STATES = [
     'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
 ]
 
+# US states with full names for display
+US_STATES_FULL = {
+    'AL': 'Alabama', 
+    'AK': 'Alaska', 
+    'AZ': 'Arizona', 
+    'AR': 'Arkansas', 
+    'CA': 'California', 
+    'CO': 'Colorado', 
+    'CT': 'Connecticut', 
+    'DE': 'Delaware', 
+    'FL': 'Florida', 
+    'GA': 'Georgia',
+    'HI': 'Hawaii', 
+    'ID': 'Idaho', 
+    'IL': 'Illinois', 
+    'IN': 'Indiana', 
+    'IA': 'Iowa', 
+    'KS': 'Kansas', 
+    'KY': 'Kentucky', 
+    'LA': 'Louisiana', 
+    'ME': 'Maine', 
+    'MD': 'Maryland',
+    'MA': 'Massachusetts', 
+    'MI': 'Michigan', 
+    'MN': 'Minnesota', 
+    'MS': 'Mississippi', 
+    'MO': 'Missouri', 
+    'MT': 'Montana', 
+    'NE': 'Nebraska', 
+    'NV': 'Nevada', 
+    'NH': 'New Hampshire', 
+    'NJ': 'New Jersey',
+    'NM': 'New Mexico', 
+    'NY': 'New York', 
+    'NC': 'North Carolina', 
+    'ND': 'North Dakota', 
+    'OH': 'Ohio', 
+    'OK': 'Oklahoma', 
+    'OR': 'Oregon', 
+    'PA': 'Pennsylvania', 
+    'RI': 'Rhode Island', 
+    'SC': 'South Carolina',
+    'SD': 'South Dakota', 
+    'TN': 'Tennessee', 
+    'TX': 'Texas', 
+    'UT': 'Utah', 
+    'VT': 'Vermont', 
+    'VA': 'Virginia', 
+    'WA': 'Washington', 
+    'WV': 'West Virginia', 
+    'WI': 'Wisconsin', 
+    'WY': 'Wyoming'
+}
+
 @app.route('/')
 def index():
     if current_user.is_authenticated:
@@ -704,7 +758,9 @@ nextload_scraper = None
 @login_required
 def nextload_page():
     """Render the NextLoad integration page with search form"""
-    return render_template('nextload.html', states=US_STATES)
+    # Convert state abbreviations to full names for the dropdown
+    states_full_list = sorted(list(US_STATES_FULL.values()))
+    return render_template('nextload.html', states=states_full_list)
 
 @app.route('/api/nextload/search', methods=['POST'])
 @login_required
@@ -722,6 +778,18 @@ def search_nextload():
         if nextload_scraper is None:
             nextload_scraper = NextloadScraper()
             
+        # Log the search criteria for debugging
+        logging.info(f"Searching NextLoad with: origin={origin_state}, destination={destination_state}, equipment={equipment_type}")
+        
+        # Ensure the scraper is logged in
+        if not nextload_scraper.is_logged_in:
+            login_success = nextload_scraper.login()
+            if not login_success:
+                return jsonify({
+                    'success': False,
+                    'error': 'Failed to log in to NextLoad.com. Please try again later.'
+                }), 500
+        
         # Perform the search
         loads = nextload_scraper.search_loads(
             origin_state=origin_state, 
@@ -751,6 +819,15 @@ def get_nextload_details(load_id):
         # Initialize scraper if it doesn't exist
         if nextload_scraper is None:
             nextload_scraper = NextloadScraper()
+            
+        # Ensure the scraper is logged in
+        if not nextload_scraper.is_logged_in:
+            login_success = nextload_scraper.login()
+            if not login_success:
+                return jsonify({
+                    'success': False,
+                    'error': 'Failed to log in to NextLoad.com. Please try again later.'
+                }), 500
             
         # Get the load details
         details = nextload_scraper.get_load_details(load_id)

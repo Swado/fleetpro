@@ -1,12 +1,14 @@
 import logging
 import time
+import os
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException, NoSuchElementException
+from selenium.common.exceptions import TimeoutException, NoSuchElementException, ElementNotInteractableException
 from webdriver_manager.chrome import ChromeDriverManager
 import json
 from datetime import datetime
@@ -19,7 +21,11 @@ class NextloadScraper:
     def __init__(self):
         """Initialize the NextLoad scraper with Chrome in headless mode"""
         self.base_url = "https://www.nextload.com"
+        self.login_url = f"{self.base_url}/login"
         self.search_url = f"{self.base_url}/loads/search"
+        self.email = "visql7@gmail.com"
+        self.password = "fleettrackpro"
+        self.is_logged_in = False
         self.setup_driver()
         
     def setup_driver(self):
@@ -46,6 +52,87 @@ class NextloadScraper:
             except Exception as e:
                 logger.error(f"Failed to initialize Chrome WebDriver with ChromeDriverManager: {e}")
                 raise
+                
+    def login(self):
+        """Login to nextload.com with the provided credentials"""
+        if self.is_logged_in:
+            logger.info("Already logged in to NextLoad")
+            return True
+            
+        try:
+            logger.info("Attempting to log in to NextLoad...")
+            self.driver.get(self.login_url)
+            time.sleep(3)  # Allow page to load
+            
+            # Find the email and password fields and enter credentials
+            try:
+                email_field = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located((By.ID, "email"))
+                )
+                email_field.clear()
+                email_field.send_keys(self.email)
+                
+                password_field = self.driver.find_element(By.ID, "password")
+                password_field.clear()
+                password_field.send_keys(self.password)
+                
+                # Click the login button
+                login_button = self.driver.find_element(By.XPATH, "//button[@type='submit']")
+                login_button.click()
+                
+                # Wait for login to complete
+                WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located((By.CLASS_NAME, "dashboard"))
+                )
+                
+                logger.info("Successfully logged in to NextLoad")
+                self.is_logged_in = True
+                return True
+                
+            except (NoSuchElementException, TimeoutException) as e:
+                logger.error(f"Login form elements not found: {e}")
+                # Try alternative login form if exists
+                try:
+                    email_field = WebDriverWait(self.driver, 5).until(
+                        EC.presence_of_element_located((By.NAME, "email"))
+                    )
+                    email_field.clear()
+                    email_field.send_keys(self.email)
+                    
+                    password_field = self.driver.find_element(By.NAME, "password")
+                    password_field.clear()
+                    password_field.send_keys(self.password)
+                    
+                    # Find login button by various methods
+                    try:
+                        login_button = self.driver.find_element(By.XPATH, "//button[contains(text(), 'Login')]")
+                    except NoSuchElementException:
+                        try:
+                            login_button = self.driver.find_element(By.XPATH, "//button[contains(text(), 'Sign In')]")
+                        except NoSuchElementException:
+                            login_button = self.driver.find_element(By.CSS_SELECTOR, "form button[type='submit']")
+                    
+                    login_button.click()
+                    
+                    # Wait for redirect after login
+                    time.sleep(5)
+                    
+                    # Check if login was successful
+                    if "/dashboard" in self.driver.current_url or "/loads" in self.driver.current_url:
+                        logger.info("Successfully logged in to NextLoad using alternative method")
+                        self.is_logged_in = True
+                        return True
+                    else:
+                        logger.warning("Login potentially failed. Current URL: " + self.driver.current_url)
+                        return False
+                        
+                except Exception as e2:
+                    logger.error(f"Alternative login attempt failed: {e2}")
+                    return False
+                
+        except Exception as e:
+            logger.error(f"Error during login: {e}")
+            return False
 
     def close(self):
         """Close the WebDriver"""
@@ -58,8 +145,8 @@ class NextloadScraper:
         Search for loads on Nextload.com based on criteria
         
         Args:
-            origin_state: State abbreviation for origin (e.g., 'CA')
-            destination_state: State abbreviation for destination (e.g., 'TX')
+            origin_state: State name or abbreviation for origin (e.g., 'California' or 'CA')
+            destination_state: State name or abbreviation for destination (e.g., 'Texas' or 'TX')
             equipment_type: Type of equipment needed (e.g., 'Flatbed', 'Reefer')
             
         Returns:
@@ -68,12 +155,88 @@ class NextloadScraper:
         try:
             logger.info(f"Searching for loads: origin={origin_state}, destination={destination_state}, equipment={equipment_type}")
             
+            # Ensure we're logged in
+            if not self.is_logged_in and not self.login():
+                logger.error("Failed to log in to NextLoad. Cannot search for loads.")
+                return []
+            
             # Navigate to the search page
             self.driver.get(self.search_url)
             time.sleep(3)  # Allow page to load
             
-            # If we need to input search criteria, we would do it here
-            # For now, we'll just scrape what's visible on the page
+            # Try to apply search filters if provided
+            if origin_state or destination_state or equipment_type:
+                try:
+                    # Find and click on "Advanced Search" or filter button if available
+                    try:
+                        advanced_search_btn = WebDriverWait(self.driver, 5).until(
+                            EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Advanced Search')]"))
+                        )
+                        advanced_search_btn.click()
+                        time.sleep(1)
+                    except (TimeoutException, NoSuchElementException):
+                        # Try looking for filter button
+                        try:
+                            filter_btn = WebDriverWait(self.driver, 3).until(
+                                EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Filter')]"))
+                            )
+                            filter_btn.click()
+                            time.sleep(1)
+                        except (TimeoutException, NoSuchElementException):
+                            logger.warning("Could not find advanced search or filter buttons")
+                    
+                    # Apply origin state filter if provided
+                    if origin_state:
+                        try:
+                            origin_input = WebDriverWait(self.driver, 5).until(
+                                EC.presence_of_element_located((By.ID, "origin-state"))
+                            )
+                            origin_input.clear()
+                            origin_input.send_keys(origin_state)
+                            origin_input.send_keys(Keys.TAB)
+                            time.sleep(1)
+                        except (TimeoutException, NoSuchElementException, ElementNotInteractableException):
+                            logger.warning(f"Could not set origin state filter: {origin_state}")
+                    
+                    # Apply destination state filter if provided
+                    if destination_state:
+                        try:
+                            dest_input = WebDriverWait(self.driver, 5).until(
+                                EC.presence_of_element_located((By.ID, "destination-state"))
+                            )
+                            dest_input.clear()
+                            dest_input.send_keys(destination_state)
+                            dest_input.send_keys(Keys.TAB)
+                            time.sleep(1)
+                        except (TimeoutException, NoSuchElementException, ElementNotInteractableException):
+                            logger.warning(f"Could not set destination state filter: {destination_state}")
+                    
+                    # Apply equipment type filter if provided
+                    if equipment_type:
+                        try:
+                            equip_input = WebDriverWait(self.driver, 5).until(
+                                EC.presence_of_element_located((By.ID, "equipment-type"))
+                            )
+                            equip_input.clear()
+                            equip_input.send_keys(equipment_type)
+                            equip_input.send_keys(Keys.TAB)
+                            time.sleep(1)
+                        except (TimeoutException, NoSuchElementException, ElementNotInteractableException):
+                            logger.warning(f"Could not set equipment type filter: {equipment_type}")
+                    
+                    # Apply filters by clicking search button
+                    try:
+                        search_btn = WebDriverWait(self.driver, 5).until(
+                            EC.element_to_be_clickable((By.XPATH, "//button[@type='submit' or contains(text(), 'Search')]"))
+                        )
+                        search_btn.click()
+                        time.sleep(3)  # Wait for results to load
+                    except (TimeoutException, NoSuchElementException):
+                        logger.warning("Could not find search button to apply filters")
+                        
+                except Exception as filter_err:
+                    logger.error(f"Error applying search filters: {filter_err}")
+                    # Continue with unfiltered results
             
             # Extract load data
             load_data = self._extract_load_data()
