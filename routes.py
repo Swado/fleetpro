@@ -780,23 +780,34 @@ def search_nextload():
             
         # Log the search criteria for debugging
         logging.info(f"Searching NextLoad with: origin={origin_state}, destination={destination_state}, equipment={equipment_type}")
+        print(f"DEBUG - Search NextLoad query: origin={origin_state}, destination={destination_state}, equipment={equipment_type}")
         
         # Ensure the scraper is logged in
         if not nextload_scraper.is_logged_in:
+            print("DEBUG - NextLoad: Not logged in, attempting login now")
             login_success = nextload_scraper.login()
             if not login_success:
+                print("DEBUG - NextLoad: Login failed!")
                 return jsonify({
                     'success': False,
                     'error': 'Failed to log in to NextLoad.com. Please try again later.'
                 }), 500
+            print("DEBUG - NextLoad: Login succeeded!")
         
         # Perform the search
+        print("DEBUG - NextLoad: Starting search...")
         loads = nextload_scraper.search_loads(
             origin_state=origin_state, 
             destination_state=destination_state,
             equipment_type=equipment_type
         )
         
+        print(f"DEBUG - NextLoad: Search completed, found {len(loads)} loads")
+        if loads:
+            print(f"DEBUG - NextLoad: First load sample: {loads[0]}")
+        else:
+            print("DEBUG - NextLoad: No loads found!")
+            
         return jsonify({
             'success': True,
             'loads': loads

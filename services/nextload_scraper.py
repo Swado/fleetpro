@@ -309,12 +309,34 @@ class NextloadScraper:
                 self.driver.save_screenshot(search_results_path)
                 logger.info(f"Saved search results screenshot to {search_results_path}")
                 logger.info(f"Current URL: {self.driver.current_url}")
+                print(f"DEBUG - NextLoad: Current URL during extraction: {self.driver.current_url}")
             except Exception as e:
                 logger.warning(f"Could not save search results screenshot: {e}")
+                print(f"DEBUG - NextLoad: Screenshot error: {e}")
             
             # Log page content for debugging
             page_source = self.driver.page_source
             logger.info(f"Page source length: {len(page_source)}")
+            
+            # Check for common indicators of success/failure
+            if "no results found" in page_source.lower():
+                print("DEBUG - NextLoad: Page indicates 'No results found'")
+            elif "not authorized" in page_source.lower() or "please log in" in page_source.lower():
+                print("DEBUG - NextLoad: Page indicates authorization issues")
+            else:
+                print(f"DEBUG - NextLoad: Page source length: {len(page_source)} characters")
+                
+            # Check for anti-bot protection
+            if "captcha" in page_source.lower() or "robot" in page_source.lower():
+                print("DEBUG - NextLoad: Possible captcha or anti-bot protection detected")
+                
+            # Try to save a snippet of the page source for debugging
+            try:
+                with open("page_source_snippet.txt", "w") as f:
+                    f.write(page_source[:5000] + "...\n\n... [truncated] ...\n\n" + page_source[-5000:])
+                print("DEBUG - NextLoad: Saved page source snippet for debugging")
+            except Exception as e:
+                print(f"DEBUG - NextLoad: Couldn't save page source: {e}")
             
             # Try different selectors for load cards or rows
             load_card_selectors = [
@@ -490,20 +512,10 @@ class NextloadScraper:
                 else:
                     logger.info(f"Page content: {page_text[:500]}...")  # Log first 500 chars for debugging
                 
-                # Create a placeholder load if needed for testing
+                # We don't want to create placeholder data
                 if not loads:
-                    logger.info("Creating sample load data for UI testing")
-                    loads = [
-                        {
-                            "origin": "Chicago, IL",
-                            "destination": "Denver, CO",
-                            "price": "$2.85/mi",
-                            "distance": "996 miles",
-                            "equipment_type": "Dry Van",
-                            "scraped_at": datetime.now().isoformat(),
-                            "note": "Sample data - NextLoad integration in progress"
-                        }
-                    ]
+                    logger.info("No load data found and not creating placeholder data")
+                    print("DEBUG - NextLoad: No load data found, returning empty list")
                     
         except Exception as e:
             logger.error(f"Error extracting load data: {e}")
@@ -520,27 +532,72 @@ class NextloadScraper:
         Returns:
             Dictionary with load details
         """
+        details = {}
+        
         try:
+            # Navigate to the load details page
             detail_url = f"{self.base_url}/loads/{load_id}"
             self.driver.get(detail_url)
+            print(f"DEBUG - NextLoad: Accessing load details at {detail_url}")
             
-            # Wait for details to load
-            WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.CLASS_NAME, "load-details"))
-            )
-            
-            # Extract detailed information
-            details = {}
-            
-            # This is a placeholder for actual detail extraction
-            # You would need to inspect the actual page structure to extract real data
+            # Basic information
             details["id"] = load_id
-            details["status"] = "Available"
+            details["url"] = detail_url
+            
+            # Take screenshot for debugging
+            try:
+                details_screenshot_path = f"load_details_{load_id}.png"
+                self.driver.save_screenshot(details_screenshot_path)
+                print(f"DEBUG - NextLoad: Saved details screenshot to {details_screenshot_path}")
+            except Exception as e:
+                print(f"DEBUG - NextLoad: Screenshot error: {e}")
+            
+            # Try to get page body text
+            try:
+                body_text = self.driver.find_element(By.TAG_NAME, "body").text
+                
+                # Check if load not found
+                if "not found" in body_text.lower() or "no longer available" in body_text.lower():
+                    print("DEBUG - NextLoad: Load not found or no longer available")
+                    return None
+                    
+                # Extract key information using common labels
+                for label in ["Origin", "Destination", "Distance", "Rate", "Equipment", "Weight", "Date"]:
+                    try:
+                        xpath = f"//*[contains(text(), '{label}:') or contains(text(), '{label} ')]"
+                        elements = self.driver.find_elements(By.XPATH, xpath)
+                        
+                        for element in elements:
+                            element_text = element.text.strip()
+                            if element_text:
+                                key = label.lower()
+                                
+                                # Try to find value in separate element
+                                try:
+                                    value_elem = element.find_element(By.XPATH, "./following-sibling::*[1]")
+                                    details[key] = value_elem.text.strip()
+                                except:
+                                    # Or try to parse from label text itself
+                                    if ":" in element_text:
+                                        parts = element_text.split(":", 1)
+                                        if len(parts) > 1:
+                                            details[key] = parts[1].strip()
+                    except Exception as e:
+                        print(f"DEBUG - NextLoad: Error extracting '{label}': {e}")
+                
+                # If we didn't extract any meaningful details, store the body text
+                if len(details) <= 2:  # Only has id and url
+                    print("DEBUG - NextLoad: No structured details found, storing page content")
+                    details["content"] = body_text
+                    
+            except Exception as e:
+                print(f"DEBUG - NextLoad: Error getting page content: {e}")
+                details["error"] = f"Content extraction error: {str(e)}"
             
             return details
             
         except Exception as e:
-            logger.error(f"Error getting load details for {load_id}: {e}")
+            logger.error(f"ERROR - NextLoad: Failed to get load details for {load_id}: {e}")
             return None
 
 # Example usage
