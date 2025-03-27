@@ -26,6 +26,7 @@
         <div class="login-modal-content">
             <span class="close-btn" onclick="toggleLoginForm()">&times;</span>
             <form method="POST" action="{{ url_for('login') }}" class="login-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 <div class="mb-3">
                     <label for="username" class="form-label">Username</label>
                     <div class="input-group">
