@@ -1,8 +1,10 @@
 :root {
     --primary-color: #2C3E50;
-    --accent-color: #E67E22;
-    --bg-color: #F5F6FA;
-    --text-color: #34495E;
+    --accent-color: #FFD700; /* Yellow accent color */
+    --bg-color: #000000; /* Black background */
+    --text-color: #FFEB3B; /* Yellow-ish text color */
+    --table-header-bg: #111111; /* Slightly lighter black for table headers */
+    --table-header-text: #FFD700; /* Gold text for table headers */
 }
 
 body {
@@ -32,6 +34,27 @@ body:not(.authenticated) {
 body.authenticated {
     background-color: var(--bg-color);
     background-image: none !important;
+    color: var(--text-color);
+}
+
+/* Make table headers sticky when scrolling */
+.table-responsive thead th {
+    position: sticky;
+    top: 0;
+    background-color: var(--table-header-bg);
+    color: var(--table-header-text);
+    z-index: 10;
+    padding: 15px 10px;
+    border-bottom: 2px solid var(--accent-color);
+}
+
+/* Highlight text and important elements */
+h1, h2, h3, h4, h5, h6, 
+.table th, .card-header, 
+.nav-link.active, .badge,
+.btn-primary, .stats-card .number,
+.truck-card h5, .dashboard-header h2 {
+    color: var(--accent-color) !important;
 }
 
 .navbar {
@@ -204,38 +227,50 @@ body.authenticated {
 }
 
 .dashboard-header {
-    background-color: rgba(255, 255, 255, 0.95);
+    background-color: #111111; /* Dark background */
     padding: 20px;
     margin-bottom: 20px;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    border: 1px solid var(--accent-color);
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
 .card {
-    border-color: var(--primary-color);
+    border-color: var(--accent-color);
     border-radius: 8px;
+    background-color: #111111; /* Dark background for cards */
+    color: var(--text-color);
 }
 
 .truck-card {
-    background-color: #fff;
+    background-color: #111111; /* Dark background */
     border-left: 4px solid var(--accent-color);
     border-radius: 8px;
     padding: 20px;
     margin-bottom: 15px;
     transition: transform 0.2s ease;
+    color: var(--text-color);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
 }
 
 .truck-card:hover {
     transform: translateX(5px);
+    border-left-color: #FFD700; /* Bright gold on hover */
+    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
 }
 
 .stats-card {
-    background-color: rgba(255, 255, 255, 0.95);
+    background-color: #111111; /* Dark background */
     border-radius: 8px;
     padding: 20px;
     margin-bottom: 20px;
     text-align: center;
     transition: transform 0.2s;
+    border: 1px solid var(--accent-color);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
 }
 
 .stats-card:hover {
@@ -264,29 +299,32 @@ body.authenticated {
 }
 
 .truck-detail-card {
-    background-color: rgba(255, 255, 255, 0.95);
+    background-color: #111111; /* Dark background */
     border-radius: 8px;
     padding: 25px;
     margin-bottom: 20px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    border: 1px solid var(--accent-color);
+    color: var(--text-color);
 }
 
 .destination-search {
-    background-color: rgba(244, 246, 248, 0.9);
+    background-color: #111111; /* Dark background */
     padding: 20px;
     border-radius: 8px;
-    border: 1px solid #e1e8ed;
+    border: 1px solid var(--accent-color);
+    color: var(--text-color);
 }
 
 #map-container {
     position: relative;
     width: 100%;
     height: 400px;
-    background-color: #fff;
-    border: 1px solid #ddd;
+    background-color: #111111; /* Dark background */
+    border: 1px solid var(--accent-color);
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
 #map {
@@ -410,28 +448,36 @@ body.authenticated {
 }
 
 .truck-detail-header {
-    background-color: rgba(255, 255, 255, 0.95);
+    background-color: #111111; /* Dark background */
     padding: 20px;
     border-radius: 8px;
     margin-bottom: 20px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    border: 1px solid var(--accent-color);
+    color: var(--text-color);
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
 .trip-card, .invoice-card {
-    background-color: rgba(255, 255, 255, 0.95);
+    background-color: #111111; /* Dark background */
     border-radius: 8px;
     padding: 15px;
     margin-bottom: 15px;
-    border-left: 4px solid var(--primary-color);
+    border-left: 4px solid var(--accent-color);
     transition: transform 0.2s;
+    color: var(--text-color);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
 }
 
 .trip-card {
-    background-color: #fff;
-    border-left: 4px solid var(--primary-color);
+    background-color: #111111; /* Dark background */
+    border-left: 4px solid var(--accent-color);
     border-radius: 8px;
     padding: 15px;
     margin-bottom: 10px;
+    color: var(--text-color);
 }
 
 .trip-card:hover, .invoice-card:hover {
@@ -498,11 +544,13 @@ body.authenticated {
 }
 
 .performance-chart-container {
-    background-color: rgba(255, 255, 255, 0.95);
+    background-color: #111111; /* Dark background */
     border-radius: 8px;
     padding: 20px;
     margin-bottom: 20px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    border: 1px solid var(--accent-color);
+    color: var(--text-color);
 }
 
 .chart-wrapper {
@@ -539,34 +587,67 @@ body.authenticated {
 
 .suggestion-content,
 .analysis-content {
-    background-color: rgba(255, 255, 255, 0.95);
+    background-color: #111111; /* Dark background */
     border-radius: 8px;
     padding: 15px;
     margin-top: 10px;
     white-space: pre-line;
     line-height: 1.6;
+    border: 1px solid var(--accent-color);
+    color: var(--text-color);
 }
 
 .ai-assistant-container .card {
-    background-color: rgba(255, 255, 255, 0.95);
-    border: none;
+    background-color: #111111; /* Dark background */
+    border: 1px solid var(--accent-color);
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    color: var(--text-color);
 }
 
 .ai-assistant-container .card-header {
-    background-color: var(--primary-color);
-    color: white;
+    background-color: #222222; /* Slightly lighter black */
+    color: var(--accent-color);
     border-radius: 8px 8px 0 0;
     padding: 15px 20px;
+    border-bottom: 1px solid var(--accent-color);
 }
 
 .ai-assistant-container .card-header h5 {
     margin: 0;
+    color: var(--accent-color);
 }
 
 .ai-assistant-container .card-body {
     padding: 20px;
+}
+
+/* Table Styles */
+.table {
+    color: var(--text-color);
+    border-color: var(--accent-color);
+}
+
+.table th {
+    background-color: var(--table-header-bg);
+    color: var(--table-header-text);
+    border-color: var(--accent-color);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.table td {
+    border-color: #333;
+    color: var(--text-color);
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #0a0a0a;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #222;
 }
 
 .ai-assistant-container .btn-primary {
@@ -627,8 +708,11 @@ html {
 
 .tab-content {
     padding: 20px;
-    background-color: #fff;
+    background-color: #111111; /* Dark background */
     border-radius: 0 0 8px 8px;
+    border: 1px solid var(--accent-color);
+    border-top: none;
+    color: var(--text-color);
 }
 
 .chart-container {
@@ -642,39 +726,51 @@ html {
     padding: 5px 10px;
     border-radius: 4px;
     font-weight: 500;
+    background-color: #222222; /* Darker background */
+    color: var(--accent-color); /* Yellow text */
 }
 
 #fleet-map {
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    border: 1px solid var(--accent-color);
 }
 
 .leaflet-popup-content {
     font-size: 0.9em;
     line-height: 1.4;
+    background-color: #111111; /* Dark background */
+    color: var(--text-color);
 }
 
 .leaflet-popup-content strong {
-    color: var(--primary-color);
+    color: var(--accent-color);
 }
 
 .unread {
-    background-color: rgba(13, 110, 253, 0.05);
+    background-color: #222222; /* Darker background */
     font-weight: 500;
+    border-left: 3px solid var(--accent-color);
 }
 
 .message-content {
     min-height: 400px;
+    background-color: #111111; /* Dark background */
+    color: var(--text-color);
+    border: 1px solid var(--accent-color);
+    padding: 15px;
+    border-radius: 8px;
 }
 
 .message-meta {
-    color: #6c757d;
+    color: var(--accent-color);
     font-size: 0.9em;
 }
 
 .message-body {
     margin: 20px 0;
     white-space: pre-wrap;
+    color: var(--text-color);
 }
 
 .message-actions {
@@ -757,16 +853,54 @@ elevenlabs-convai {
     height: 400px;
     width: 100%;
     border-radius: 8px;
-    border: 2px solid var(--primary-color);
+    border: 2px solid var(--accent-color);
     margin-top: 20px;
     z-index: 1;
 }
 
-.leaflet-popup-content {
-    font-size: 0.9em;
-    line-height: 1.4;
+/* Fix for table headers to ensure they remain visible when scrolling */
+.table-responsive {
+    max-height: 70vh;
+    overflow-y: auto;
+    border: 1px solid var(--accent-color);
+    border-radius: 8px;
 }
 
-.leaflet-popup-content strong {
-    color: var(--primary-color);
+/* Specific style for table headers to remain fixed while scrolling */
+.table-responsive thead th {
+    position: sticky;
+    top: 0;
+    background-color: var(--table-header-bg);
+    z-index: 10;
+    padding: 15px 10px;
+    border-bottom: 2px solid var(--accent-color);
+}
+
+/* Style for list items to match theme */
+.list-group-item {
+    background-color: #111111;
+    color: var(--text-color);
+    border-color: #333;
+}
+
+/* Style for modal dialogs to match theme */
+.modal-content {
+    background-color: #111111;
+    color: var(--text-color);
+    border: 1px solid var(--accent-color);
+}
+
+.modal-header {
+    border-bottom-color: var(--accent-color);
+    background-color: #222222;
+}
+
+.modal-footer {
+    border-top-color: var(--accent-color);
+}
+
+/* Fix navbar color and style */
+.navbar {
+    background-color: #000000;
+    border-bottom: 1px solid var(--accent-color);
 }
