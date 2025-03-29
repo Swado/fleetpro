@@ -5,19 +5,22 @@
 {% block content %}
 <div class="container-fluid">
     <!-- Service Navigation -->
-    <div class="service-navigation">
-        <div class="nav nav-tabs" role="tablist">
+    <div class="service-navigation mb-4">
+        <div class="nav nav-pills nav-fill" role="tablist">
             <a class="nav-link active" href="{{ url_for('dashboard') }}">
-                <i class="fas fa-tachometer-alt"></i> Dashboard
+                <i class="fas fa-tachometer-alt me-2"></i> Dashboard
             </a>
             <a class="nav-link" href="{{ url_for('fleet_services') }}#insurance">
-                <i class="fas fa-shield-alt"></i> Insurance
+                <i class="fas fa-shield-alt me-2"></i> Insurance Services
             </a>
             <a class="nav-link" href="{{ url_for('fleet_services') }}#legal">
-                <i class="fas fa-gavel"></i> Legal Support
+                <i class="fas fa-gavel me-2"></i> Legal Support
             </a>
             <a class="nav-link" href="{{ url_for('fleet_services') }}#payments">
-                <i class="fas fa-money-bill-wave"></i> Payments
+                <i class="fas fa-money-bill-wave me-2"></i> Payment Processing
+            </a>
+            <a class="nav-link" href="{{ url_for('nextload_page') }}">
+                <i class="fas fa-truck me-2"></i> Find Loads
             </a>
         </div>
     </div>
@@ -53,7 +56,8 @@
                                         data-bs-target="#truck-content-{{ truck.id }}" 
                                         type="button" 
                                         role="tab">
-                                    <span class="driver-name" style="color: {% if truck.status == 'active' %}#2ecc71{% elif truck.status == 'maintenance' %}#e67e22{% else %}#e74c3c{% endif %};">
+                                    <span class="driver-name">
+                                        <span class="driver-status status-{{ truck.status }}"></span>
                                         {{ truck.plate_number }} - {{ truck.driver_name }}
                                     </span>
                                 </button>
@@ -70,7 +74,8 @@
                                         <h4>{{ truck.plate_number }}</h4>
                                         <p>
                                             <strong>Driver:</strong>
-                                            <span style="color: {% if truck.status == 'active' %}#2ecc71{% elif truck.status == 'maintenance' %}#e67e22{% else %}#e74c3c{% endif %};">
+                                            <span class="driver-name">
+                                                <span class="driver-status status-{{ truck.status }}"></span>
                                                 {{ truck.driver_name }}
                                             </span>
                                         </p>
@@ -79,7 +84,7 @@
                                         <p>
                                             <strong>Status:</strong>
                                             <span class="truck-status" data-status="{{ truck.status }}">
-                                                <i class="fas fa-circle" style="color: {% if truck.status == 'active' %}#2ecc71{% elif truck.status == 'maintenance' %}#e67e22{% else %}#e74c3c{% endif %};"></i>
+                                                <span class="driver-status status-{{ truck.status }}"></span>
                                                 {{ truck.status|title }}
                                             </span>
                                         </p>
@@ -173,29 +178,29 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-4">
-                                <a href="{{ url_for('fleet_services') }}" class="text-decoration-none">
-                                    <div class="service-card insurance-card">
-                                        <i class="fas fa-shield-alt fa-3x mb-3"></i>
-                                        <h4>Insurance Shopping</h4>
-                                        <p>Compare and select from top fleet insurance providers</p>
+                                <a href="{{ url_for('fleet_services') }}#insurance" class="text-decoration-none">
+                                    <div class="service-btn">
+                                        <i class="fas fa-shield-alt"></i>
+                                        <h5>Insurance Services</h5>
+                                        <p>Compare rates from top providers and manage existing policies</p>
                                     </div>
                                 </a>
                             </div>
                             <div class="col-md-4">
-                                <a href="{{ url_for('fleet_services') }}" class="text-decoration-none">
-                                    <div class="service-card legal-card">
-                                        <i class="fas fa-gavel fa-3x mb-3"></i>
-                                        <h4>24/7 Legal Support</h4>
-                                        <p>Access nationwide legal assistance for your drivers</p>
+                                <a href="{{ url_for('fleet_services') }}#legal" class="text-decoration-none">
+                                    <div class="service-btn">
+                                        <i class="fas fa-gavel"></i>
+                                        <h5>Legal Support</h5>
+                                        <p>24/7 legal assistance for drivers nationwide with real-time consulting</p>
                                     </div>
                                 </a>
                             </div>
                             <div class="col-md-4">
-                                <a href="{{ url_for('fleet_services') }}" class="text-decoration-none">
-                                    <div class="service-card payment-card">
-                                        <i class="fas fa-money-bill-wave fa-3x mb-3"></i>
-                                        <h4>Instant Payments</h4>
-                                        <p>Manage driver payroll and repair payments efficiently</p>
+                                <a href="{{ url_for('fleet_services') }}#payments" class="text-decoration-none">
+                                    <div class="service-btn">
+                                        <i class="fas fa-money-bill-wave"></i>
+                                        <h5>Instant Payments</h5>
+                                        <p>Streamlined payroll processing and direct deposits for drivers</p>
                                     </div>
                                 </a>
                             </div>

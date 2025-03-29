@@ -1,10 +1,14 @@
 :root {
     --primary-color: #2C3E50;
-    --accent-color: #FFD700; /* Yellow accent color */
+    --accent-color: #1E90FF; /* Royal blue accent color */
+    --accent-gradient: linear-gradient(135deg, #1E90FF, #00BFFF); /* Blue gradient */
     --bg-color: #000000; /* Black background */
-    --text-color: #FFEB3B; /* Yellow-ish text color */
-    --table-header-bg: #111111; /* Slightly lighter black for table headers */
-    --table-header-text: #FFD700; /* Gold text for table headers */
+    --text-color: #E0E0E0; /* Light silver text color */
+    --highlight-color: #FFFFFF; /* Pure white for highlights */
+    --table-header-bg: #121212; /* Slightly lighter black for table headers */
+    --table-header-text: #FFFFFF; /* White text for table headers */
+    --border-color: #333333; /* Dark gray borders instead of yellow */
+    --card-bg: #0A0A0A; /* Very dark gray for cards */
 }
 
 body {
@@ -227,50 +231,86 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .dashboard-header {
-    background-color: #111111; /* Dark background */
+    background-color: #0A0A0A; /* Very dark background */
     padding: 20px;
     margin-bottom: 20px;
     border-radius: 8px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    border: 1px solid var(--accent-color);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    border: 1px solid var(--border-color);
+    border-bottom: 2px solid var(--accent-color);
     position: sticky;
     top: 0;
     z-index: 100;
+    font-family: 'Montserrat', sans-serif;
+    letter-spacing: 0.03em;
 }
 
 .card {
-    border-color: var(--accent-color);
+    border-color: var(--border-color);
     border-radius: 8px;
-    background-color: #111111; /* Dark background for cards */
+    background-color: var(--card-bg); /* Very dark background for cards */
     color: var(--text-color);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    overflow: hidden;
 }
 
 .truck-card {
-    background-color: #111111; /* Dark background */
-    border-left: 4px solid var(--accent-color);
-    border-radius: 8px;
+    background-color: var(--card-bg); /* Very dark background */
+    border-left: 3px solid var(--accent-color);
+    border-radius: 4px;
     padding: 20px;
     margin-bottom: 15px;
-    transition: transform 0.2s ease;
+    transition: all 0.3s ease;
     color: var(--text-color);
-    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    position: relative;
 }
 
 .truck-card:hover {
     transform: translateX(5px);
-    border-left-color: #FFD700; /* Bright gold on hover */
-    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+    border-left-color: var(--accent-color);
+    box-shadow: 0 6px 16px rgba(30, 144, 255, 0.2);
+    background-color: #0D0D0D;
+}
+
+.truck-card::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--accent-gradient);
+    opacity: 0.3;
+    transition: opacity 0.3s ease;
+}
+
+.truck-card:hover::after {
+    opacity: 1;
 }
 
 .stats-card {
-    background-color: #111111; /* Dark background */
+    background-color: var(--card-bg); /* Very dark background */
     border-radius: 8px;
-    padding: 20px;
+    padding: 25px;
     margin-bottom: 20px;
     text-align: center;
-    transition: transform 0.2s;
-    border: 1px solid var(--accent-color);
-    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.stats-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--accent-gradient);
+    opacity: 0.7;
 }
 
 .stats-card:hover {
@@ -299,32 +339,35 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .truck-detail-card {
-    background-color: #111111; /* Dark background */
+    background-color: var(--card-bg); /* Very dark background */
     border-radius: 8px;
     padding: 25px;
     margin-bottom: 20px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-    border: 1px solid var(--accent-color);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    border: 1px solid var(--border-color);
+    border-top: 3px solid var(--accent-color);
     color: var(--text-color);
+    position: relative;
 }
 
 .destination-search {
-    background-color: #111111; /* Dark background */
+    background-color: var(--card-bg); /* Very dark background */
     padding: 20px;
     border-radius: 8px;
-    border: 1px solid var(--accent-color);
+    border: 1px solid var(--border-color);
     color: var(--text-color);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
 }
 
 #map-container {
     position: relative;
     width: 100%;
     height: 400px;
-    background-color: #111111; /* Dark background */
-    border: 1px solid var(--accent-color);
+    background-color: var(--card-bg); /* Very dark background */
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
 }
 
 #map {
@@ -448,36 +491,57 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .truck-detail-header {
-    background-color: #111111; /* Dark background */
+    background-color: var(--card-bg); /* Very dark background */
     padding: 20px;
     border-radius: 8px;
     margin-bottom: 20px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    border: 1px solid var(--accent-color);
+    border: 1px solid var(--border-color);
+    border-bottom: 2px solid var(--accent-color);
     color: var(--text-color);
     position: sticky;
     top: 0;
     z-index: 100;
+    font-family: 'Montserrat', sans-serif;
+    letter-spacing: 0.03em;
 }
 
 .trip-card, .invoice-card {
-    background-color: #111111; /* Dark background */
+    background-color: var(--card-bg); /* Very dark background */
     border-radius: 8px;
-    padding: 15px;
+    padding: 20px;
     margin-bottom: 15px;
-    border-left: 4px solid var(--accent-color);
-    transition: transform 0.2s;
+    border-left: 3px solid var(--accent-color);
+    transition: all 0.3s ease;
     color: var(--text-color);
-    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    position: relative;
+}
+
+.trip-card::after, .invoice-card::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--accent-gradient);
+    opacity: 0.3;
+    transition: opacity 0.3s ease;
+}
+
+.trip-card:hover::after, .invoice-card:hover::after {
+    opacity: 0.7;
 }
 
 .trip-card {
-    background-color: #111111; /* Dark background */
-    border-left: 4px solid var(--accent-color);
-    border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 10px;
+    background-color: var(--card-bg); /* Very dark background */
+    border-left: 3px solid var(--accent-color);
+    border-radius: 6px;
+    padding: 20px;
+    margin-bottom: 15px;
     color: var(--text-color);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
 .trip-card:hover, .invoice-card:hover {
@@ -544,13 +608,16 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .performance-chart-container {
-    background-color: #111111; /* Dark background */
+    background-color: var(--card-bg); /* Very dark background */
     border-radius: 8px;
-    padding: 20px;
+    padding: 25px;
     margin-bottom: 20px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    border: 1px solid var(--accent-color);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+    border: 1px solid var(--border-color);
+    border-top: 3px solid var(--accent-color);
     color: var(--text-color);
+    position: relative;
+    font-family: 'Montserrat', sans-serif;
 }
 
 .chart-wrapper {
@@ -587,22 +654,27 @@ h1, h2, h3, h4, h5, h6,
 
 .suggestion-content,
 .analysis-content {
-    background-color: #111111; /* Dark background */
+    background-color: var(--card-bg); /* Very dark background */
     border-radius: 8px;
-    padding: 15px;
-    margin-top: 10px;
+    padding: 20px;
+    margin-top: 15px;
     white-space: pre-line;
     line-height: 1.6;
-    border: 1px solid var(--accent-color);
+    border: 1px solid var(--border-color);
+    border-left: 3px solid var(--accent-color);
     color: var(--text-color);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    font-family: 'Roboto', sans-serif;
+    letter-spacing: 0.02em;
 }
 
 .ai-assistant-container .card {
-    background-color: #111111; /* Dark background */
-    border: 1px solid var(--accent-color);
+    background-color: var(--card-bg); /* Very dark background */
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     color: var(--text-color);
+    overflow: hidden;
 }
 
 .ai-assistant-container .card-header {
@@ -707,12 +779,16 @@ html {
 }
 
 .tab-content {
-    padding: 20px;
-    background-color: #111111; /* Dark background */
+    padding: 25px;
+    background-color: var(--card-bg); /* Very dark background */
     border-radius: 0 0 8px 8px;
-    border: 1px solid var(--accent-color);
+    border: 1px solid var(--border-color);
     border-top: none;
     color: var(--text-color);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    font-family: 'Roboto', sans-serif;
+    letter-spacing: 0.02em;
+    line-height: 1.6;
 }
 
 .chart-container {
@@ -723,28 +799,60 @@ html {
 }
 
 .badge {
-    padding: 5px 10px;
+    padding: 6px 12px;
     border-radius: 4px;
     font-weight: 500;
     background-color: #222222; /* Darker background */
-    color: var(--accent-color); /* Yellow text */
+    color: var(--highlight-color); /* White text for better visibility */
+    letter-spacing: 0.05em;
+    font-size: 0.85em;
+    font-family: 'Montserrat', sans-serif;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* Button Styles */
+.btn {
+    font-family: 'Montserrat', sans-serif;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    padding: 8px 16px;
+    transition: all 0.3s ease;
+    border-radius: 4px;
+    text-transform: uppercase;
+    font-size: 0.9em;
+}
+
+.btn-primary {
+    background: var(--accent-gradient);
+    border: none;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    color: white !important;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(30, 144, 255, 0.4);
 }
 
 #fleet-map {
     border-radius: 8px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    border: 1px solid var(--accent-color);
+    border: 1px solid var(--border-color);
+    overflow: hidden;
 }
 
 .leaflet-popup-content {
     font-size: 0.9em;
-    line-height: 1.4;
-    background-color: #111111; /* Dark background */
+    line-height: 1.6;
+    background-color: var(--card-bg); /* Very dark background */
     color: var(--text-color);
+    padding: 5px;
+    font-family: 'Roboto', sans-serif;
 }
 
 .leaflet-popup-content strong {
-    color: var(--accent-color);
+    color: var(--highlight-color);
+    font-weight: 600;
 }
 
 .unread {
@@ -755,22 +863,32 @@ html {
 
 .message-content {
     min-height: 400px;
-    background-color: #111111; /* Dark background */
+    background-color: var(--card-bg); /* Very dark background */
     color: var(--text-color);
-    border: 1px solid var(--accent-color);
-    padding: 15px;
+    border: 1px solid var(--border-color);
+    border-left: 3px solid var(--accent-color);
+    padding: 20px;
     border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    letter-spacing: 0.02em;
+    line-height: 1.6;
 }
 
 .message-meta {
     color: var(--accent-color);
     font-size: 0.9em;
+    font-family: 'Montserrat', sans-serif;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 10px;
+    margin-bottom: 15px;
 }
 
 .message-body {
     margin: 20px 0;
     white-space: pre-wrap;
     color: var(--text-color);
+    font-family: 'Roboto', sans-serif;
+    line-height: 1.8;
 }
 
 .message-actions {
@@ -853,17 +971,21 @@ elevenlabs-convai {
     height: 400px;
     width: 100%;
     border-radius: 8px;
-    border: 2px solid var(--accent-color);
+    border: 1px solid var(--border-color);
     margin-top: 20px;
     z-index: 1;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
 
 /* Fix for table headers to ensure they remain visible when scrolling */
 .table-responsive {
     max-height: 70vh;
     overflow-y: auto;
-    border: 1px solid var(--accent-color);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
+    background-color: var(--card-bg);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
 
 /* Specific style for table headers to remain fixed while scrolling */
@@ -874,20 +996,45 @@ elevenlabs-convai {
     z-index: 10;
     padding: 15px 10px;
     border-bottom: 2px solid var(--accent-color);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.9em;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
 }
 
 /* Style for list items to match theme */
 .list-group-item {
-    background-color: #111111;
+    background-color: var(--card-bg);
     color: var(--text-color);
-    border-color: #333;
+    border-color: var(--border-color);
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.list-group-item:hover {
+    background-color: #0d0d0d;
+    transform: translateX(3px);
+}
+
+.list-group-item::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--accent-color), transparent);
+    opacity: 0.2;
 }
 
 /* Style for modal dialogs to match theme */
 .modal-content {
-    background-color: #111111;
+    background-color: var(--card-bg);
     color: var(--text-color);
-    border: 1px solid var(--accent-color);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
 }
 
 .modal-header {
@@ -903,4 +1050,102 @@ elevenlabs-convai {
 .navbar {
     background-color: #000000;
     border-bottom: 1px solid var(--accent-color);
+}
+
+/* Service navigation styling */
+.service-navigation {
+    padding: 20px 10px;
+    background-color: var(--card-bg);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.service-navigation .nav-pills .nav-link {
+    color: var(--text-color);
+    background-color: transparent;
+    border-radius: 4px;
+    margin: 0 5px;
+    padding: 10px 15px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.service-navigation .nav-pills .nav-link:hover {
+    border-color: var(--accent-color);
+    background-color: rgba(30, 144, 255, 0.1);
+}
+
+.service-navigation .nav-pills .nav-link.active {
+    background: var(--accent-gradient);
+    color: white;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* Driver status styles */
+.driver-status {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.status-active {
+    background-color: #28a745;
+    box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+}
+
+.status-inactive {
+    background-color: #dc3545;
+    box-shadow: 0 0 10px rgba(220, 53, 69, 0.5);
+}
+
+.status-maintenance {
+    background-color: #ffc107;
+    box-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
+}
+
+.driver-name {
+    display: flex;
+    align-items: center;
+}
+
+/* Fleet service buttons */
+.service-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.service-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+    border-color: var(--accent-color);
+}
+
+.service-btn i {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: var(--accent-color);
+}
+
+.service-btn h5 {
+    margin: 10px 0;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+}
+
+.service-btn p {
+    font-size: 0.85rem;
+    text-align: center;
+    opacity: 0.7;
 }
