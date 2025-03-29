@@ -1,4 +1,4 @@
-modules = ["python-3.11", "python3", "nodejs-18"]
+modules = ["python3", "nodejs-20", "python-3.11"]
 
 [nix]
 channel = "stable-24_05"
@@ -34,6 +34,22 @@ args = "Create Admin"
 [[workflows.workflow.tasks]]
 task = "workflow.run"
 args = "Create Admin User"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Python Flask App"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Simple Preview Server"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Python Simple Server"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Flask Simple Server"
 
 [[workflows.workflow]]
 name = "Start application"
@@ -106,6 +122,66 @@ task = "packager.installForAll"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npx prisma generate && node create-admin.js"
+
+[[workflows.workflow]]
+name = "Python Flask App"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python main.py"
+waitForPort = 5000
+
+[[workflows.workflow]]
+name = "Simple Preview Server"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node simple_server.js"
+waitForPort = 5000
+
+[[workflows.workflow]]
+name = "Python Simple Server"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "/home/runner/workspace/.pythonlibs/bin/python3 simple_server.py"
+waitForPort = 5001
+
+[[workflows.workflow]]
+name = "Flask Simple Server"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "/home/runner/workspace/.pythonlibs/bin/python3 app_simple.py"
+waitForPort = 5000
 
 [[ports]]
 localPort = 3000

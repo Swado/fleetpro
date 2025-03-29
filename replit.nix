@@ -1,5 +1,6 @@
 {pkgs}: {
   deps = [
+    pkgs.python3
     pkgs.nodejs
     pkgs.openssl_1_1
     pkgs.chromium

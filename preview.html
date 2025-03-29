@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FleetTrack Pro - Ultra Premium Fleet Management</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container mx-auto p-6">
+    <!-- Header with ElevenLabs Integration -->
+    <header class="flex flex-col md:flex-row items-start md:items-center justify-between mb-8">
+      <div class="flex items-center space-x-2 mb-4 md:mb-0">
+        <div class="text-2xl font-bold neon-text">FleetTrack<span class="text-white">Pro</span></div>
+        <span class="premium-badge">Enterprise</span>
+      </div>
+      
+      <!-- ElevenLabs Voice AI Widget Mock -->
+      <div class="glassmorphic-card p-3 flex items-center space-x-4 max-w-sm">
+        <div class="w-10 h-10 rounded-full neon-border flex items-center justify-center">
+          <i class="fas fa-robot neon-text"></i>
+        </div>
+        <div class="flex-1">
+          <div class="text-sm font-medium mb-1">AI Fleet Assistant</div>
+          <div class="text-xs text-gray-400">Ask me anything about your fleet</div>
+        </div>
+        <button class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center">
+          <i class="fas fa-microphone neon-text"></i>
+        </button>
+      </div>
+    </header>
+    
+    <!-- Main content -->
+    <div class="flex flex-col md:flex-row">
+      <!-- Sidebar Navigation -->
+      <div class="w-full md:w-64 pr-0 md:pr-6 mb-6 md:mb-0">
+        <nav class="glassmorphic-card p-4 mb-6">
+          <div class="mb-6 pb-4 border-b border-gray-700">
+            <div class="font-medium text-sm text-gray-400 mb-2">MAIN NAVIGATION</div>
+            <ul class="space-y-2">
+              <li class="nav-item active">
+                <i class="fas fa-tachometer-alt mr-3"></i>
+                Dashboard
+              </li>
+              <li class="nav-item">
+                <i class="fas fa-truck mr-3"></i>
+                Fleet Management
+              </li>
+              <li class="nav-item">
+                <i class="fas fa-route mr-3"></i>
+                Route Planning
+              </li>
+              <li class="nav-item">
+                <i class="fas fa-chart-line mr-3"></i>
+                Analytics
+              </li>
+              <li class="nav-item">
+                <i class="fas fa-trophy mr-3"></i>
+                Driver Achievements
+              </li>
+              <li class="nav-item">
+                <i class="fas fa-envelope mr-3"></i>
+                Messages
+                <span class="ml-2 bg-red-500 text-white text-xs rounded-full px-1.5">3</span>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <div class="font-medium text-sm text-gray-400 mb-2">PREMIUM SERVICES</div>
+            <ul class="space-y-2">
+              <li class="nav-item">
+                <i class="fas fa-shield-alt mr-3"></i>
+                Insurance Services
+              </li>
+              <li class="nav-item">
+                <i class="fas fa-gavel mr-3"></i>
+                Legal Support
+              </li>
+              <li class="nav-item">
+                <i class="fas fa-credit-card mr-3"></i>
+                Instant Payments
+              </li>
+              <li class="nav-item">
+                <i class="fas fa-search mr-3"></i>
+                NextLoad
+              </li>
+            </ul>
+          </div>
+        </nav>
+        
+        <!-- Quick Stats -->
+        <div class="glassmorphic-card p-4">
+          <h3 class="text-lg font-bold mb-4 section-header">Fleet Stats</h3>
+          <div class="space-y-4">
+            <div>
+              <div class="flex justify-between text-sm">
+                <span>Active Trucks</span>
+                <span class="neon-text">76%</span>
+              </div>
+              <div class="w-full h-2 bg-gray-700 rounded-full mt-1">
+                <div class="h-full rounded-full" style="width: 76%; background: linear-gradient(90deg, var(--accent-primary), #c2c007);"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-sm">
+                <span>Fuel Efficiency</span>
+                <span class="neon-text">84%</span>
+              </div>
+              <div class="w-full h-2 bg-gray-700 rounded-full mt-1">
+                <div class="h-full rounded-full" style="width: 84%; background: linear-gradient(90deg, var(--accent-primary), #c2c007);"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-sm">
+                <span>On-Time Delivery</span>
+                <span class="neon-text">92%</span>
+              </div>
+              <div class="w-full h-2 bg-gray-700 rounded-full mt-1">
+                <div class="h-full rounded-full" style="width: 92%; background: linear-gradient(90deg, var(--accent-primary), #c2c007);"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Main Dashboard Content -->
+      <div class="flex-1">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          <!-- Fleet Overview Card -->
+          <div class="glassmorphic-card p-6 col-span-1 depth-effect">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-bold section-header">Fleet Overview</h3>
+              <button class="text-sm text-gray-400 hover:text-white"><i class="fas fa-sync-alt"></i></button>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div class="bg-opacity-30 bg-gray-800 p-4 rounded-lg">
+                <div class="text-sm text-gray-400">Total Trucks</div>
+                <div class="text-2xl font-bold mt-1">42</div>
+              </div>
+              <div class="bg-opacity-30 bg-gray-800 p-4 rounded-lg">
+                <div class="text-sm text-gray-400">Active Routes</div>
+                <div class="text-2xl font-bold mt-1">28</div>
+              </div>
+              <div class="bg-opacity-30 bg-gray-800 p-4 rounded-lg">
+                <div class="text-sm text-gray-400">Drivers</div>
+                <div class="text-2xl font-bold mt-1">36</div>
+              </div>
+              <div class="bg-opacity-30 bg-gray-800 p-4 rounded-lg">
+                <div class="text-sm text-gray-400">Maintenance</div>
+                <div class="text-2xl font-bold mt-1">7</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- AI Insights Card -->
+          <div class="glassmorphic-card p-6 col-span-1 md:col-span-2 depth-effect">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-bold section-header">AI Insights</h3>
+              <div class="flex items-center">
+                <span class="text-xs text-gray-400 mr-2">Powered by OpenAI</span>
+                <i class="fas fa-brain neon-text"></i>
+              </div>
+            </div>
+            <div class="space-y-4">
+              <div class="bg-opacity-30 bg-gray-800 p-4 rounded-lg">
+                <div class="flex items-start">
+                  <i class="fas fa-lightbulb text-yellow-400 mt-1 mr-3"></i>
+                  <div>
+                    <div class="font-medium mb-1">Efficiency Opportunity</div>
+                    <p class="text-sm text-gray-400">Analysis of recent routes shows potential for 12% fuel savings by optimizing Chicago to Denver routes.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="bg-opacity-30 bg-gray-800 p-4 rounded-lg">
+                <div class="flex items-start">
+                  <i class="fas fa-exclamation-triangle text-red-400 mt-1 mr-3"></i>
+                  <div>
+                    <div class="font-medium mb-1">Maintenance Alert</div>
+                    <p class="text-sm text-gray-400">Predictive analysis indicates 3 vehicles will require maintenance within the next 2 weeks.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="bg-opacity-30 bg-gray-800 p-4 rounded-lg">
+                <div class="flex items-start">
+                  <i class="fas fa-chart-pie text-blue-400 mt-1 mr-3"></i>
+                  <div>
+                    <div class="font-medium mb-1">Load Optimization</div>
+                    <p class="text-sm text-gray-400">Recommended consolidation of Northeast deliveries could reduce empty miles by 8%.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Geometric Line Divider -->
+        <div class="geo-line my-6"></div>
+        
+        <!-- Active Trucks Section -->
+        <div>
+          <h2 class="text-xl font-bold mb-4 section-header">Active Trucks</h2>
+          
+          <div class="glassmorphic-card overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full premium-table">
+                <thead>
+                  <tr>
+                    <th class="text-left">Truck</th>
+                    <th class="text-left">Driver</th>
+                    <th class="text-left">Destination</th>
+                    <th class="text-left">Status</th>
+                    <th class="text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <div class="flex items-center">
+                        <i class="fas fa-truck-moving mr-3 text-gray-400"></i>
+                        <div>
+                          <div class="font-medium">TK-42198</div>
+                          <div class="text-xs text-gray-400">Volvo VNL 760</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="font-medium text-green-400">James Wilson</div>
+                      <div class="text-xs text-gray-400">ID: DRV-8834</div>
+                    </td>
+                    <td>
+                      <div class="font-medium">Portland, OR</div>
+                      <div class="text-xs text-gray-400">1,020 miles away</div>
+                    </td>
+                    <td>
+                      <div class="flex items-center">
+                        <span class="status-indicator status-active"></span>
+                        <span>Active</span>
+                      </div>
+                    </td>
+                    <td class="text-center">
+                      <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-map-marked-alt"></i></button>
+                      <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-phone"></i></button>
+                      <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-info-circle"></i></button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div class="flex items-center">
+                        <i class="fas fa-truck-moving mr-3 text-gray-400"></i>
+                        <div>
+                          <div class="font-medium">TK-58392</div>
+                          <div class="text-xs text-gray-400">Peterbilt 579</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="font-medium text-yellow-400">Sarah Johnson</div>
+                      <div class="text-xs text-gray-400">ID: DRV-7721</div>
+                    </td>
+                    <td>
+                      <div class="font-medium">Miami, FL</div>
+                      <div class="text-xs text-gray-400">845 miles away</div>
+                    </td>
+                    <td>
+                      <div class="flex items-center">
+                        <span class="status-indicator status-maintenance"></span>
+                        <span>Maintenance</span>
+                      </div>
+                    </td>
+                    <td class="text-center">
+                      <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-map-marked-alt"></i></button>
+                      <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-phone"></i></button>
+                      <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-info-circle"></i></button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div class="flex items-center">
+                        <i class="fas fa-truck-moving mr-3 text-gray-400"></i>
+                        <div>
+                          <div class="font-medium">TK-77219</div>
+                          <div class="text-xs text-gray-400">Kenworth T680</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="font-medium text-blue-400">Robert Chen</div>
+                      <div class="text-xs text-gray-400">ID: DRV-9938</div>
+                    </td>
+                    <td>
+                      <div class="font-medium">Chicago, IL</div>
+                      <div class="text-xs text-gray-400">320 miles away</div>
+                    </td>
+                    <td>
+                      <div class="flex items-center">
+                        <span class="status-indicator status-en-route"></span>
+                        <span>En Route</span>
+                      </div>
+                    </td>
+                    <td class="text-center">
+                      <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-map-marked-alt"></i></button>
+                      <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-phone"></i></button>
+                      <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-info-circle"></i></button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div class="flex items-center">
+                        <i class="fas fa-truck-moving mr-3 text-gray-400"></i>
+                        <div>
+                          <div class="font-medium">TK-34567</div>
+                          <div class="text-xs text-gray-400">Freightliner Cascadia</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="font-medium text-red-400">Maria Garcia</div>
+                      <div class="text-xs text-gray-400">ID: DRV-6612</div>
+                    </td>
+                    <td>
+                      <div class="font-medium">Denver, CO</div>
+                      <div class="text-xs text-gray-400">580 miles away</div>
+                    </td>
+                    <td>
+                      <div class="flex items-center">
+                        <span class="status-indicator status-inactive"></span>
+                        <span>Inactive</span>
+                      </div>
+                    </td>
+                    <td class="text-center">
+                      <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-map-marked-alt"></i></button>
+                      <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-phone"></i></button>
+                      <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-info-circle"></i></button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- Table Pagination -->
+            <div class="flex items-center justify-between p-4 border-t border-gray-700">
+              <div class="text-sm text-gray-400">Showing 1-4 of 28 trucks</div>
+              <div class="flex space-x-2">
+                <button class="w-8 h-8 flex items-center justify-center rounded bg-gray-800">
+                  <i class="fas fa-chevron-left text-sm"></i>
+                </button>
+                <button class="w-8 h-8 flex items-center justify-center rounded bg-gray-800 neon-text">1</button>
+                <button class="w-8 h-8 flex items-center justify-center rounded bg-gray-800">2</button>
+                <button class="w-8 h-8 flex items-center justify-center rounded bg-gray-800">3</button>
+                <button class="w-8 h-8 flex items-center justify-center rounded bg-gray-800">
+                  <i class="fas fa-chevron-right text-sm"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Driver Gamification Section -->
+        <div class="mt-8">
+          <h2 class="text-xl font-bold mb-4 section-header">Driver Achievements</h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Top Driver Card -->
+            <div class="glassmorphic-card p-6 depth-effect col-span-1 md:col-span-2">
+              <div class="flex flex-col md:flex-row items-center">
+                <div class="mb-4 md:mb-0 md:mr-6">
+                  <div class="w-24 h-24 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center">
+                    <i class="fas fa-trophy text-4xl text-black"></i>
+                  </div>
+                </div>
+                <div class="flex-1 text-center md:text-left">
+                  <div class="text-lg font-bold mb-1">Top Driver of the Month</div>
+                  <div class="text-2xl font-bold neon-text mb-2">Robert Chen</div>
+                  <div class="text-sm text-gray-400 mb-3">
+                    <span class="inline-block mr-4"><i class="fas fa-road mr-1"></i> 8,542 mi</span>
+                    <span class="inline-block mr-4"><i class="fas fa-gas-pump mr-1"></i> 8.3 MPG</span>
+                    <span class="inline-block"><i class="fas fa-star mr-1"></i> 98/100</span>
+                  </div>
+                  <div class="flex flex-wrap justify-center md:justify-start gap-2">
+                    <span class="bg-opacity-30 bg-gray-800 px-3 py-1 rounded-full text-xs">
+                      <i class="fas fa-tachometer-alt mr-1 text-green-400"></i> Efficiency Master
+                    </span>
+                    <span class="bg-opacity-30 bg-gray-800 px-3 py-1 rounded-full text-xs">
+                      <i class="fas fa-clock mr-1 text-blue-400"></i> Always On Time
+                    </span>
+                    <span class="bg-opacity-30 bg-gray-800 px-3 py-1 rounded-full text-xs">
+                      <i class="fas fa-medal mr-1 text-yellow-400"></i> 5-Star Rating
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Recent Achievements -->
+            <div class="glassmorphic-card p-6 col-span-1 lg:col-span-2">
+              <h3 class="text-lg font-bold mb-4 section-header">Recent Achievements</h3>
+              <div class="space-y-4">
+                <div class="flex items-center">
+                  <div class="w-10 h-10 rounded-full bg-opacity-30 bg-blue-900 flex items-center justify-center mr-4">
+                    <i class="fas fa-route text-blue-400"></i>
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex justify-between items-center mb-1">
+                      <div class="font-medium">Coast to Coast</div>
+                      <div class="text-xs text-gray-400">Today</div>
+                    </div>
+                    <div class="text-xs text-gray-400">Sarah Johnson completed a cross-country route</div>
+                  </div>
+                </div>
+                <div class="flex items-center">
+                  <div class="w-10 h-10 rounded-full bg-opacity-30 bg-green-900 flex items-center justify-center mr-4">
+                    <i class="fas fa-leaf text-green-400"></i>
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex justify-between items-center mb-1">
+                      <div class="font-medium">Eco Driver</div>
+                      <div class="text-xs text-gray-400">Yesterday</div>
+                    </div>
+                    <div class="text-xs text-gray-400">James Wilson maintained 9+ MPG for 30 days</div>
+                  </div>
+                </div>
+                <div class="flex items-center">
+                  <div class="w-10 h-10 rounded-full bg-opacity-30 bg-purple-900 flex items-center justify-center mr-4">
+                    <i class="fas fa-bolt text-purple-400"></i>
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex justify-between items-center mb-1">
+                      <div class="font-medium">Speed Demon</div>
+                      <div class="text-xs text-gray-400">3 days ago</div>
+                    </div>
+                    <div class="text-xs text-gray-400">Maria Garcia delivered 5 loads ahead of schedule</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Services Section -->
+        <div class="mt-8">
+          <h2 class="text-xl font-bold mb-4 section-header">Premium Services</h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Insurance Services Card -->
+            <div class="glassmorphic-card p-6 depth-effect">
+              <div class="text-center mb-4">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full neon-border mb-4">
+                  <i class="fas fa-shield-alt text-2xl neon-text"></i>
+                </div>
+                <h3 class="text-lg font-bold">Insurance Services</h3>
+                <p class="text-sm text-gray-400 mt-2">Premium coverage for your entire fleet with instant claims processing.</p>
+              </div>
+              <button class="gradient-button w-full mt-4">Access Service</button>
+            </div>
+            
+            <!-- Legal Support Card -->
+            <div class="glassmorphic-card p-6 depth-effect">
+              <div class="text-center mb-4">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full neon-border mb-4">
+                  <i class="fas fa-gavel text-2xl neon-text"></i>
+                </div>
+                <h3 class="text-lg font-bold">Legal Support</h3>
+                <p class="text-sm text-gray-400 mt-2">24/7 access to legal experts specialized in transportation regulations.</p>
+              </div>
+              <button class="gradient-button w-full mt-4">Access Service</button>
+            </div>
+            
+            <!-- Instant Payments Card -->
+            <div class="glassmorphic-card p-6 depth-effect">
+              <div class="text-center mb-4">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full neon-border mb-4">
+                  <i class="fas fa-credit-card text-2xl neon-text"></i>
+                </div>
+                <h3 class="text-lg font-bold">Instant Payments</h3>
+                <p class="text-sm text-gray-400 mt-2">Same-day payment processing with integrated financial tools.</p>
+              </div>
+              <button class="gradient-button w-full mt-4">Access Service</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
