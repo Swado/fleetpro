@@ -9,38 +9,44 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Main brand colors
+        // Main brand colors - from Flask app
         primary: {
-          DEFAULT: '#3B82F6', // Blue
-          dark: '#2563EB',
-          light: '#60A5FA',
-        },
-        secondary: {
-          DEFAULT: '#8B5CF6', // Purple
-          dark: '#7C3AED',
-          light: '#A78BFA',
+          DEFAULT: '#2C3E50', // Flask primary color
+          dark: '#1E2A35',
+          light: '#3D5166',
         },
         accent: {
-          DEFAULT: '#EC4899', // Pink
-          dark: '#DB2777',
-          light: '#F472B6',
+          DEFAULT: '#1E90FF', // Royal blue accent color
+          dark: '#0066CC',
+          light: '#00BFFF',
         },
         
-        // UI colors
+        // UI colors - from Flask app
         background: {
-          DEFAULT: '#0F172A', // Dark blue/slate base
-          light: '#1E293B',
-          dark: '#0B1120',
+          DEFAULT: '#000000', // Black background
+          light: '#121212',
+          dark: '#000000',
         },
         card: {
-          DEFAULT: '#1E293B',
-          light: '#334155',
-          dark: '#0F172A',
+          DEFAULT: '#0A0A0A', // Very dark gray for cards
+          light: '#101010',
+          dark: '#050505',
         },
         text: {
-          DEFAULT: '#E2E8F0', // Light text
-          light: '#F8FAFC',
-          dark: '#94A3B8',
+          DEFAULT: '#E0E0E0', // Light silver text color
+          light: '#FFFFFF', // White for highlights
+          dark: '#AAAAAA',
+        },
+        border: {
+          DEFAULT: '#333333', // Dark gray borders
+          light: '#444444',
+          dark: '#222222',
+        },
+        table: {
+          header: {
+            bg: '#121212', // Slightly lighter black for table headers
+            text: '#FFFFFF', // White text for table headers
+          }
         },
         
         // Status colors

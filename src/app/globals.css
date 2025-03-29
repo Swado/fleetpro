@@ -4,20 +4,66 @@
 
 @layer base {
   body {
-    @apply bg-white text-gray-900;
+    @apply bg-black text-white;
   }
 }
 
 @layer components {
+  /* Navigation */
   .navbar {
-    @apply bg-primary-DEFAULT shadow-md;
+    @apply bg-[#2C3E50] shadow-md;
   }
 
+  /* Buttons */
   .btn-primary {
-    @apply bg-primary-DEFAULT hover:bg-primary-dark text-white;
+    @apply bg-[#2C3E50] hover:bg-[#1E90FF] text-white transition-colors duration-300;
   }
 
   .btn-info {
-    @apply bg-blue-500 hover:bg-blue-600 text-white;
+    @apply bg-[#1E90FF] hover:bg-[#00BFFF] text-white transition-colors duration-300;
+  }
+  
+  /* Cards */
+  .card {
+    @apply bg-[#0A0A0A] border border-[#333333] rounded-lg shadow-md overflow-hidden;
+  }
+
+  .card-header {
+    @apply bg-[#121212] border-b border-[#1E90FF]/30 p-4 font-semibold text-[#1E90FF];
+  }
+  
+  .card-body {
+    @apply p-4;
+  }
+  
+  /* Tables */
+  .table-header {
+    @apply bg-[#121212] text-white sticky top-0 z-10 p-3 border-b-2 border-[#1E90FF];
+  }
+  
+  .table-row {
+    @apply border-b border-[#333333] hover:bg-[#121212] transition-colors duration-200;
+  }
+  
+  /* Truck cards */
+  .truck-card {
+    @apply bg-[#0A0A0A] border-l-4 border-l-[#1E90FF] rounded p-4 mb-3 transition-all hover:translate-x-1 hover:bg-[#121212];
+  }
+  
+  /* Status indicators */
+  .status-active {
+    @apply bg-[#10B981];
+  }
+  
+  .status-inactive, .status-maintenance {
+    @apply bg-[#EF4444];
+  }
+  
+  .status-en_route {
+    @apply bg-[#0EA5E9];
+  }
+  
+  .driver-status {
+    @apply inline-block w-3 h-3 rounded-full mr-2;
   }
 }
