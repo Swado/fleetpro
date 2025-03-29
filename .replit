@@ -35,8 +35,8 @@ task = "packager.installForAll"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "npx next dev"
-waitForPort = 3000
+args = "npx next dev -p 5000"
+waitForPort = 5000
 
 [[workflows.workflow]]
 name = "Flask Server"
