@@ -163,6 +163,21 @@ window.onclick = function(event) {
         modal.style.display = 'none';
     }
 }
+
+// Auto-display login form if redirected from another page
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if there's a 'next' parameter in the URL which indicates a redirect
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('next')) {
+        // Show the login modal automatically
+        document.getElementById('loginModal').style.display = 'flex';
+    }
+    
+    // For demo purposes, also show login if this is the login page
+    if (window.location.pathname === '/login') {
+        document.getElementById('loginModal').style.display = 'flex';
+    }
+});
 </script>
 {% endblock %}
 {% endblock %}
