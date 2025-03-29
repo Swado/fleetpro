@@ -13,22 +13,36 @@
     <!-- Header with ElevenLabs Integration -->
     <header class="flex flex-col md:flex-row items-start md:items-center justify-between mb-8">
       <div class="flex items-center space-x-2 mb-4 md:mb-0">
-        <div class="text-2xl font-bold neon-text">FleetTrack<span class="text-white">Pro</span></div>
+        <a href="/" class="text-2xl font-bold neon-text no-underline">FleetTrack<span class="text-white">Pro</span></a>
         <span class="premium-badge">Enterprise</span>
       </div>
       
-      <!-- ElevenLabs Voice AI Widget Mock -->
-      <div class="glassmorphic-card p-3 flex items-center space-x-4 max-w-sm">
-        <div class="w-10 h-10 rounded-full neon-border flex items-center justify-center">
-          <i class="fas fa-robot neon-text"></i>
+      <!-- User Controls -->
+      <div class="flex items-center space-x-4">
+        <!-- ElevenLabs Voice AI Widget Mock -->
+        <div class="glassmorphic-card p-3 flex items-center space-x-4 max-w-sm">
+          <div class="w-10 h-10 rounded-full neon-border flex items-center justify-center">
+            <i class="fas fa-robot neon-text"></i>
+          </div>
+          <div class="flex-1">
+            <div class="text-sm font-medium mb-1">AI Fleet Assistant</div>
+            <div class="text-xs text-gray-400">Ask me anything about your fleet</div>
+          </div>
+          <button class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center">
+            <i class="fas fa-microphone neon-text"></i>
+          </button>
         </div>
-        <div class="flex-1">
-          <div class="text-sm font-medium mb-1">AI Fleet Assistant</div>
-          <div class="text-xs text-gray-400">Ask me anything about your fleet</div>
+        
+        <!-- User Menu -->
+        <div class="glassmorphic-card p-2">
+          <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center">
+              <i class="fas fa-user text-gray-300"></i>
+            </div>
+            <div class="text-sm">Admin</div>
+            <a href="/logout" class="gradient-button py-1 px-3 text-sm">Logout</a>
+          </div>
         </div>
-        <button class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center">
-          <i class="fas fa-microphone neon-text"></i>
-        </button>
       </div>
     </header>
     
@@ -40,51 +54,71 @@
           <div class="mb-6 pb-4 border-b border-gray-700">
             <div class="font-medium text-sm text-gray-400 mb-2">MAIN NAVIGATION</div>
             <ul class="space-y-2">
-              <li class="nav-item active">
-                <i class="fas fa-tachometer-alt mr-3"></i>
-                Dashboard
+              <li>
+                <a href="/dashboard" class="nav-item active flex items-center w-full">
+                  <i class="fas fa-tachometer-alt mr-3"></i>
+                  Dashboard
+                </a>
               </li>
-              <li class="nav-item">
-                <i class="fas fa-truck mr-3"></i>
-                Fleet Management
+              <li>
+                <a href="/fleet" class="nav-item flex items-center w-full">
+                  <i class="fas fa-truck mr-3"></i>
+                  Fleet Management
+                </a>
               </li>
-              <li class="nav-item">
-                <i class="fas fa-route mr-3"></i>
-                Route Planning
+              <li>
+                <a href="/routes" class="nav-item flex items-center w-full">
+                  <i class="fas fa-route mr-3"></i>
+                  Route Planning
+                </a>
               </li>
-              <li class="nav-item">
-                <i class="fas fa-chart-line mr-3"></i>
-                Analytics
+              <li>
+                <a href="/analytics" class="nav-item flex items-center w-full">
+                  <i class="fas fa-chart-line mr-3"></i>
+                  Analytics
+                </a>
               </li>
-              <li class="nav-item">
-                <i class="fas fa-trophy mr-3"></i>
-                Driver Achievements
+              <li>
+                <a href="/achievements" class="nav-item flex items-center w-full">
+                  <i class="fas fa-trophy mr-3"></i>
+                  Driver Achievements
+                </a>
               </li>
-              <li class="nav-item">
-                <i class="fas fa-envelope mr-3"></i>
-                Messages
-                <span class="ml-2 bg-red-500 text-white text-xs rounded-full px-1.5">3</span>
+              <li>
+                <a href="/messages" class="nav-item flex items-center w-full">
+                  <i class="fas fa-envelope mr-3"></i>
+                  Messages
+                  <span class="ml-2 bg-red-500 text-white text-xs rounded-full px-1.5">3</span>
+                </a>
               </li>
             </ul>
           </div>
           <div>
             <div class="font-medium text-sm text-gray-400 mb-2">PREMIUM SERVICES</div>
             <ul class="space-y-2">
-              <li class="nav-item">
-                <i class="fas fa-shield-alt mr-3"></i>
-                Insurance Services
+              <li>
+                <a href="/services/insurance" class="nav-item flex items-center w-full">
+                  <i class="fas fa-shield-alt mr-3"></i>
+                  Insurance Services
+                </a>
               </li>
-              <li class="nav-item">
-                <i class="fas fa-gavel mr-3"></i>
-                Legal Support
+              <li>
+                <a href="/services/legal" class="nav-item flex items-center w-full">
+                  <i class="fas fa-gavel mr-3"></i>
+                  Legal Support
+                </a>
               </li>
-              <li class="nav-item">
-                <i class="fas fa-credit-card mr-3"></i>
-                Instant Payments
+              <li>
+                <a href="/services/payments" class="nav-item flex items-center w-full">
+                  <i class="fas fa-credit-card mr-3"></i>
+                  Instant Payments
+                </a>
               </li>
-              <li class="nav-item">
-                <i class="fas fa-search mr-3"></i>
-                NextLoad
+              <li>
+                <a href="/nextload" class="nav-item flex items-center w-full">
+                  <i class="fas fa-search mr-3"></i>
+                  NextLoad
+                </a>
               </li>
             </ul>
           </div>
@@ -240,9 +274,9 @@
                       </div>
                     </td>
                     <td class="text-center">
-                      <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-map-marked-alt"></i></button>
-                      <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-phone"></i></button>
-                      <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-info-circle"></i></button>
+                      <a href="/map/42198" class="text-gray-400 hover:text-white mx-1"><i class="fas fa-map-marked-alt"></i></a>
+                      <a href="/call/42198" class="text-gray-400 hover:text-white mx-1"><i class="fas fa-phone"></i></a>
+                      <a href="/truck/42198" class="text-gray-400 hover:text-white mx-1"><i class="fas fa-info-circle"></i></a>
                     </td>
                   </tr>
                   <tr>
@@ -270,9 +304,9 @@
                       </div>
                     </td>
                     <td class="text-center">
-                      <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-map-marked-alt"></i></button>
-                      <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-phone"></i></button>
-                      <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-info-circle"></i></button>
+                      <a href="/map/58392" class="text-gray-400 hover:text-white mx-1"><i class="fas fa-map-marked-alt"></i></a>
+                      <a href="/call/58392" class="text-gray-400 hover:text-white mx-1"><i class="fas fa-phone"></i></a>
+                      <a href="/truck/58392" class="text-gray-400 hover:text-white mx-1"><i class="fas fa-info-circle"></i></a>
                     </td>
                   </tr>
                   <tr>
@@ -300,9 +334,9 @@
                       </div>
                     </td>
                     <td class="text-center">
-                      <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-map-marked-alt"></i></button>
-                      <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-phone"></i></button>
-                      <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-info-circle"></i></button>
+                      <a href="/map/77219" class="text-gray-400 hover:text-white mx-1"><i class="fas fa-map-marked-alt"></i></a>
+                      <a href="/call/77219" class="text-gray-400 hover:text-white mx-1"><i class="fas fa-phone"></i></a>
+                      <a href="/truck/77219" class="text-gray-400 hover:text-white mx-1"><i class="fas fa-info-circle"></i></a>
                     </td>
                   </tr>
                   <tr>
@@ -330,9 +364,9 @@
                       </div>
                     </td>
                     <td class="text-center">
-                      <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-map-marked-alt"></i></button>
-                      <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-phone"></i></button>
-                      <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-info-circle"></i></button>
+                      <a href="/map/34567" class="text-gray-400 hover:text-white mx-1"><i class="fas fa-map-marked-alt"></i></a>
+                      <a href="/call/34567" class="text-gray-400 hover:text-white mx-1"><i class="fas fa-phone"></i></a>
+                      <a href="/truck/34567" class="text-gray-400 hover:text-white mx-1"><i class="fas fa-info-circle"></i></a>
                     </td>
                   </tr>
                 </tbody>
@@ -451,7 +485,7 @@
                 <h3 class="text-lg font-bold">Insurance Services</h3>
                 <p class="text-sm text-gray-400 mt-2">Premium coverage for your entire fleet with instant claims processing.</p>
               </div>
-              <button class="gradient-button w-full mt-4">Access Service</button>
+              <a href="/services/insurance" class="gradient-button w-full mt-4 block text-center no-underline">Access Service</a>
             </div>
             
             <!-- Legal Support Card -->
@@ -463,7 +497,7 @@
                 <h3 class="text-lg font-bold">Legal Support</h3>
                 <p class="text-sm text-gray-400 mt-2">24/7 access to legal experts specialized in transportation regulations.</p>
               </div>
-              <button class="gradient-button w-full mt-4">Access Service</button>
+              <a href="/services/legal" class="gradient-button w-full mt-4 block text-center no-underline">Access Service</a>
             </div>
             
             <!-- Instant Payments Card -->
@@ -475,7 +509,7 @@
                 <h3 class="text-lg font-bold">Instant Payments</h3>
                 <p class="text-sm text-gray-400 mt-2">Same-day payment processing with integrated financial tools.</p>
               </div>
-              <button class="gradient-button w-full mt-4">Access Service</button>
+              <a href="/services/payments" class="gradient-button w-full mt-4 block text-center no-underline">Access Service</a>
             </div>
           </div>
         </div>
