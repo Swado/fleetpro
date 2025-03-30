@@ -9,9 +9,21 @@ def index():
 
 # Handle specific route patterns
 @app.route('/map/<truck_id>')
+def map_view(truck_id):
+    return send_from_directory('.', 'map_view.html')
+
 @app.route('/call/<truck_id>')
+def call_driver(truck_id):
+    return send_from_directory('.', 'call_driver.html')
+
 @app.route('/truck/<truck_id>')
+def truck_detail(truck_id):
+    return send_from_directory('.', 'truck_detail.html')
+
 @app.route('/services/<service_type>')
+def services(service_type):
+    return send_from_directory('.', 'services.html')
+
 @app.route('/dashboard')
 @app.route('/fleet')
 @app.route('/routes')
@@ -20,8 +32,8 @@ def index():
 @app.route('/analytics')
 @app.route('/messages')
 @app.route('/settings')
-def handle_app_routes(truck_id=None, service_type=None):
-    # For now, all routes simply return the preview.html page
+def handle_app_routes():
+    # For most routes, return the main dashboard
     return send_from_directory('.', 'preview.html')
 
 @app.route('/logout')

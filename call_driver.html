@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Call Driver | FleetPulse</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .signal-wave {
+      position: absolute;
+      border: 3px solid rgba(250, 204, 21, 0.4);
+      border-radius: 50%;
+      opacity: 0;
+      transform: scale(0);
+      animation: signalWave 3s infinite;
+    }
+    
+    .signal-wave:nth-child(2) {
+      animation-delay: 0.5s;
+    }
+    
+    .signal-wave:nth-child(3) {
+      animation-delay: 1s;
+    }
+    
+    @keyframes signalWave {
+      0% {
+        opacity: 1;
+        transform: scale(0);
+      }
+      70% {
+        opacity: 0.3;
+      }
+      100% {
+        opacity: 0;
+        transform: scale(1);
+      }
+    }
+    
+    .microphone-wave {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background-color: rgba(250, 204, 21, 0.2);
+      transform-origin: center;
+      transform: scale(0);
+    }
+    
+    .microphone-active .microphone-wave {
+      animation: micPulse 1.5s ease-out infinite;
+    }
+    
+    @keyframes micPulse {
+      0% {
+        transform: scale(0);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(1.5);
+        opacity: 0;
+      }
+    }
+    
+    .audio-visualizer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      height: 40px;
+    }
+    
+    .audio-bar {
+      width: 3px;
+      background-color: #facc15;
+      border-radius: 3px;
+      animation: audioVisualize 0.5s ease-in-out infinite alternate;
+    }
+    
+    .audio-bar:nth-child(1) { height: 40%; animation-delay: 0.0s; }
+    .audio-bar:nth-child(2) { height: 60%; animation-delay: 0.1s; }
+    .audio-bar:nth-child(3) { height: 80%; animation-delay: 0.2s; }
+    .audio-bar:nth-child(4) { height: 100%; animation-delay: 0.3s; }
+    .audio-bar:nth-child(5) { height: 70%; animation-delay: 0.4s; }
+    .audio-bar:nth-child(6) { height: 50%; animation-delay: 0.5s; }
+    .audio-bar:nth-child(7) { height: 30%; animation-delay: 0.6s; }
+    
+    @keyframes audioVisualize {
+      0% {
+        transform: scaleY(0.5);
+      }
+      100% {
+        transform: scaleY(1);
+      }
+    }
+    
+    .call-button {
+      position: relative;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: linear-gradient(145deg, #3d3d3d, #181818);
+      box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5),
+                  -5px -5px 10px rgba(255, 255, 255, 0.05);
+    }
+    
+    .call-button:hover {
+      transform: scale(1.05);
+    }
+    
+    .call-button:active {
+      transform: scale(0.95);
+      box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.5),
+                  inset -3px -3px 5px rgba(255, 255, 255, 0.05);
+    }
+    
+    .call-button-end {
+      background: linear-gradient(145deg, #ff3a3a, #d32f2f);
+    }
+    
+    .call-button-accept {
+      background: linear-gradient(145deg, #4caf50, #2e7d32);
+    }
+  </style>
+</head>
+<body class="bg-black text-white">
+  <div class="min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="border-b border-gray-800 bg-gray-900 py-4">
+      <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between">
+          <!-- Logo -->
+          <div class="flex items-center space-x-4">
+            <div class="text-2xl font-bold text-yellow-400">FleetPulse</div>
+            <div class="hidden md:flex border-l border-gray-700 pl-4 ml-2">
+              <div class="neon-pulse-sm mr-2"></div>
+              <span class="text-sm text-yellow-400">LIVE</span>
+            </div>
+          </div>
+          
+          <!-- Main Navigation -->
+          <nav class="hidden md:flex items-center space-x-6">
+            <a href="/" class="nav-item">Home</a>
+            <a href="/dashboard" class="nav-item active">Dashboard</a>
+            <a href="/fleet" class="nav-item">Fleet</a>
+            <a href="/drivers" class="nav-item">Drivers</a>
+            <a href="/analytics" class="nav-item">Analytics</a>
+          </nav>
+          
+          <!-- User Menu -->
+          <div class="flex items-center">
+            <div class="hidden md:flex items-center mr-4 pr-4 border-r border-gray-700">
+              <div class="w-8 h-8 rounded-full bg-blue-600 mr-2 flex items-center justify-center">
+                <i class="fas fa-user text-gray-300"></i>
+              </div>
+              <div class="text-sm">Admin</div>
+              <a href="/logout" class="gradient-button py-1 px-3 text-sm ml-3">Logout</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    
+    <!-- Main content -->
+    <div class="flex-1 container mx-auto px-4 py-8">
+      <div class="flex items-center mb-6">
+        <a href="/dashboard" class="text-gray-400 hover:text-white mr-2">
+          <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+      </div>
+      
+      <!-- Call Container -->
+      <div class="max-w-lg mx-auto">
+        <!-- Call Header -->
+        <div class="glassmorphic-card p-6 mb-8">
+          <div class="flex justify-between items-center">
+            <div class="text-sm text-gray-400">Secure Fleet Call</div>
+            <div class="text-sm text-yellow-400">
+              <i class="fas fa-lock mr-1"></i> Encrypted
+            </div>
+          </div>
+          
+          <!-- Call Status -->
+          <div id="callConnecting" class="py-10 text-center">
+            <div class="w-24 h-24 rounded-full mx-auto bg-gray-800 flex items-center justify-center relative mb-6">
+              <div class="signal-wave" style="width: 100px; height: 100px;"></div>
+              <div class="signal-wave" style="width: 100px; height: 100px;"></div>
+              <div class="signal-wave" style="width: 100px; height: 100px;"></div>
+              <img src="https://randomuser.me/api/portraits/men/32.jpg" class="w-24 h-24 rounded-full object-cover" alt="James Wilson">
+            </div>
+            <div class="text-xl font-bold mb-1">Calling James Wilson</div>
+            <div class="text-gray-400">Driver ID: DRV-8845</div>
+            <div class="text-yellow-400 text-sm mt-3">
+              <i class="fas fa-circle neon-pulse mr-1"></i>
+              Connecting...
+            </div>
+          </div>
+          
+          <!-- Call In Progress (Hidden by Default) -->
+          <div id="callInProgress" class="py-10 text-center hidden">
+            <div class="w-24 h-24 rounded-full mx-auto bg-gray-800 flex items-center justify-center relative mb-6">
+              <img src="https://randomuser.me/api/portraits/men/32.jpg" class="w-24 h-24 rounded-full object-cover" alt="James Wilson">
+            </div>
+            <div class="text-xl font-bold mb-1">James Wilson</div>
+            <div class="text-gray-400 mb-2">Driver ID: DRV-8845</div>
+            <div class="text-yellow-400 text-sm">
+              <i class="fas fa-phone-alt mr-1"></i>
+              <span id="callTimer">00:00</span>
+            </div>
+            
+            <!-- Audio Visualizer -->
+            <div class="audio-visualizer mx-auto mt-6">
+              <div class="audio-bar"></div>
+              <div class="audio-bar"></div>
+              <div class="audio-bar"></div>
+              <div class="audio-bar"></div>
+              <div class="audio-bar"></div>
+              <div class="audio-bar"></div>
+              <div class="audio-bar"></div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Call Information -->
+        <div class="glassmorphic-card p-6 mb-8">
+          <h3 class="font-bold mb-4">Current Truck Status</h3>
+          
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <div>
+              <div class="text-sm text-gray-400">Current Location</div>
+              <div>Portland, OR</div>
+            </div>
+            <div>
+              <div class="text-sm text-gray-400">Destination</div>
+              <div>Seattle, WA</div>
+            </div>
+            <div>
+              <div class="text-sm text-gray-400">ETA</div>
+              <div>3:45 PM Today</div>
+            </div>
+            <div>
+              <div class="text-sm text-gray-400">Truck</div>
+              <div>Volvo VNL 860 (TK-42198)</div>
+            </div>
+          </div>
+          
+          <div class="p-3 bg-yellow-900 bg-opacity-20 rounded flex items-start">
+            <i class="fas fa-info-circle text-yellow-400 mr-2 mt-0.5"></i>
+            <div class="text-sm">
+              <span class="font-medium">Note:</span>
+              Driver reported minor delay due to traffic near Tacoma. Revised ETA updated above.
+            </div>
+          </div>
+        </div>
+        
+        <!-- Call Controls -->
+        <div class="flex justify-center items-center space-x-6">
+          <div class="flex flex-col items-center">
+            <button id="micButton" class="call-button mb-2 microphone-active">
+              <i class="fas fa-microphone text-white text-xl"></i>
+              <div class="microphone-wave"></div>
+            </button>
+            <div class="text-xs">Mute</div>
+          </div>
+          
+          <div class="flex flex-col items-center">
+            <button id="endCallButton" class="call-button call-button-end mb-2">
+              <i class="fas fa-phone-slash text-white text-xl"></i>
+            </button>
+            <div class="text-xs">End Call</div>
+          </div>
+          
+          <div class="flex flex-col items-center">
+            <button id="speakerButton" class="call-button mb-2">
+              <i class="fas fa-volume-up text-white text-xl"></i>
+            </button>
+            <div class="text-xs">Speaker</div>
+          </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="mt-8">
+          <h3 class="text-lg font-bold mb-4 section-header">Quick Actions</h3>
+          
+          <div class="grid grid-cols-2 gap-4">
+            <a href="/truck/42198" class="glassmorphic-card p-4 flex items-center hover:border-yellow-400 transition-all">
+              <div class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center mr-3">
+                <i class="fas fa-truck text-yellow-400"></i>
+              </div>
+              <div>
+                <div class="font-medium">Truck Details</div>
+                <div class="text-xs text-gray-400">View truck information</div>
+              </div>
+            </a>
+            
+            <a href="/map/42198" class="glassmorphic-card p-4 flex items-center hover:border-yellow-400 transition-all">
+              <div class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center mr-3">
+                <i class="fas fa-map-marked-alt text-yellow-400"></i>
+              </div>
+              <div>
+                <div class="font-medium">Track Location</div>
+                <div class="text-xs text-gray-400">View real-time location</div>
+              </div>
+            </a>
+            
+            <button class="glassmorphic-card p-4 flex items-center hover:border-yellow-400 transition-all">
+              <div class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center mr-3">
+                <i class="fas fa-route text-yellow-400"></i>
+              </div>
+              <div>
+                <div class="font-medium">Send Route</div>
+                <div class="text-xs text-gray-400">Update route information</div>
+              </div>
+            </button>
+            
+            <button class="glassmorphic-card p-4 flex items-center hover:border-yellow-400 transition-all">
+              <div class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center mr-3">
+                <i class="fas fa-comment-alt text-yellow-400"></i>
+              </div>
+              <div>
+                <div class="font-medium">Send Message</div>
+                <div class="text-xs text-gray-400">Text communication</div>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="py-6 border-t border-gray-800 mt-8">
+      <div class="container mx-auto px-4">
+        <div class="flex flex-col md:flex-row justify-between items-center">
+          <div class="text-sm text-gray-400">© 2025 FleetPulse. All rights reserved.</div>
+          <div class="flex mt-4 md:mt-0 space-x-4">
+            <a href="#" class="text-gray-400 hover:text-white">Privacy Policy</a>
+            <a href="#" class="text-gray-400 hover:text-white">Terms of Service</a>
+            <a href="#" class="text-gray-400 hover:text-white">Contact Support</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const micButton = document.getElementById('micButton');
+      const speakerButton = document.getElementById('speakerButton');
+      const endCallButton = document.getElementById('endCallButton');
+      const callConnecting = document.getElementById('callConnecting');
+      const callInProgress = document.getElementById('callInProgress');
+      const callTimer = document.getElementById('callTimer');
+      
+      let callActive = false;
+      let callSeconds = 0;
+      let timerInterval;
+      
+      // Simulate call connecting after 3 seconds
+      setTimeout(() => {
+        callConnecting.classList.add('hidden');
+        callInProgress.classList.remove('hidden');
+        callActive = true;
+        
+        // Start call timer
+        timerInterval = setInterval(updateCallTimer, 1000);
+      }, 3000);
+      
+      function updateCallTimer() {
+        callSeconds++;
+        const minutes = Math.floor(callSeconds / 60);
+        const seconds = callSeconds % 60;
+        callTimer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      }
+      
+      // Mic button toggle
+      micButton.addEventListener('click', function() {
+        if (callActive) {
+          micButton.classList.toggle('microphone-active');
+          const micIcon = micButton.querySelector('i');
+          if (micButton.classList.contains('microphone-active')) {
+            micIcon.className = 'fas fa-microphone text-white text-xl';
+          } else {
+            micIcon.className = 'fas fa-microphone-slash text-white text-xl';
+          }
+        }
+      });
+      
+      // Speaker button toggle
+      speakerButton.addEventListener('click', function() {
+        if (callActive) {
+          speakerButton.classList.toggle('call-button-accept');
+          const speakerIcon = speakerButton.querySelector('i');
+          if (speakerButton.classList.contains('call-button-accept')) {
+            speakerIcon.className = 'fas fa-volume-up text-white text-xl';
+          } else {
+            speakerIcon.className = 'fas fa-volume-mute text-white text-xl';
+          }
+        }
+      });
+      
+      // End call button
+      endCallButton.addEventListener('click', function() {
+        if (callActive) {
+          clearInterval(timerInterval);
+          window.location.href = '/dashboard';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

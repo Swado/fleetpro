@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Premium Services | FleetPulse</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body class="bg-black text-white">
+  <div class="min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="border-b border-gray-800 bg-gray-900 py-4">
+      <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between">
+          <!-- Logo -->
+          <div class="flex items-center space-x-4">
+            <div class="text-2xl font-bold text-yellow-400">FleetPulse</div>
+            <div class="hidden md:flex border-l border-gray-700 pl-4 ml-2">
+              <div class="neon-pulse-sm mr-2"></div>
+              <span class="text-sm text-yellow-400">LIVE</span>
+            </div>
+          </div>
+          
+          <!-- Main Navigation -->
+          <nav class="hidden md:flex items-center space-x-6">
+            <a href="/" class="nav-item">Home</a>
+            <a href="/dashboard" class="nav-item">Dashboard</a>
+            <a href="/fleet" class="nav-item">Fleet</a>
+            <a href="/drivers" class="nav-item">Drivers</a>
+            <a href="/analytics" class="nav-item">Analytics</a>
+          </nav>
+          
+          <!-- User Menu -->
+          <div class="flex items-center">
+            <div class="hidden md:flex items-center mr-4 pr-4 border-r border-gray-700">
+              <div class="w-8 h-8 rounded-full bg-blue-600 mr-2 flex items-center justify-center">
+                <i class="fas fa-user text-gray-300"></i>
+              </div>
+              <div class="text-sm">Admin</div>
+              <a href="/logout" class="gradient-button py-1 px-3 text-sm ml-3">Logout</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    
+    <!-- Main content -->
+    <div class="flex-1 container mx-auto px-4 py-8">
+      <div class="flex items-center mb-6">
+        <a href="/dashboard" class="text-gray-400 hover:text-white mr-2">
+          <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+      </div>
+      
+      <!-- Services Header -->
+      <div class="mb-8 text-center">
+        <h1 class="text-4xl font-bold mb-2">Premium Fleet Services</h1>
+        <p class="text-xl text-gray-400 max-w-3xl mx-auto">Enhance your fleet operations with our comprehensive suite of premium services designed to optimize performance and reduce costs.</p>
+      </div>
+      
+      <!-- Services Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+        <!-- Insurance Services Card -->
+        <div class="glassmorphic-card p-8 text-center hover:border-yellow-400 transition-all">
+          <div class="inline-flex items-center justify-center w-20 h-20 rounded-full neon-border mb-6">
+            <i class="fas fa-shield-alt text-3xl neon-text"></i>
+          </div>
+          <h2 class="text-xl font-bold mb-3">Insurance Services</h2>
+          <p class="text-gray-400 mb-6">Premium coverage for your entire fleet with instant claims processing and 24/7 emergency support.</p>
+          <div class="text-left mb-6">
+            <div class="flex items-center mb-2">
+              <i class="fas fa-check text-green-400 mr-2"></i>
+              <span>Comprehensive liability coverage</span>
+            </div>
+            <div class="flex items-center mb-2">
+              <i class="fas fa-check text-green-400 mr-2"></i>
+              <span>Cargo insurance up to $2M</span>
+            </div>
+            <div class="flex items-center mb-2">
+              <i class="fas fa-check text-green-400 mr-2"></i>
+              <span>Driver health & accident protection</span>
+            </div>
+            <div class="flex items-center">
+              <i class="fas fa-check text-green-400 mr-2"></i>
+              <span>Digital claims processed in 24hrs</span>
+            </div>
+          </div>
+          <div>
+            <button class="gradient-button w-full">Get Custom Quote</button>
+            <button class="border border-gray-700 py-2 px-4 rounded-md w-full mt-3 hover:bg-gray-800">Learn More</button>
+          </div>
+        </div>
+        
+        <!-- Legal Support Card -->
+        <div class="glassmorphic-card p-8 text-center hover:border-yellow-400 transition-all transform scale-105 border-yellow-400">
+          <div class="inline-flex items-center justify-center w-20 h-20 rounded-full neon-border mb-6">
+            <i class="fas fa-gavel text-3xl neon-text"></i>
+          </div>
+          <div class="absolute -top-3 right-8 bg-yellow-400 text-black px-3 py-1 rounded-full text-xs font-bold">MOST POPULAR</div>
+          <h2 class="text-xl font-bold mb-3">Legal Support</h2>
+          <p class="text-gray-400 mb-6">24/7 access to legal experts specialized in transportation regulations and compliance management.</p>
+          <div class="text-left mb-6">
+            <div class="flex items-center mb-2">
+              <i class="fas fa-check text-green-400 mr-2"></i>
+              <span>Unlimited legal consultations</span>
+            </div>
+            <div class="flex items-center mb-2">
+              <i class="fas fa-check text-green-400 mr-2"></i>
+              <span>Citation & violation defense</span>
+            </div>
+            <div class="flex items-center mb-2">
+              <i class="fas fa-check text-green-400 mr-2"></i>
+              <span>Contract review & negotiation</span>
+            </div>
+            <div class="flex items-center">
+              <i class="fas fa-check text-green-400 mr-2"></i>
+              <span>Regulatory compliance audits</span>
+            </div>
+          </div>
+          <div>
+            <button class="gradient-button w-full">Subscribe Now</button>
+            <button class="border border-gray-700 py-2 px-4 rounded-md w-full mt-3 hover:bg-gray-800">View Plan Details</button>
+          </div>
+        </div>
+        
+        <!-- Instant Payments Card -->
+        <div class="glassmorphic-card p-8 text-center hover:border-yellow-400 transition-all">
+          <div class="inline-flex items-center justify-center w-20 h-20 rounded-full neon-border mb-6">
+            <i class="fas fa-credit-card text-3xl neon-text"></i>
+          </div>
+          <h2 class="text-xl font-bold mb-3">Instant Payments</h2>
+          <p class="text-gray-400 mb-6">Same-day payment processing with integrated financial tools and advanced analytics.</p>
+          <div class="text-left mb-6">
+            <div class="flex items-center mb-2">
+              <i class="fas fa-check text-green-400 mr-2"></i>
+              <span>Same-day payment processing</span>
+            </div>
+            <div class="flex items-center mb-2">
+              <i class="fas fa-check text-green-400 mr-2"></i>
+              <span>Automated invoice generation</span>
+            </div>
+            <div class="flex items-center mb-2">
+              <i class="fas fa-check text-green-400 mr-2"></i>
+              <span>Real-time financial reporting</span>
+            </div>
+            <div class="flex items-center">
+              <i class="fas fa-check text-green-400 mr-2"></i>
+              <span>Tax preparation assistance</span>
+            </div>
+          </div>
+          <div>
+            <button class="gradient-button w-full">Activate Service</button>
+            <button class="border border-gray-700 py-2 px-4 rounded-md w-full mt-3 hover:bg-gray-800">Explore Features</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Additional Services Section -->
+      <div class="mb-12">
+        <h2 class="text-2xl font-bold mb-6 section-header">Additional Premium Services</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Maintenance Service -->
+          <div class="glassmorphic-card p-6 flex items-start">
+            <div class="flex-shrink-0 bg-gray-800 rounded-full p-3 mr-4">
+              <i class="fas fa-tools text-yellow-400"></i>
+            </div>
+            <div>
+              <h3 class="font-bold mb-1">Maintenance Service</h3>
+              <p class="text-sm text-gray-400 mb-3">Nationwide network of certified mechanics with priority service.</p>
+              <a href="#" class="text-yellow-400 hover:underline text-sm flex items-center">
+                Learn More <i class="fas fa-chevron-right ml-1 text-xs"></i>
+              </a>
+            </div>
+          </div>
+          
+          <!-- Fuel Savings Program -->
+          <div class="glassmorphic-card p-6 flex items-start">
+            <div class="flex-shrink-0 bg-gray-800 rounded-full p-3 mr-4">
+              <i class="fas fa-gas-pump text-yellow-400"></i>
+            </div>
+            <div>
+              <h3 class="font-bold mb-1">Fuel Savings Program</h3>
+              <p class="text-sm text-gray-400 mb-3">Discounted fuel rates at over 5,000 stations nationwide.</p>
+              <a href="#" class="text-yellow-400 hover:underline text-sm flex items-center">
+                Learn More <i class="fas fa-chevron-right ml-1 text-xs"></i>
+              </a>
+            </div>
+          </div>
+          
+          <!-- Safety Training -->
+          <div class="glassmorphic-card p-6 flex items-start">
+            <div class="flex-shrink-0 bg-gray-800 rounded-full p-3 mr-4">
+              <i class="fas fa-hard-hat text-yellow-400"></i>
+            </div>
+            <div>
+              <h3 class="font-bold mb-1">Safety Training</h3>
+              <p class="text-sm text-gray-400 mb-3">Comprehensive safety programs and certification for drivers.</p>
+              <a href="#" class="text-yellow-400 hover:underline text-sm flex items-center">
+                Learn More <i class="fas fa-chevron-right ml-1 text-xs"></i>
+              </a>
+            </div>
+          </div>
+          
+          <!-- Route Optimization -->
+          <div class="glassmorphic-card p-6 flex items-start">
+            <div class="flex-shrink-0 bg-gray-800 rounded-full p-3 mr-4">
+              <i class="fas fa-route text-yellow-400"></i>
+            </div>
+            <div>
+              <h3 class="font-bold mb-1">Route Optimization</h3>
+              <p class="text-sm text-gray-400 mb-3">AI-powered route planning to maximize efficiency and reduce costs.</p>
+              <a href="#" class="text-yellow-400 hover:underline text-sm flex items-center">
+                Learn More <i class="fas fa-chevron-right ml-1 text-xs"></i>
+              </a>
+            </div>
+          </div>
+          
+          <!-- Driver Recruitment -->
+          <div class="glassmorphic-card p-6 flex items-start">
+            <div class="flex-shrink-0 bg-gray-800 rounded-full p-3 mr-4">
+              <i class="fas fa-user-plus text-yellow-400"></i>
+            </div>
+            <div>
+              <h3 class="font-bold mb-1">Driver Recruitment</h3>
+              <p class="text-sm text-gray-400 mb-3">Vetted driver placement services with background checks.</p>
+              <a href="#" class="text-yellow-400 hover:underline text-sm flex items-center">
+                Learn More <i class="fas fa-chevron-right ml-1 text-xs"></i>
+              </a>
+            </div>
+          </div>
+          
+          <!-- Compliance Management -->
+          <div class="glassmorphic-card p-6 flex items-start">
+            <div class="flex-shrink-0 bg-gray-800 rounded-full p-3 mr-4">
+              <i class="fas fa-clipboard-check text-yellow-400"></i>
+            </div>
+            <div>
+              <h3 class="font-bold mb-1">Compliance Management</h3>
+              <p class="text-sm text-gray-400 mb-3">Automated regulatory compliance tracking and reporting.</p>
+              <a href="#" class="text-yellow-400 hover:underline text-sm flex items-center">
+                Learn More <i class="fas fa-chevron-right ml-1 text-xs"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Service Packages -->
+      <div class="mb-12">
+        <h2 class="text-2xl font-bold mb-6 section-header">Service Packages</h2>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <!-- Essential Package -->
+          <div class="glassmorphic-card p-6">
+            <div class="text-center mb-6">
+              <h3 class="text-xl font-bold mb-2">Essential Package</h3>
+              <div class="text-3xl font-bold mb-1">$299<span class="text-sm text-gray-400">/month</span></div>
+              <div class="text-sm text-gray-400">per 10 trucks</div>
+            </div>
+            
+            <div class="space-y-3 mb-6">
+              <div class="flex items-center">
+                <i class="fas fa-check text-green-400 mr-2"></i>
+                <span>Basic insurance coverage</span>
+              </div>
+              <div class="flex items-center">
+                <i class="fas fa-check text-green-400 mr-2"></i>
+                <span>Standard payment processing (3 days)</span>
+              </div>
+              <div class="flex items-center">
+                <i class="fas fa-check text-green-400 mr-2"></i>
+                <span>Email support (24hr response)</span>
+              </div>
+              <div class="flex items-center">
+                <i class="fas fa-check text-green-400 mr-2"></i>
+                <span>Basic maintenance scheduling</span>
+              </div>
+              <div class="flex items-center text-gray-500">
+                <i class="fas fa-times mr-2"></i>
+                <span>Legal consultation</span>
+              </div>
+              <div class="flex items-center text-gray-500">
+                <i class="fas fa-times mr-2"></i>
+                <span>Advanced route optimization</span>
+              </div>
+            </div>
+            
+            <button class="gradient-button w-full">Select Plan</button>
+          </div>
+          
+          <!-- Professional Package -->
+          <div class="glassmorphic-card p-6 border-yellow-400 transform scale-105 z-10">
+            <div class="absolute -top-3 right-6 bg-yellow-400 text-black px-3 py-1 rounded-full text-xs font-bold">RECOMMENDED</div>
+            <div class="text-center mb-6">
+              <h3 class="text-xl font-bold mb-2">Professional Package</h3>
+              <div class="text-3xl font-bold mb-1">$699<span class="text-sm text-gray-400">/month</span></div>
+              <div class="text-sm text-gray-400">per 10 trucks</div>
+            </div>
+            
+            <div class="space-y-3 mb-6">
+              <div class="flex items-center">
+                <i class="fas fa-check text-green-400 mr-2"></i>
+                <span>Premium insurance with $1M coverage</span>
+              </div>
+              <div class="flex items-center">
+                <i class="fas fa-check text-green-400 mr-2"></i>
+                <span>Same-day payment processing</span>
+              </div>
+              <div class="flex items-center">
+                <i class="fas fa-check text-green-400 mr-2"></i>
+                <span>Priority support (4hr response)</span>
+              </div>
+              <div class="flex items-center">
+                <i class="fas fa-check text-green-400 mr-2"></i>
+                <span>Comprehensive maintenance program</span>
+              </div>
+              <div class="flex items-center">
+                <i class="fas fa-check text-green-400 mr-2"></i>
+                <span>5 hours of legal consultation monthly</span>
+              </div>
+              <div class="flex items-center">
+                <i class="fas fa-check text-green-400 mr-2"></i>
+                <span>Advanced route optimization</span>
+              </div>
+            </div>
+            
+            <button class="gradient-button w-full">Select Plan</button>
+          </div>
+          
+          <!-- Enterprise Package -->
+          <div class="glassmorphic-card p-6">
+            <div class="text-center mb-6">
+              <h3 class="text-xl font-bold mb-2">Enterprise Package</h3>
+              <div class="text-3xl font-bold mb-1">$1,299<span class="text-sm text-gray-400">/month</span></div>
+              <div class="text-sm text-gray-400">per 10 trucks</div>
+            </div>
+            
+            <div class="space-y-3 mb-6">
+              <div class="flex items-center">
+                <i class="fas fa-check text-green-400 mr-2"></i>
+                <span>Ultimate insurance with $2M coverage</span>
+              </div>
+              <div class="flex items-center">
+                <i class="fas fa-check text-green-400 mr-2"></i>
+                <span>Instant payment processing</span>
+              </div>
+              <div class="flex items-center">
+                <i class="fas fa-check text-green-400 mr-2"></i>
+                <span>24/7 dedicated support</span>
+              </div>
+              <div class="flex items-center">
+                <i class="fas fa-check text-green-400 mr-2"></i>
+                <span>Premium maintenance with loaner vehicles</span>
+              </div>
+              <div class="flex items-center">
+                <i class="fas fa-check text-green-400 mr-2"></i>
+                <span>Unlimited legal consultation</span>
+              </div>
+              <div class="flex items-center">
+                <i class="fas fa-check text-green-400 mr-2"></i>
+                <span>AI-powered route optimization & planning</span>
+              </div>
+            </div>
+            
+            <button class="gradient-button w-full">Select Plan</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Contact Section -->
+      <div>
+        <div class="glassmorphic-card p-8">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+              <h2 class="text-2xl font-bold mb-4">Need Custom Solutions?</h2>
+              <p class="text-gray-400 mb-6">Our fleet consultants are ready to design a customized service package that fits your unique operational needs and budget.</p>
+              
+              <div class="mb-6">
+                <div class="flex items-center mb-4">
+                  <div class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center mr-3">
+                    <i class="fas fa-phone text-yellow-400"></i>
+                  </div>
+                  <div>
+                    <div class="text-sm text-gray-400">Call us at</div>
+                    <div class="font-bold">(800) 555-FLEET</div>
+                  </div>
+                </div>
+                
+                <div class="flex items-center">
+                  <div class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center mr-3">
+                    <i class="fas fa-envelope text-yellow-400"></i>
+                  </div>
+                  <div>
+                    <div class="text-sm text-gray-400">Email us at</div>
+                    <div class="font-bold">services@fleetpulse.com</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="p-4 border border-yellow-800 bg-yellow-900 bg-opacity-20 rounded-md">
+                <div class="flex items-start">
+                  <i class="fas fa-lightbulb text-yellow-400 mr-3 mt-1"></i>
+                  <div>
+                    <div class="font-bold mb-1">Pro Tip</div>
+                    <div class="text-sm">Companies with 25+ trucks qualify for our volume discount program with savings of up to 35% on all services.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <h3 class="font-bold mb-4">Request a Custom Quote</h3>
+              
+              <form>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label class="block text-sm text-gray-400 mb-1">First Name</label>
+                    <input type="text" class="w-full bg-gray-900 border border-gray-700 rounded-md px-3 py-2 focus:outline-none focus:border-yellow-400">
+                  </div>
+                  <div>
+                    <label class="block text-sm text-gray-400 mb-1">Last Name</label>
+                    <input type="text" class="w-full bg-gray-900 border border-gray-700 rounded-md px-3 py-2 focus:outline-none focus:border-yellow-400">
+                  </div>
+                </div>
+                
+                <div class="mb-4">
+                  <label class="block text-sm text-gray-400 mb-1">Company Name</label>
+                  <input type="text" class="w-full bg-gray-900 border border-gray-700 rounded-md px-3 py-2 focus:outline-none focus:border-yellow-400">
+                </div>
+                
+                <div class="mb-4">
+                  <label class="block text-sm text-gray-400 mb-1">Email Address</label>
+                  <input type="email" class="w-full bg-gray-900 border border-gray-700 rounded-md px-3 py-2 focus:outline-none focus:border-yellow-400">
+                </div>
+                
+                <div class="mb-4">
+                  <label class="block text-sm text-gray-400 mb-1">Fleet Size</label>
+                  <select class="w-full bg-gray-900 border border-gray-700 rounded-md px-3 py-2 focus:outline-none focus:border-yellow-400">
+                    <option>Select fleet size</option>
+                    <option>1-10 trucks</option>
+                    <option>11-25 trucks</option>
+                    <option>26-50 trucks</option>
+                    <option>51-100 trucks</option>
+                    <option>100+ trucks</option>
+                  </select>
+                </div>
+                
+                <div class="mb-4">
+                  <label class="block text-sm text-gray-400 mb-1">Services Interested In</label>
+                  <div class="space-y-2">
+                    <label class="flex items-center">
+                      <input type="checkbox" class="form-checkbox h-4 w-4 text-yellow-400 rounded bg-gray-700 border-gray-600">
+                      <span class="ml-2 text-sm">Insurance Services</span>
+                    </label>
+                    <label class="flex items-center">
+                      <input type="checkbox" class="form-checkbox h-4 w-4 text-yellow-400 rounded bg-gray-700 border-gray-600">
+                      <span class="ml-2 text-sm">Legal Support</span>
+                    </label>
+                    <label class="flex items-center">
+                      <input type="checkbox" class="form-checkbox h-4 w-4 text-yellow-400 rounded bg-gray-700 border-gray-600">
+                      <span class="ml-2 text-sm">Instant Payments</span>
+                    </label>
+                    <label class="flex items-center">
+                      <input type="checkbox" class="form-checkbox h-4 w-4 text-yellow-400 rounded bg-gray-700 border-gray-600">
+                      <span class="ml-2 text-sm">Maintenance Program</span>
+                    </label>
+                    <label class="flex items-center">
+                      <input type="checkbox" class="form-checkbox h-4 w-4 text-yellow-400 rounded bg-gray-700 border-gray-600">
+                      <span class="ml-2 text-sm">Route Optimization</span>
+                    </label>
+                  </div>
+                </div>
+                
+                <button type="submit" class="gradient-button w-full">Request Quote</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="py-6 border-t border-gray-800 mt-12">
+      <div class="container mx-auto px-4">
+        <div class="flex flex-col md:flex-row justify-between items-center">
+          <div class="text-sm text-gray-400">© 2025 FleetPulse. All rights reserved.</div>
+          <div class="flex mt-4 md:mt-0 space-x-4">
+            <a href="#" class="text-gray-400 hover:text-white">Privacy Policy</a>
+            <a href="#" class="text-gray-400 hover:text-white">Terms of Service</a>
+            <a href="#" class="text-gray-400 hover:text-white">Contact Support</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

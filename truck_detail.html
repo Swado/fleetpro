@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Truck Details | FleetPulse</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body class="bg-black text-white">
+  <div class="min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="border-b border-gray-800 bg-gray-900 py-4">
+      <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between">
+          <!-- Logo -->
+          <div class="flex items-center space-x-4">
+            <div class="text-2xl font-bold text-yellow-400">FleetPulse</div>
+            <div class="hidden md:flex border-l border-gray-700 pl-4 ml-2">
+              <div class="neon-pulse-sm mr-2"></div>
+              <span class="text-sm text-yellow-400">LIVE</span>
+            </div>
+          </div>
+          
+          <!-- Main Navigation -->
+          <nav class="hidden md:flex items-center space-x-6">
+            <a href="/" class="nav-item">Home</a>
+            <a href="/dashboard" class="nav-item active">Dashboard</a>
+            <a href="/fleet" class="nav-item">Fleet</a>
+            <a href="/drivers" class="nav-item">Drivers</a>
+            <a href="/analytics" class="nav-item">Analytics</a>
+          </nav>
+          
+          <!-- User Menu -->
+          <div class="flex items-center">
+            <div class="hidden md:flex items-center mr-4 pr-4 border-r border-gray-700">
+              <div class="w-8 h-8 rounded-full bg-blue-600 mr-2 flex items-center justify-center">
+                <i class="fas fa-user text-gray-300"></i>
+              </div>
+              <div class="text-sm">Admin</div>
+              <a href="/logout" class="gradient-button py-1 px-3 text-sm ml-3">Logout</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    
+    <!-- Main content -->
+    <div class="flex-1 container mx-auto px-4 py-8">
+      <div class="flex items-center mb-6">
+        <a href="/dashboard" class="text-gray-400 hover:text-white mr-2">
+          <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+      </div>
+      
+      <!-- Truck Detail Header -->
+      <div class="glassmorphic-card p-6 mb-8">
+        <div class="flex flex-col md:flex-row items-center md:items-start">
+          <div class="truck-icon rounded-lg mb-4 md:mb-0 md:mr-6 flex items-center justify-center bg-gray-800 p-4">
+            <i class="fas fa-truck-moving text-5xl text-yellow-400"></i>
+          </div>
+          
+          <div class="flex-1">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+              <div>
+                <h1 class="text-2xl font-bold">Truck TK-42198</h1>
+                <div class="text-gray-400">Volvo VNL 860</div>
+              </div>
+              <div class="flex mt-2 md:mt-0">
+                <span class="status-indicator status-active mr-2"></span>
+                <span>Active</span>
+              </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <div>
+                <div class="text-sm text-gray-400">Driver</div>
+                <div class="text-yellow-400 font-medium">James Wilson</div>
+              </div>
+              <div>
+                <div class="text-sm text-gray-400">Current Location</div>
+                <div>Portland, OR</div>
+              </div>
+              <div>
+                <div class="text-sm text-gray-400">Destination</div>
+                <div>Seattle, WA (220 miles left)</div>
+              </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div>
+                <div class="text-sm text-gray-400">Last Maintenance</div>
+                <div>Feb 15, 2025</div>
+              </div>
+              <div>
+                <div class="text-sm text-gray-400">Fuel Level</div>
+                <div>78%</div>
+              </div>
+              <div>
+                <div class="text-sm text-gray-400">Odometer</div>
+                <div>142,653 miles</div>
+              </div>
+              <div>
+                <div class="text-sm text-gray-400">Insurance Expires</div>
+                <div>Dec 31, 2025</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Action Buttons -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <a href="/map/42198" class="glassmorphic-card p-4 text-center flex flex-col items-center hover:border-yellow-400 transition-all">
+          <i class="fas fa-map-marked-alt text-2xl text-yellow-400 mb-2"></i>
+          <span>Track Location</span>
+        </a>
+        <a href="/call/42198" class="glassmorphic-card p-4 text-center flex flex-col items-center hover:border-yellow-400 transition-all">
+          <i class="fas fa-phone text-2xl text-yellow-400 mb-2"></i>
+          <span>Call Driver</span>
+        </a>
+        <a href="#maintenance" class="glassmorphic-card p-4 text-center flex flex-col items-center hover:border-yellow-400 transition-all">
+          <i class="fas fa-tools text-2xl text-yellow-400 mb-2"></i>
+          <span>Schedule Maintenance</span>
+        </a>
+        <a href="#history" class="glassmorphic-card p-4 text-center flex flex-col items-center hover:border-yellow-400 transition-all">
+          <i class="fas fa-history text-2xl text-yellow-400 mb-2"></i>
+          <span>View History</span>
+        </a>
+      </div>
+      
+      <!-- Vitals Section -->
+      <h2 class="text-xl font-bold mb-4 section-header">Truck Vitals</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <!-- Performance Metrics -->
+        <div class="glassmorphic-card p-6">
+          <h3 class="text-lg font-bold mb-4">Performance Metrics</h3>
+          
+          <div class="space-y-4">
+            <div>
+              <div class="flex justify-between mb-1">
+                <div class="text-sm text-gray-400">Fuel Efficiency</div>
+                <div class="text-sm">7.2 MPG</div>
+              </div>
+              <div class="h-2 bg-gray-700 rounded">
+                <div class="h-2 bg-green-500 rounded" style="width: 72%"></div>
+              </div>
+            </div>
+            
+            <div>
+              <div class="flex justify-between mb-1">
+                <div class="text-sm text-gray-400">Engine Health</div>
+                <div class="text-sm">92%</div>
+              </div>
+              <div class="h-2 bg-gray-700 rounded">
+                <div class="h-2 bg-blue-500 rounded" style="width: 92%"></div>
+              </div>
+            </div>
+            
+            <div>
+              <div class="flex justify-between mb-1">
+                <div class="text-sm text-gray-400">Tire Pressure</div>
+                <div class="text-sm">98%</div>
+              </div>
+              <div class="h-2 bg-gray-700 rounded">
+                <div class="h-2 bg-yellow-500 rounded" style="width: 98%"></div>
+              </div>
+            </div>
+            
+            <div>
+              <div class="flex justify-between mb-1">
+                <div class="text-sm text-gray-400">Battery Health</div>
+                <div class="text-sm">85%</div>
+              </div>
+              <div class="h-2 bg-gray-700 rounded">
+                <div class="h-2 bg-purple-500 rounded" style="width: 85%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Maintenance Schedule -->
+        <div class="glassmorphic-card p-6">
+          <h3 class="text-lg font-bold mb-4">Upcoming Maintenance</h3>
+          
+          <div class="space-y-4">
+            <div class="flex items-center">
+              <div class="w-10 h-10 rounded-full bg-opacity-30 bg-red-900 flex items-center justify-center mr-4">
+                <i class="fas fa-oil-can text-red-400"></i>
+              </div>
+              <div class="flex-1">
+                <div class="flex justify-between items-center mb-1">
+                  <div class="font-medium">Oil Change</div>
+                  <div class="text-xs text-gray-400">Due in 2 days</div>
+                </div>
+                <div class="text-xs text-gray-400">Last change: 12,000 miles ago</div>
+              </div>
+            </div>
+            
+            <div class="flex items-center">
+              <div class="w-10 h-10 rounded-full bg-opacity-30 bg-yellow-900 flex items-center justify-center mr-4">
+                <i class="fas fa-cog text-yellow-400"></i>
+              </div>
+              <div class="flex-1">
+                <div class="flex justify-between items-center mb-1">
+                  <div class="font-medium">Brake Inspection</div>
+                  <div class="text-xs text-gray-400">Due in 15 days</div>
+                </div>
+                <div class="text-xs text-gray-400">Last inspection: 4 months ago</div>
+              </div>
+            </div>
+            
+            <div class="flex items-center">
+              <div class="w-10 h-10 rounded-full bg-opacity-30 bg-green-900 flex items-center justify-center mr-4">
+                <i class="fas fa-filter text-green-400"></i>
+              </div>
+              <div class="flex-1">
+                <div class="flex justify-between items-center mb-1">
+                  <div class="font-medium">Air Filter Replacement</div>
+                  <div class="text-xs text-gray-400">Due in 45 days</div>
+                </div>
+                <div class="text-xs text-gray-400">Last replacement: 8,500 miles ago</div>
+              </div>
+            </div>
+          </div>
+          
+          <button class="gradient-button w-full mt-6">Schedule Service</button>
+        </div>
+      </div>
+      
+      <!-- Trip History -->
+      <h2 id="history" class="text-xl font-bold mb-4 section-header">Trip History</h2>
+      <div class="glassmorphic-card overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="min-w-full">
+            <thead>
+              <tr>
+                <th class="px-4 py-3 text-left">Date</th>
+                <th class="px-4 py-3 text-left">Route</th>
+                <th class="px-4 py-3 text-left">Distance</th>
+                <th class="px-4 py-3 text-left">MPG</th>
+                <th class="px-4 py-3 text-left">Status</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-700">
+              <tr>
+                <td class="px-4 py-3">Mar 15, 2025</td>
+                <td class="px-4 py-3">Los Angeles, CA → Portland, OR</td>
+                <td class="px-4 py-3">965 miles</td>
+                <td class="px-4 py-3">7.4</td>
+                <td class="px-4 py-3">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-900 text-green-300">
+                    Completed
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <td class="px-4 py-3">Mar 10, 2025</td>
+                <td class="px-4 py-3">Phoenix, AZ → Los Angeles, CA</td>
+                <td class="px-4 py-3">398 miles</td>
+                <td class="px-4 py-3">7.1</td>
+                <td class="px-4 py-3">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-900 text-green-300">
+                    Completed
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <td class="px-4 py-3">Mar 5, 2025</td>
+                <td class="px-4 py-3">Dallas, TX → Phoenix, AZ</td>
+                <td class="px-4 py-3">1,065 miles</td>
+                <td class="px-4 py-3">6.9</td>
+                <td class="px-4 py-3">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-900 text-green-300">
+                    Completed
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <td class="px-4 py-3">Feb 28, 2025</td>
+                <td class="px-4 py-3">Atlanta, GA → Dallas, TX</td>
+                <td class="px-4 py-3">795 miles</td>
+                <td class="px-4 py-3">7.2</td>
+                <td class="px-4 py-3">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-900 text-green-300">
+                    Completed
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <td class="px-4 py-3">Feb 20, 2025</td>
+                <td class="px-4 py-3">Miami, FL → Atlanta, GA</td>
+                <td class="px-4 py-3">662 miles</td>
+                <td class="px-4 py-3">7.5</td>
+                <td class="px-4 py-3">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-900 text-green-300">
+                    Completed
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="p-4 border-t border-gray-700 flex justify-between items-center">
+          <div class="text-sm text-gray-400">Showing 5 of 43 trips</div>
+          <div class="flex space-x-2">
+            <button class="w-8 h-8 flex items-center justify-center rounded bg-gray-800">
+              <i class="fas fa-chevron-left text-sm"></i>
+            </button>
+            <button class="w-8 h-8 flex items-center justify-center rounded bg-gray-800 neon-text">1</button>
+            <button class="w-8 h-8 flex items-center justify-center rounded bg-gray-800">2</button>
+            <button class="w-8 h-8 flex items-center justify-center rounded bg-gray-800">3</button>
+            <button class="w-8 h-8 flex items-center justify-center rounded bg-gray-800">
+              <i class="fas fa-chevron-right text-sm"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="py-6 border-t border-gray-800 mt-8">
+      <div class="container mx-auto px-4">
+        <div class="flex flex-col md:flex-row justify-between items-center">
+          <div class="text-sm text-gray-400">© 2025 FleetPulse. All rights reserved.</div>
+          <div class="flex mt-4 md:mt-0 space-x-4">
+            <a href="#" class="text-gray-400 hover:text-white">Privacy Policy</a>
+            <a href="#" class="text-gray-400 hover:text-white">Terms of Service</a>
+            <a href="#" class="text-gray-400 hover:text-white">Contact Support</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>
