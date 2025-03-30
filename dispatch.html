@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dispatch - FleetPulse</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    :root {
+      --bg-color: #111;
+      --text-color: #f8f8f8;
+      --accent-color: #facc15;
+      --accent-glow: 0 0 15px rgba(250, 204, 21, 0.6);
+      --button-bg: #1a1a1a;
+      --button-hover: #252525;
+      --transition-speed: 0.3s;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow-x: hidden;
+      position: relative;
+    }
+    
+    body::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 1200px;
+      height: 1200px;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle, rgba(30, 30, 30, 0.8) 0%, rgba(17, 17, 17, 0) 70%);
+      z-index: -1;
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      padding: 2rem;
+      text-align: center;
+    }
+    
+    #dispatch-screen, #trucks-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      transition: opacity var(--transition-speed) ease;
+    }
+    
+    #trucks-screen {
+      display: none;
+      opacity: 0;
+    }
+    
+    .main-button {
+      padding: 2rem 4rem;
+      font-size: 2.5rem;
+      font-weight: 700;
+      background-color: var(--button-bg);
+      color: var(--text-color);
+      border: 2px solid var(--accent-color);
+      border-radius: 1rem;
+      cursor: pointer;
+      transition: all var(--transition-speed) ease;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    .main-button:hover {
+      background-color: var(--button-hover);
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px var(--accent-color);
+    }
+    
+    .main-button:active {
+      transform: translateY(-2px);
+    }
+    
+    .main-button::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      border-radius: 1rem;
+      background: linear-gradient(45deg, var(--accent-color), transparent, var(--accent-color));
+      z-index: -1;
+      animation: rotate 3s linear infinite;
+      opacity: 0;
+      transition: opacity var(--transition-speed) ease;
+    }
+    
+    .main-button:hover::before {
+      opacity: 0.5;
+    }
+    
+    @keyframes rotate {
+      0% {
+        filter: hue-rotate(0deg);
+      }
+      100% {
+        filter: hue-rotate(360deg);
+      }
+    }
+    
+    .button-tagline {
+      margin-top: 1rem;
+      font-size: 1.25rem;
+      color: var(--accent-color);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      opacity: 0.8;
+    }
+    
+    .find-load-button {
+      padding: 1rem 2rem;
+      font-size: 1.25rem;
+      font-weight: 600;
+      background-color: var(--button-bg);
+      color: var(--text-color);
+      border: 2px solid var(--accent-color);
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: all var(--transition-speed) ease;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .find-load-button:hover {
+      background-color: var(--button-hover);
+      box-shadow: 0 0 15px var(--accent-color);
+    }
+    
+    .find-load-button i {
+      margin-right: 0.5rem;
+    }
+    
+    .trucks-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1.5rem;
+      width: 100%;
+    }
+    
+    .truck-button {
+      position: relative;
+      height: 150px;
+      background: linear-gradient(145deg, #222, #333);
+      border: none;
+      border-radius: 1rem;
+      cursor: pointer;
+      transition: all var(--transition-speed) ease;
+      color: var(--text-color);
+      font-weight: 600;
+      font-size: 1.1rem;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+      text-align: center;
+    }
+    
+    .truck-button:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 0 0 10px var(--accent-color);
+    }
+    
+    .truck-button:active {
+      transform: translateY(-2px);
+    }
+    
+    .truck-icon {
+      margin-bottom: 1rem;
+      font-size: 2.5rem;
+      color: var(--accent-color);
+    }
+    
+    .truck-button::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      background: linear-gradient(135deg, rgba(250, 204, 21, 0.1), transparent 80%);
+      border-radius: 1rem;
+    }
+    
+    .truck-button::after {
+      content: '';
+      position: absolute;
+      width: 30px;
+      height: 600%;
+      top: -200%;
+      left: -200px;
+      background-color: rgba(255, 255, 255, 0.1);
+      transform: rotate(35deg);
+      transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+    }
+    
+    .truck-button:hover::after {
+      left: 200%;
+    }
+    
+    .truck-status {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background-color: #22c55e; /* green for active */
+    }
+    
+    .truck-status.inactive {
+      background-color: #ef4444; /* red for inactive */
+    }
+    
+    @media (max-width: 768px) {
+      .main-button {
+        padding: 1.5rem 3rem;
+        font-size: 2rem;
+      }
+      
+      .button-tagline {
+        font-size: 1rem;
+      }
+      
+      .trucks-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .main-button {
+        padding: 1.2rem 2rem;
+        font-size: 1.5rem;
+      }
+      
+      .trucks-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Initial Dispatch Button Screen -->
+    <div id="dispatch-screen">
+      <button id="dispatch-button" class="main-button">DISPATCH</button>
+      <p class="button-tagline">Let's get this shit rollin'</p>
+    </div>
+    
+    <!-- Trucks Grid Screen (Initially Hidden) -->
+    <div id="trucks-screen">
+      <button id="find-load-button" class="find-load-button">
+        <i class="fas fa-search"></i>
+        Find Next Load (<span id="truck-count">0</span> Trucks)
+      </button>
+      
+      <div id="trucks-grid" class="trucks-grid">
+        <!-- Truck buttons will be generated here -->
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Sample truck data
+    const trucks = [
+      { id: 1, name: "John Smith", active: true },
+      { id: 2, name: "Sarah Johnson", active: true },
+      { id: 3, name: "Michael Brown", active: false },
+      { id: 4, name: "Emily Davis", active: true },
+      { id: 5, name: "David Wilson", active: true },
+      { id: 6, name: "Jennifer Lee", active: true },
+      { id: 7, name: "Robert Martinez", active: false },
+      { id: 8, name: "Lisa Thompson", active: true },
+      { id: 9, name: "Daniel White", active: true },
+      { id: 10, name: "Jessica Harris", active: true }
+    ];
+    
+    // DOM elements
+    const dispatchScreen = document.getElementById('dispatch-screen');
+    const trucksScreen = document.getElementById('trucks-screen');
+    const dispatchButton = document.getElementById('dispatch-button');
+    const trucksGrid = document.getElementById('trucks-grid');
+    const truckCountEl = document.getElementById('truck-count');
+    
+    // Update truck count
+    truckCountEl.textContent = trucks.length;
+    
+    // Generate truck buttons
+    function generateTruckButtons() {
+      trucksGrid.innerHTML = '';
+      
+      trucks.forEach(truck => {
+        const truckButton = document.createElement('button');
+        truckButton.className = 'truck-button';
+        truckButton.setAttribute('data-id', truck.id);
+        
+        const truckIcon = document.createElement('div');
+        truckIcon.className = 'truck-icon';
+        truckIcon.innerHTML = '<i class="fas fa-truck"></i>';
+        
+        const truckName = document.createElement('div');
+        truckName.className = 'truck-name';
+        truckName.textContent = truck.name;
+        
+        const truckStatus = document.createElement('div');
+        truckStatus.className = truck.active ? 'truck-status' : 'truck-status inactive';
+        
+        truckButton.appendChild(truckIcon);
+        truckButton.appendChild(truckName);
+        truckButton.appendChild(truckStatus);
+        
+        truckButton.addEventListener('click', () => {
+          alert(`Selected driver: ${truck.name}`);
+        });
+        
+        trucksGrid.appendChild(truckButton);
+      });
+    }
+    
+    // Event listeners
+    dispatchButton.addEventListener('click', () => {
+      // Fade out dispatch screen
+      dispatchScreen.style.opacity = '0';
+      
+      // Wait for fade animation
+      setTimeout(() => {
+        dispatchScreen.style.display = 'none';
+        trucksScreen.style.display = 'flex';
+        
+        // Generate truck buttons
+        generateTruckButtons();
+        
+        // Small delay before fade in
+        setTimeout(() => {
+          trucksScreen.style.opacity = '1';
+        }, 50);
+      }, 300);
+    });
+    
+    // Find load button functionality
+    document.getElementById('find-load-button').addEventListener('click', () => {
+      alert('Searching for next available load...');
+    });
+  </script>
+</body>
+</html>

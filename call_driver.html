@@ -3,416 +3,545 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Call Driver | FleetPulse</title>
+  <title>Call Driver - FleetPulse</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <link rel="stylesheet" href="/styles.css">
   <style>
-    .signal-wave {
-      position: absolute;
-      border: 3px solid rgba(250, 204, 21, 0.4);
-      border-radius: 50%;
-      opacity: 0;
-      transform: scale(0);
-      animation: signalWave 3s infinite;
+    :root {
+      --bg-color: #111;
+      --text-color: #f8f8f8;
+      --accent-color: #facc15;
+      --accent-glow: 0 0 15px rgba(250, 204, 21, 0.6);
+      --button-bg: #1a1a1a;
+      --button-hover: #252525;
+      --card-bg: #1a1a1a;
+      --border-color: rgba(250, 204, 21, 0.3);
+      --success-color: #22c55e;
+      --error-color: #ef4444;
+      --warning-color: #f59e0b;
+      --transition-speed: 0.3s;
     }
     
-    .signal-wave:nth-child(2) {
-      animation-delay: 0.5s;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
     
-    .signal-wave:nth-child(3) {
-      animation-delay: 1s;
-    }
-    
-    @keyframes signalWave {
-      0% {
-        opacity: 1;
-        transform: scale(0);
-      }
-      70% {
-        opacity: 0.3;
-      }
-      100% {
-        opacity: 0;
-        transform: scale(1);
-      }
-    }
-    
-    .microphone-wave {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      background-color: rgba(250, 204, 21, 0.2);
-      transform-origin: center;
-      transform: scale(0);
-    }
-    
-    .microphone-active .microphone-wave {
-      animation: micPulse 1.5s ease-out infinite;
-    }
-    
-    @keyframes micPulse {
-      0% {
-        transform: scale(0);
-        opacity: 1;
-      }
-      100% {
-        transform: scale(1.5);
-        opacity: 0;
-      }
-    }
-    
-    .audio-visualizer {
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      min-height: 100vh;
       display: flex;
-      align-items: center;
       justify-content: center;
-      gap: 3px;
-      height: 40px;
-    }
-    
-    .audio-bar {
-      width: 3px;
-      background-color: #facc15;
-      border-radius: 3px;
-      animation: audioVisualize 0.5s ease-in-out infinite alternate;
-    }
-    
-    .audio-bar:nth-child(1) { height: 40%; animation-delay: 0.0s; }
-    .audio-bar:nth-child(2) { height: 60%; animation-delay: 0.1s; }
-    .audio-bar:nth-child(3) { height: 80%; animation-delay: 0.2s; }
-    .audio-bar:nth-child(4) { height: 100%; animation-delay: 0.3s; }
-    .audio-bar:nth-child(5) { height: 70%; animation-delay: 0.4s; }
-    .audio-bar:nth-child(6) { height: 50%; animation-delay: 0.5s; }
-    .audio-bar:nth-child(7) { height: 30%; animation-delay: 0.6s; }
-    
-    @keyframes audioVisualize {
-      0% {
-        transform: scaleY(0.5);
-      }
-      100% {
-        transform: scaleY(1);
-      }
-    }
-    
-    .call-button {
+      align-items: center;
+      padding: 2rem 1rem;
+      overflow-x: hidden;
       position: relative;
-      width: 60px;
-      height: 60px;
+    }
+    
+    body::before {
+      content: '';
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      width: 1200px;
+      height: 1200px;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle, rgba(30, 30, 30, 0.8) 0%, rgba(17, 17, 17, 0) 70%);
+      z-index: -1;
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 600px;
+      text-align: center;
+    }
+    
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      color: var(--text-color);
+      font-size: 1rem;
+      margin-bottom: 2rem;
+      text-decoration: none;
+      transition: color var(--transition-speed) ease;
+      align-self: flex-start;
+    }
+    
+    .back-button:hover {
+      color: var(--accent-color);
+    }
+    
+    .back-button i {
+      margin-right: 0.5rem;
+    }
+    
+    .card {
+      background-color: var(--card-bg);
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+    }
+    
+    .driver-avatar {
+      width: 100px;
+      height: 100px;
       border-radius: 50%;
+      background-color: var(--button-bg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      border: 2px solid var(--accent-color);
+      font-size: 2.5rem;
+      color: var(--accent-color);
+    }
+    
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    
+    .driver-phone {
+      font-size: 1.25rem;
+      margin-bottom: 2rem;
+      color: rgba(248, 248, 248, 0.8);
+    }
+    
+    .call-options {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+    }
+    
+    .option-button {
+      background-color: var(--button-bg);
+      color: var(--text-color);
+      border: 1px solid var(--border-color);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      width: 48%;
+      cursor: pointer;
+      transition: all var(--transition-speed) ease;
+      font-weight: 600;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .option-button i {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+      color: var(--accent-color);
+    }
+    
+    .option-button:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    
+    .option-button.active {
+      border-color: var(--accent-color);
+      box-shadow: 0 0 10px rgba(250, 204, 21, 0.3);
+    }
+    
+    .action-buttons {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    .action-button {
+      padding: 0.8rem 1.5rem;
+      background-color: var(--button-bg);
+      color: var(--text-color);
+      border: 1px solid var(--border-color);
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition-speed) ease;
+      width: 48%;
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+    
+    .action-button i {
+      margin-right: 0.5rem;
+    }
+    
+    .action-button.primary {
+      background-color: var(--accent-color);
+      color: #111;
       border: none;
+    }
+    
+    .action-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    
+    .action-button.primary:hover {
+      box-shadow: 0 4px 12px rgba(250, 204, 21, 0.3);
+    }
+    
+    .call-status {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      font-weight: 500;
+      font-size: 1rem;
+      width: 100%;
+      display: none;
+    }
+    
+    .call-status.connecting {
+      background-color: rgba(245, 158, 11, 0.1);
+      color: var(--warning-color);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .call-status.connected {
+      background-color: rgba(34, 197, 94, 0.1);
+      color: var(--success-color);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .call-status.error {
+      background-color: rgba(239, 68, 68, 0.1);
+      color: var(--error-color);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .call-status i {
+      margin-right: 0.5rem;
+    }
+    
+    #call-time {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-top: 1rem;
+      display: none;
+    }
+    
+    .pulse-animation {
+      animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+      0% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.5;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+    
+    .conversation-container {
+      width: 100%;
+      margin-top: 2rem;
+      display: none;
+    }
+    
+    .conversation-header {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      text-align: left;
+    }
+    
+    .transcript {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      height: 150px;
+      overflow-y: auto;
+      text-align: left;
+      margin-bottom: 1rem;
+    }
+    
+    .transcript p {
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+    }
+    
+    .transcript .driver {
+      color: var(--accent-color);
+    }
+    
+    .transcript .you {
+      color: var(--text-color);
+    }
+    
+    .transcript-actions {
+      display: flex;
+      justify-content: flex-end;
+    }
+    
+    .transcript-button {
+      background: none;
+      border: none;
+      color: rgba(248, 248, 248, 0.6);
       cursor: pointer;
-      transition: all 0.3s ease;
-      background: linear-gradient(145deg, #3d3d3d, #181818);
-      box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5),
-                  -5px -5px 10px rgba(255, 255, 255, 0.05);
+      font-size: 0.9rem;
+      transition: color var(--transition-speed) ease;
+      display: flex;
+      align-items: center;
     }
     
-    .call-button:hover {
-      transform: scale(1.05);
+    .transcript-button:hover {
+      color: var(--accent-color);
     }
     
-    .call-button:active {
-      transform: scale(0.95);
-      box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.5),
-                  inset -3px -3px 5px rgba(255, 255, 255, 0.05);
+    .transcript-button i {
+      margin-right: 0.5rem;
     }
     
-    .call-button-end {
-      background: linear-gradient(145deg, #ff3a3a, #d32f2f);
-    }
-    
-    .call-button-accept {
-      background: linear-gradient(145deg, #4caf50, #2e7d32);
+    @media (max-width: 480px) {
+      .driver-avatar {
+        width: 80px;
+        height: 80px;
+        font-size: 2rem;
+      }
+      
+      h1 {
+        font-size: 1.5rem;
+      }
+      
+      .driver-phone {
+        font-size: 1rem;
+      }
+      
+      .option-button i {
+        font-size: 1.2rem;
+      }
+      
+      .action-button {
+        padding: 0.7rem 1rem;
+        font-size: 0.9rem;
+      }
     }
   </style>
 </head>
-<body class="bg-black text-white">
-  <div class="min-h-screen flex flex-col">
-    <!-- Header -->
-    <header class="border-b border-gray-800 bg-gray-900 py-4">
-      <div class="container mx-auto px-4">
-        <div class="flex items-center justify-between">
-          <!-- Logo -->
-          <div class="flex items-center space-x-4">
-            <div class="text-2xl font-bold text-yellow-400">FleetPulse</div>
-            <div class="hidden md:flex border-l border-gray-700 pl-4 ml-2">
-              <div class="neon-pulse-sm mr-2"></div>
-              <span class="text-sm text-yellow-400">LIVE</span>
-            </div>
-          </div>
-          
-          <!-- Main Navigation -->
-          <nav class="hidden md:flex items-center space-x-6">
-            <a href="/" class="nav-item">Home</a>
-            <a href="/dashboard" class="nav-item active">Dashboard</a>
-            <a href="/fleet" class="nav-item">Fleet</a>
-            <a href="/drivers" class="nav-item">Drivers</a>
-            <a href="/analytics" class="nav-item">Analytics</a>
-          </nav>
-          
-          <!-- User Menu -->
-          <div class="flex items-center">
-            <div class="hidden md:flex items-center mr-4 pr-4 border-r border-gray-700">
-              <div class="w-8 h-8 rounded-full bg-blue-600 mr-2 flex items-center justify-center">
-                <i class="fas fa-user text-gray-300"></i>
-              </div>
-              <div class="text-sm">Admin</div>
-              <a href="/logout" class="gradient-button py-1 px-3 text-sm ml-3">Logout</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </header>
+<body>
+  <div class="container">
+    <a href="/truck_detail/1" class="back-button">
+      <i class="fas fa-arrow-left"></i> Back to Driver
+    </a>
     
-    <!-- Main content -->
-    <div class="flex-1 container mx-auto px-4 py-8">
-      <div class="flex items-center mb-6">
-        <a href="/dashboard" class="text-gray-400 hover:text-white mr-2">
-          <i class="fas fa-arrow-left"></i> Back to Dashboard
-        </a>
+    <div class="card">
+      <div class="driver-avatar">
+        <i class="fas fa-user"></i>
       </div>
       
-      <!-- Call Container -->
-      <div class="max-w-lg mx-auto">
-        <!-- Call Header -->
-        <div class="glassmorphic-card p-6 mb-8">
-          <div class="flex justify-between items-center">
-            <div class="text-sm text-gray-400">Secure Fleet Call</div>
-            <div class="text-sm text-yellow-400">
-              <i class="fas fa-lock mr-1"></i> Encrypted
-            </div>
-          </div>
-          
-          <!-- Call Status -->
-          <div id="callConnecting" class="py-10 text-center">
-            <div class="w-24 h-24 rounded-full mx-auto bg-gray-800 flex items-center justify-center relative mb-6">
-              <div class="signal-wave" style="width: 100px; height: 100px;"></div>
-              <div class="signal-wave" style="width: 100px; height: 100px;"></div>
-              <div class="signal-wave" style="width: 100px; height: 100px;"></div>
-              <img src="https://randomuser.me/api/portraits/men/32.jpg" class="w-24 h-24 rounded-full object-cover" alt="James Wilson">
-            </div>
-            <div class="text-xl font-bold mb-1">Calling James Wilson</div>
-            <div class="text-gray-400">Driver ID: DRV-8845</div>
-            <div class="text-yellow-400 text-sm mt-3">
-              <i class="fas fa-circle neon-pulse mr-1"></i>
-              Connecting...
-            </div>
-          </div>
-          
-          <!-- Call In Progress (Hidden by Default) -->
-          <div id="callInProgress" class="py-10 text-center hidden">
-            <div class="w-24 h-24 rounded-full mx-auto bg-gray-800 flex items-center justify-center relative mb-6">
-              <img src="https://randomuser.me/api/portraits/men/32.jpg" class="w-24 h-24 rounded-full object-cover" alt="James Wilson">
-            </div>
-            <div class="text-xl font-bold mb-1">James Wilson</div>
-            <div class="text-gray-400 mb-2">Driver ID: DRV-8845</div>
-            <div class="text-yellow-400 text-sm">
-              <i class="fas fa-phone-alt mr-1"></i>
-              <span id="callTimer">00:00</span>
-            </div>
-            
-            <!-- Audio Visualizer -->
-            <div class="audio-visualizer mx-auto mt-6">
-              <div class="audio-bar"></div>
-              <div class="audio-bar"></div>
-              <div class="audio-bar"></div>
-              <div class="audio-bar"></div>
-              <div class="audio-bar"></div>
-              <div class="audio-bar"></div>
-              <div class="audio-bar"></div>
-            </div>
-          </div>
+      <h1>John Smith</h1>
+      <div class="driver-phone">(312) 555-7890</div>
+      
+      <div class="call-options">
+        <button class="option-button active" id="voice-call">
+          <i class="fas fa-phone"></i>
+          Voice Call
+        </button>
+        
+        <button class="option-button" id="video-call">
+          <i class="fas fa-video"></i>
+          Video Call
+        </button>
+      </div>
+      
+      <div class="action-buttons">
+        <button class="action-button" id="cancel-btn">
+          <i class="fas fa-times"></i> Cancel
+        </button>
+        
+        <button class="action-button primary" id="call-btn">
+          <i class="fas fa-phone"></i> Call Driver
+        </button>
+      </div>
+      
+      <div class="call-status" id="call-status">
+        <i class="fas fa-circle-notch fa-spin"></i> Connecting to driver...
+      </div>
+      
+      <div id="call-time">00:00</div>
+      
+      <div class="conversation-container" id="conversation-container">
+        <div class="conversation-header">Conversation Transcript</div>
+        
+        <div class="transcript" id="transcript">
+          <!-- Transcript will be dynamically added here -->
         </div>
         
-        <!-- Call Information -->
-        <div class="glassmorphic-card p-6 mb-8">
-          <h3 class="font-bold mb-4">Current Truck Status</h3>
-          
-          <div class="grid grid-cols-2 gap-4 mb-4">
-            <div>
-              <div class="text-sm text-gray-400">Current Location</div>
-              <div>Portland, OR</div>
-            </div>
-            <div>
-              <div class="text-sm text-gray-400">Destination</div>
-              <div>Seattle, WA</div>
-            </div>
-            <div>
-              <div class="text-sm text-gray-400">ETA</div>
-              <div>3:45 PM Today</div>
-            </div>
-            <div>
-              <div class="text-sm text-gray-400">Truck</div>
-              <div>Volvo VNL 860 (TK-42198)</div>
-            </div>
-          </div>
-          
-          <div class="p-3 bg-yellow-900 bg-opacity-20 rounded flex items-start">
-            <i class="fas fa-info-circle text-yellow-400 mr-2 mt-0.5"></i>
-            <div class="text-sm">
-              <span class="font-medium">Note:</span>
-              Driver reported minor delay due to traffic near Tacoma. Revised ETA updated above.
-            </div>
-          </div>
-        </div>
-        
-        <!-- Call Controls -->
-        <div class="flex justify-center items-center space-x-6">
-          <div class="flex flex-col items-center">
-            <button id="micButton" class="call-button mb-2 microphone-active">
-              <i class="fas fa-microphone text-white text-xl"></i>
-              <div class="microphone-wave"></div>
-            </button>
-            <div class="text-xs">Mute</div>
-          </div>
-          
-          <div class="flex flex-col items-center">
-            <button id="endCallButton" class="call-button call-button-end mb-2">
-              <i class="fas fa-phone-slash text-white text-xl"></i>
-            </button>
-            <div class="text-xs">End Call</div>
-          </div>
-          
-          <div class="flex flex-col items-center">
-            <button id="speakerButton" class="call-button mb-2">
-              <i class="fas fa-volume-up text-white text-xl"></i>
-            </button>
-            <div class="text-xs">Speaker</div>
-          </div>
-        </div>
-        
-        <!-- Quick Actions -->
-        <div class="mt-8">
-          <h3 class="text-lg font-bold mb-4 section-header">Quick Actions</h3>
-          
-          <div class="grid grid-cols-2 gap-4">
-            <a href="/truck/42198" class="glassmorphic-card p-4 flex items-center hover:border-yellow-400 transition-all">
-              <div class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center mr-3">
-                <i class="fas fa-truck text-yellow-400"></i>
-              </div>
-              <div>
-                <div class="font-medium">Truck Details</div>
-                <div class="text-xs text-gray-400">View truck information</div>
-              </div>
-            </a>
-            
-            <a href="/map/42198" class="glassmorphic-card p-4 flex items-center hover:border-yellow-400 transition-all">
-              <div class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center mr-3">
-                <i class="fas fa-map-marked-alt text-yellow-400"></i>
-              </div>
-              <div>
-                <div class="font-medium">Track Location</div>
-                <div class="text-xs text-gray-400">View real-time location</div>
-              </div>
-            </a>
-            
-            <button class="glassmorphic-card p-4 flex items-center hover:border-yellow-400 transition-all">
-              <div class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center mr-3">
-                <i class="fas fa-route text-yellow-400"></i>
-              </div>
-              <div>
-                <div class="font-medium">Send Route</div>
-                <div class="text-xs text-gray-400">Update route information</div>
-              </div>
-            </button>
-            
-            <button class="glassmorphic-card p-4 flex items-center hover:border-yellow-400 transition-all">
-              <div class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center mr-3">
-                <i class="fas fa-comment-alt text-yellow-400"></i>
-              </div>
-              <div>
-                <div class="font-medium">Send Message</div>
-                <div class="text-xs text-gray-400">Text communication</div>
-              </div>
-            </button>
-          </div>
+        <div class="transcript-actions">
+          <button class="transcript-button">
+            <i class="fas fa-download"></i> Save Transcript
+          </button>
         </div>
       </div>
     </div>
-    
-    <!-- Footer -->
-    <footer class="py-6 border-t border-gray-800 mt-8">
-      <div class="container mx-auto px-4">
-        <div class="flex flex-col md:flex-row justify-between items-center">
-          <div class="text-sm text-gray-400">© 2025 FleetPulse. All rights reserved.</div>
-          <div class="flex mt-4 md:mt-0 space-x-4">
-            <a href="#" class="text-gray-400 hover:text-white">Privacy Policy</a>
-            <a href="#" class="text-gray-400 hover:text-white">Terms of Service</a>
-            <a href="#" class="text-gray-400 hover:text-white">Contact Support</a>
-          </div>
-        </div>
-      </div>
-    </footer>
   </div>
   
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const micButton = document.getElementById('micButton');
-      const speakerButton = document.getElementById('speakerButton');
-      const endCallButton = document.getElementById('endCallButton');
-      const callConnecting = document.getElementById('callConnecting');
-      const callInProgress = document.getElementById('callInProgress');
-      const callTimer = document.getElementById('callTimer');
+    // DOM elements
+    const voiceCallBtn = document.getElementById('voice-call');
+    const videoCallBtn = document.getElementById('video-call');
+    const callBtn = document.getElementById('call-btn');
+    const cancelBtn = document.getElementById('cancel-btn');
+    const callStatus = document.getElementById('call-status');
+    const callTime = document.getElementById('call-time');
+    const conversationContainer = document.getElementById('conversation-container');
+    const transcript = document.getElementById('transcript');
+    
+    // Toggle call type selection
+    voiceCallBtn.addEventListener('click', () => {
+      voiceCallBtn.classList.add('active');
+      videoCallBtn.classList.remove('active');
+    });
+    
+    videoCallBtn.addEventListener('click', () => {
+      videoCallBtn.classList.add('active');
+      voiceCallBtn.classList.remove('active');
+    });
+    
+    // Cancel button functionality
+    cancelBtn.addEventListener('click', () => {
+      window.location.href = '/truck_detail/1';
+    });
+    
+    // Call timer
+    let callInterval;
+    let seconds = 0;
+    let minutes = 0;
+    
+    function updateCallTime() {
+      seconds++;
       
-      let callActive = false;
-      let callSeconds = 0;
-      let timerInterval;
-      
-      // Simulate call connecting after 3 seconds
-      setTimeout(() => {
-        callConnecting.classList.add('hidden');
-        callInProgress.classList.remove('hidden');
-        callActive = true;
-        
-        // Start call timer
-        timerInterval = setInterval(updateCallTimer, 1000);
-      }, 3000);
-      
-      function updateCallTimer() {
-        callSeconds++;
-        const minutes = Math.floor(callSeconds / 60);
-        const seconds = callSeconds % 60;
-        callTimer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      if (seconds >= 60) {
+        seconds = 0;
+        minutes++;
       }
       
-      // Mic button toggle
-      micButton.addEventListener('click', function() {
-        if (callActive) {
-          micButton.classList.toggle('microphone-active');
-          const micIcon = micButton.querySelector('i');
-          if (micButton.classList.contains('microphone-active')) {
-            micIcon.className = 'fas fa-microphone text-white text-xl';
-          } else {
-            micIcon.className = 'fas fa-microphone-slash text-white text-xl';
-          }
-        }
-      });
+      const formattedSeconds = seconds < 10 ? `0${seconds}` : seconds;
+      const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
       
-      // Speaker button toggle
-      speakerButton.addEventListener('click', function() {
-        if (callActive) {
-          speakerButton.classList.toggle('call-button-accept');
-          const speakerIcon = speakerButton.querySelector('i');
-          if (speakerButton.classList.contains('call-button-accept')) {
-            speakerIcon.className = 'fas fa-volume-up text-white text-xl';
-          } else {
-            speakerIcon.className = 'fas fa-volume-mute text-white text-xl';
-          }
-        }
+      callTime.textContent = `${formattedMinutes}:${formattedSeconds}`;
+    }
+    
+    // Sample conversation data
+    const sampleConversation = [
+      { speaker: 'you', text: 'Hi John, this is dispatch. How's your trip going?' },
+      { speaker: 'driver', text: 'Hey there! All good so far. Just passed through Lincoln about an hour ago.' },
+      { speaker: 'you', text: 'Great to hear. Any issues with the cargo or the truck?' },
+      { speaker: 'driver', text: 'No issues with the cargo. The truck's running fine, but I noticed the rear left tire pressure is a bit low.' },
+      { speaker: 'you', text: 'Thanks for letting me know. Could you stop at the next service station to check it?' },
+      { speaker: 'driver', text: 'Will do. There's a Flying J coming up in about 30 miles.' },
+      { speaker: 'you', text: 'Perfect. And what's your ETA to Denver looking like?' },
+      { speaker: 'driver', text: 'Should arrive around 4:15 PM on the 30th, maybe a bit earlier if traffic stays light.' }
+    ];
+    
+    // Function to populate the transcript
+    function populateTranscript() {
+      sampleConversation.forEach((message, index) => {
+        setTimeout(() => {
+          const messageElement = document.createElement('p');
+          messageElement.innerHTML = `<span class="${message.speaker}">${message.speaker === 'driver' ? 'John' : 'You'}:</span> ${message.text}`;
+          transcript.appendChild(messageElement);
+          transcript.scrollTop = transcript.scrollHeight;
+        }, index * 2000); // Add each message with a delay
       });
+    }
+    
+    // Simulate a call
+    callBtn.addEventListener('click', () => {
+      // Update UI for calling state
+      callBtn.disabled = true;
+      callStatus.className = 'call-status connecting';
+      callStatus.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Connecting to driver...';
+      callStatus.style.display = 'flex';
       
-      // End call button
-      endCallButton.addEventListener('click', function() {
-        if (callActive) {
-          clearInterval(timerInterval);
-          window.location.href = '/dashboard';
-        }
-      });
+      // Simulate connection delay
+      setTimeout(() => {
+        // Update UI for connected state
+        callStatus.className = 'call-status connected';
+        callStatus.innerHTML = '<i class="fas fa-phone"></i> Connected with John Smith';
+        callBtn.innerHTML = '<i class="fas fa-phone-slash"></i> End Call';
+        callBtn.disabled = false;
+        callBtn.classList.add('pulse-animation');
+        
+        // Show call timer
+        callTime.style.display = 'block';
+        callInterval = setInterval(updateCallTime, 1000);
+        
+        // Show conversation container
+        conversationContainer.style.display = 'block';
+        
+        // Populate transcript with a delay
+        populateTranscript();
+        
+      }, 3000); // Simulate 3 second connection time
+      
+      // Change call button functionality to end call
+      callBtn.removeEventListener('click', callBtn.onclick);
+      callBtn.addEventListener('click', endCall);
     });
+    
+    // End call function
+    function endCall() {
+      // Clear interval and reset timer
+      clearInterval(callInterval);
+      seconds = 0;
+      minutes = 0;
+      
+      // Update UI
+      callStatus.className = 'call-status';
+      callStatus.style.display = 'none';
+      callTime.style.display = 'none';
+      callBtn.innerHTML = '<i class="fas fa-phone"></i> Call Driver';
+      callBtn.classList.remove('pulse-animation');
+      
+      // Change button functionality back to start call
+      callBtn.removeEventListener('click', endCall);
+      callBtn.addEventListener('click', callBtn.onclick);
+      
+      // Show alert
+      alert('Call ended. The transcript has been saved.');
+      
+      // Redirect back to driver detail
+      window.location.href = '/truck_detail/1';
+    }
   </script>
 </body>
 </html>

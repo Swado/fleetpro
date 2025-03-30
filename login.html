@@ -3,251 +3,585 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sign In | FleetPulse</title>
+  <title>Login - FleetPulse</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <link rel="stylesheet" href="/styles.css">
   <style>
-    .login-gradient {
-      background: linear-gradient(135deg, rgba(17, 24, 39, 0.95), rgba(0, 0, 0, 0.95));
-      background-size: cover;
-      background-position: center;
+    :root {
+      --bg-color: #111;
+      --text-color: #f8f8f8;
+      --accent-color: #facc15;
+      --accent-glow: 0 0 15px rgba(250, 204, 21, 0.6);
+      --button-bg: #1a1a1a;
+      --button-hover: #252525;
+      --card-bg: rgba(26, 26, 26, 0.7);
+      --border-color: rgba(250, 204, 21, 0.3);
+      --error-color: #ef4444;
+      --transition-speed: 0.3s;
     }
     
-    .input-icon {
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    /* Background effects */
+    .bg-elements {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+    }
+    
+    .bg-gradient {
       position: absolute;
       top: 50%;
-      transform: translateY(-50%);
-      left: 1rem;
-      color: #6b7280;
+      left: 50%;
+      width: 1000px;
+      height: 1000px;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle, rgba(30, 30, 30, 0.8) 0%, rgba(17, 17, 17, 0) 70%);
     }
     
-    .input-with-icon {
-      padding-left: 2.5rem;
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
     }
     
-    .border-gradient {
+    .bg-line {
+      position: absolute;
+      height: 2px;
+      width: 200px;
+      background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+      animation: moveLine 15s linear infinite;
+      opacity: 0.2;
+    }
+    
+    .bg-line:nth-child(1) {
+      top: 15%;
+      left: -200px;
+      animation-delay: 0s;
+    }
+    
+    .bg-line:nth-child(2) {
+      top: 35%;
+      left: -200px;
+      animation-delay: 5s;
+      width: 150px;
+    }
+    
+    .bg-line:nth-child(3) {
+      top: 55%;
+      left: -200px;
+      animation-delay: 7s;
+      width: 300px;
+    }
+    
+    .bg-line:nth-child(4) {
+      top: 75%;
+      left: -200px;
+      animation-delay: 2s;
+      width: 250px;
+    }
+    
+    @keyframes moveLine {
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        transform: translateX(calc(100vw + 400px));
+      }
+    }
+    
+    .glow-circle {
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(250, 204, 21, 0.1) 0%, rgba(250, 204, 21, 0) 70%);
+      animation: pulse 4s ease-in-out infinite alternate;
+    }
+    
+    .glow-circle:nth-child(1) {
+      top: 20%;
+      right: 20%;
+    }
+    
+    .glow-circle:nth-child(2) {
+      bottom: 20%;
+      left: 20%;
+      animation-delay: 2s;
+    }
+    
+    @keyframes pulse {
+      0% {
+        opacity: 0.2;
+        transform: scale(0.8);
+      }
+      100% {
+        opacity: 0.4;
+        transform: scale(1.2);
+      }
+    }
+    
+    /* Login container */
+    .login-container {
+      width: 100%;
+      max-width: 450px;
       position: relative;
-      border-radius: 0.375rem;
-      z-index: 0;
+      z-index: 1;
     }
     
-    .border-gradient::before {
+    .logo-container {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-color);
+      text-decoration: none;
+    }
+    
+    .logo i {
+      color: var(--accent-color);
+      margin-right: 0.75rem;
+      filter: drop-shadow(var(--accent-glow));
+      font-size: 2.5rem;
+    }
+    
+    .login-card {
+      background-color: var(--card-bg);
+      border-radius: 1rem;
+      padding: 2.5rem;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2), 0 0 10px rgba(250, 204, 21, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .login-card::before {
       content: '';
       position: absolute;
       top: 0;
       left: 0;
-      right: 0;
-      bottom: 0;
-      border-radius: 0.375rem;
-      padding: 1px;
-      background: linear-gradient(90deg, #facc15, transparent, #facc15);
-      -webkit-mask: 
-        linear-gradient(#fff 0 0) content-box, 
-        linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      z-index: -1;
-      opacity: 0;
-      transition: opacity 0.3s ease;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
     }
     
-    .input-focus:focus {
-      border-color: transparent;
-      outline: none;
+    .login-header {
+      text-align: center;
+      margin-bottom: 2rem;
     }
     
-    .input-focus:focus + .border-gradient::before {
-      opacity: 1;
+    .login-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
     }
     
-    .login-button {
+    .login-subtitle {
+      font-size: 0.95rem;
+      color: rgba(248, 248, 248, 0.7);
+    }
+    
+    .login-form {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
       position: relative;
-      overflow: hidden;
-      z-index: 1;
-      transition: all 0.3s ease;
     }
     
-    .login-button::before {
+    .form-label {
+      display: block;
+      font-size: 0.95rem;
+      font-weight: 500;
+      margin-bottom: 0.75rem;
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 0.9rem 1rem 0.9rem 3rem;
+      background-color: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0.5rem;
+      color: var(--text-color);
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      transition: all var(--transition-speed) ease;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 2px rgba(250, 204, 21, 0.2);
+    }
+    
+    .form-icon {
+      position: absolute;
+      top: 2.75rem;
+      left: 1rem;
+      color: rgba(248, 248, 248, 0.6);
+      font-size: 1.1rem;
+    }
+    
+    .form-group:focus-within .form-icon {
+      color: var(--accent-color);
+    }
+    
+    .form-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    
+    .remember-me {
+      display: flex;
+      align-items: center;
+    }
+    
+    .checkbox-input {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+      height: 0;
+      width: 0;
+    }
+    
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      font-size: 0.9rem;
+      color: rgba(248, 248, 248, 0.8);
+      cursor: pointer;
+    }
+    
+    .checkbox-custom {
+      width: 18px;
+      height: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+      margin-right: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all var(--transition-speed) ease;
+    }
+    
+    .checkbox-custom i {
+      color: var(--bg-color);
+      font-size: 0.7rem;
+      display: none;
+    }
+    
+    .checkbox-input:checked ~ .checkbox-custom {
+      background-color: var(--accent-color);
+      border-color: var(--accent-color);
+    }
+    
+    .checkbox-input:checked ~ .checkbox-custom i {
+      display: block;
+    }
+    
+    .forgot-password {
+      font-size: 0.9rem;
+      color: rgba(248, 248, 248, 0.8);
+      text-decoration: none;
+      transition: color var(--transition-speed) ease;
+    }
+    
+    .forgot-password:hover {
+      color: var(--accent-color);
+    }
+    
+    .submit-button {
+      padding: 1rem;
+      background-color: var(--accent-color);
+      color: var(--bg-color);
+      border: none;
+      border-radius: 0.5rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition-speed) ease;
+      margin-bottom: 1.5rem;
+    }
+    
+    .submit-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(250, 204, 21, 0.4);
+    }
+    
+    .alternate-login {
+      text-align: center;
+    }
+    
+    .alternate-text {
+      font-size: 0.9rem;
+      color: rgba(248, 248, 248, 0.6);
+      margin-bottom: 1rem;
+      position: relative;
+    }
+    
+    .alternate-text::before,
+    .alternate-text::after {
       content: '';
       position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-      transition: all 0.5s ease;
-      z-index: -1;
+      top: 50%;
+      width: 30%;
+      height: 1px;
+      background-color: rgba(255, 255, 255, 0.1);
     }
     
-    .login-button:hover::before {
-      left: 100%;
+    .alternate-text::before {
+      left: 0;
     }
     
-    /* For the background elements */
-    .bg-element {
-      position: absolute;
+    .alternate-text::after {
+      right: 0;
+    }
+    
+    .social-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+    }
+    
+    .social-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
-      background: radial-gradient(circle at center, rgba(250, 204, 21, 0.3), transparent 70%);
-      opacity: 0.1;
-      filter: blur(60px);
-      z-index: 0;
+      background-color: rgba(255, 255, 255, 0.07);
+      color: var(--text-color);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      cursor: pointer;
+      transition: all var(--transition-speed) ease;
     }
     
-    .floating-truck {
-      position: absolute;
-      animation: float 6s ease-in-out infinite;
+    .social-button:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      transform: translateY(-3px);
     }
     
-    @keyframes float {
-      0% {
-        transform: translateY(0px);
+    .signup-prompt {
+      margin-top: 2rem;
+      text-align: center;
+      font-size: 0.95rem;
+      color: rgba(248, 248, 248, 0.7);
+    }
+    
+    .signup-link {
+      color: var(--accent-color);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color var(--transition-speed) ease;
+    }
+    
+    .signup-link:hover {
+      text-decoration: underline;
+    }
+    
+    .error-message {
+      background-color: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 0.5rem;
+      color: var(--error-color);
+      padding: 0.75rem 1rem;
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+    }
+    
+    .error-message i {
+      margin-right: 0.5rem;
+    }
+    
+    /* Responsive */
+    @media (max-width: 480px) {
+      .login-card {
+        padding: 2rem 1.5rem;
       }
-      50% {
-        transform: translateY(-20px);
+      
+      .logo i {
+        font-size: 2rem;
       }
-      100% {
-        transform: translateY(0px);
+      
+      .login-title {
+        font-size: 1.5rem;
+      }
+      
+      .form-actions {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
       }
     }
   </style>
 </head>
-<body class="bg-black text-white login-gradient">
-  <!-- Background elements for visual effect -->
-  <div class="bg-element w-[400px] h-[400px] top-[-100px] right-[-50px]"></div>
-  <div class="bg-element w-[300px] h-[300px] bottom-[10%] left-[-100px]"></div>
+<body>
+  <!-- Background elements -->
+  <div class="bg-elements">
+    <div class="bg-gradient"></div>
+    <div class="bg-grid"></div>
+    <div class="bg-line"></div>
+    <div class="bg-line"></div>
+    <div class="bg-line"></div>
+    <div class="bg-line"></div>
+    <div class="glow-circle"></div>
+    <div class="glow-circle"></div>
+  </div>
   
-  <div class="min-h-screen flex flex-col">
-    <!-- Header -->
-    <header class="py-6">
-      <div class="container mx-auto px-4">
-        <div class="flex justify-between items-center">
-          <a href="/" class="flex items-center space-x-3">
-            <div class="text-3xl font-bold text-yellow-400">FleetPulse</div>
-            <div class="hidden md:flex border-l border-gray-700 pl-3 ml-1">
-              <div class="neon-pulse-sm mr-2"></div>
-              <span class="text-sm text-yellow-400">AI-POWERED</span>
-            </div>
-          </a>
-          
-          <a href="/" class="text-gray-400 hover:text-white transition-colors flex items-center">
-            <i class="fas fa-arrow-left mr-2"></i>
-            Back to Home
-          </a>
-        </div>
-      </div>
-    </header>
-    
-    <!-- Login Content -->
-    <div class="flex-1 flex items-center justify-center py-12 px-4">
-      <div class="max-w-md w-full space-y-8 relative z-10">
-        <div class="text-center">
-          <h2 class="text-3xl font-extrabold">Welcome Back</h2>
-          <p class="mt-2 text-gray-400">Sign in to your FleetPulse account</p>
-        </div>
-        
-        <div class="glassmorphic-card p-8 rounded-xl">
-          <form action="/fleet" method="POST" class="space-y-6">
-            <div>
-              <label for="username" class="block text-sm font-medium text-gray-300 mb-1">Username</label>
-              <div class="relative">
-                <i class="fas fa-user input-icon"></i>
-                <input id="username" name="username" type="text" autocomplete="username" required 
-                       class="input-focus input-with-icon block w-full px-3 py-3 bg-gray-900 text-white placeholder-gray-500 border border-gray-700 rounded-md focus:ring-0"
-                       placeholder="Enter your username" value="admin">
-                <div class="border-gradient"></div>
-              </div>
-            </div>
-            
-            <div>
-              <label for="password" class="block text-sm font-medium text-gray-300 mb-1">Password</label>
-              <div class="relative">
-                <i class="fas fa-lock input-icon"></i>
-                <input id="password" name="password" type="password" autocomplete="current-password" required 
-                       class="input-focus input-with-icon block w-full px-3 py-3 bg-gray-900 text-white placeholder-gray-500 border border-gray-700 rounded-md focus:ring-0"
-                       placeholder="Enter your password" value="admin123">
-                <div class="border-gradient"></div>
-              </div>
-            </div>
-            
-            <div class="flex items-center justify-between">
-              <div class="flex items-center">
-                <input id="remember-me" name="remember-me" type="checkbox" 
-                       class="h-4 w-4 bg-gray-800 border-gray-700 rounded text-yellow-400 focus:ring-yellow-400">
-                <label for="remember-me" class="ml-2 block text-sm text-gray-300">
-                  Remember me
-                </label>
-              </div>
-              
-              <div class="text-sm">
-                <a href="#" class="text-yellow-400 hover:text-yellow-300">
-                  Forgot your password?
-                </a>
-              </div>
-            </div>
-            
-            <div>
-              <button type="submit" class="login-button gradient-button py-3 w-full flex justify-center">
-                <i class="fas fa-sign-in-alt mr-2"></i>
-                Sign In
-              </button>
-            </div>
-            
-            <div class="relative">
-              <div class="absolute inset-0 flex items-center">
-                <div class="w-full border-t border-gray-700"></div>
-              </div>
-              <div class="relative flex justify-center text-sm">
-                <span class="px-2 bg-gray-900 text-gray-400">Or continue with</span>
-              </div>
-            </div>
-            
-            <div class="grid grid-cols-3 gap-3">
-              <button type="button" class="p-2 bg-gray-800 rounded-md flex justify-center hover:bg-gray-700 transition-colors">
-                <i class="fab fa-google text-white"></i>
-              </button>
-              <button type="button" class="p-2 bg-gray-800 rounded-md flex justify-center hover:bg-gray-700 transition-colors">
-                <i class="fab fa-microsoft text-white"></i>
-              </button>
-              <button type="button" class="p-2 bg-gray-800 rounded-md flex justify-center hover:bg-gray-700 transition-colors">
-                <i class="fab fa-apple text-white"></i>
-              </button>
-            </div>
-          </form>
-        </div>
-        
-        <div class="text-center text-sm text-gray-400">
-          <p>
-            Don't have an account? 
-            <a href="#" class="text-yellow-400 hover:text-yellow-300">Create one now</a>
-          </p>
-        </div>
-      </div>
-      
-      <!-- Decorative Elements -->
-      <div class="hidden lg:block absolute bottom-[10%] right-[5%]">
-        <div class="floating-truck">
-          <div class="relative w-[150px] h-[150px] glassmorphic-card p-6 rounded-full flex items-center justify-center">
-            <i class="fas fa-truck-moving text-yellow-400 text-5xl"></i>
-          </div>
-        </div>
-      </div>
+  <div class="login-container">
+    <div class="logo-container">
+      <a href="/" class="logo">
+        <i class="fas fa-truck-moving"></i> FleetPulse
+      </a>
     </div>
     
-    <!-- Footer -->
-    <footer class="py-6">
-      <div class="container mx-auto px-4">
-        <div class="flex flex-col md:flex-row justify-between items-center">
-          <div class="text-gray-500 text-sm mb-4 md:mb-0">
-            &copy; 2025 FleetPulse. All rights reserved.
+    <div class="login-card">
+      <div class="login-header">
+        <h1 class="login-title">Welcome Back</h1>
+        <p class="login-subtitle">Sign in to access your dashboard</p>
+      </div>
+      
+      <form class="login-form" action="/authenticate" method="POST">
+        <!-- <div class="error-message">
+          <i class="fas fa-exclamation-circle"></i>
+          Invalid credentials. Please try again.
+        </div> -->
+        
+        <div class="form-group">
+          <label for="username" class="form-label">Username</label>
+          <i class="fas fa-user form-icon"></i>
+          <input type="text" id="username" name="username" class="form-input" placeholder="Enter your username" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="password" class="form-label">Password</label>
+          <i class="fas fa-lock form-icon"></i>
+          <input type="password" id="password" name="password" class="form-input" placeholder="Enter your password" required>
+        </div>
+        
+        <div class="form-actions">
+          <div class="remember-me">
+            <input type="checkbox" id="remember" class="checkbox-input">
+            <label for="remember" class="checkbox-label">
+              <span class="checkbox-custom">
+                <i class="fas fa-check"></i>
+              </span>
+              Remember me
+            </label>
           </div>
-          <div class="flex space-x-6">
-            <a href="#" class="text-gray-500 hover:text-gray-400 text-sm">Privacy Policy</a>
-            <a href="#" class="text-gray-500 hover:text-gray-400 text-sm">Terms of Service</a>
-            <a href="#" class="text-gray-500 hover:text-gray-400 text-sm">Contact Support</a>
+          
+          <a href="#" class="forgot-password">Forgot password?</a>
+        </div>
+        
+        <button type="submit" class="submit-button">Sign In</button>
+        
+        <div class="alternate-login">
+          <p class="alternate-text">Or sign in with</p>
+          <div class="social-buttons">
+            <button type="button" class="social-button">
+              <i class="fab fa-google"></i>
+            </button>
+            <button type="button" class="social-button">
+              <i class="fab fa-microsoft"></i>
+            </button>
+            <button type="button" class="social-button">
+              <i class="fab fa-apple"></i>
+            </button>
           </div>
         </div>
+      </form>
+      
+      <div class="signup-prompt">
+        Don't have an account? <a href="#" class="signup-link">Sign up</a>
       </div>
-    </footer>
+    </div>
   </div>
+  
+  <script>
+    // Demo username and password hint
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    
+    // Add placeholder tooltips
+    usernameInput.setAttribute('title', 'Demo username: admin');
+    passwordInput.setAttribute('title', 'Demo password: admin123');
+    
+    // Remember me functionality
+    const rememberCheckbox = document.getElementById('remember');
+    const storedUsername = localStorage.getItem('fleetpulse_username');
+    
+    if (storedUsername) {
+      usernameInput.value = storedUsername;
+      rememberCheckbox.checked = true;
+    }
+    
+    document.querySelector('.login-form').addEventListener('submit', function(e) {
+      if (rememberCheckbox.checked) {
+        localStorage.setItem('fleetpulse_username', usernameInput.value);
+      } else {
+        localStorage.removeItem('fleetpulse_username');
+      }
+    });
+    
+    // Social login buttons
+    document.querySelectorAll('.social-button').forEach(button => {
+      button.addEventListener('click', function() {
+        alert('Social login will be implemented in the future.');
+      });
+    });
+    
+    // Forgot password link
+    document.querySelector('.forgot-password').addEventListener('click', function(e) {
+      e.preventDefault();
+      alert('Password reset functionality will be implemented in the future.');
+    });
+    
+    // Sign up link
+    document.querySelector('.signup-link').addEventListener('click', function(e) {
+      e.preventDefault();
+      alert('Sign up functionality will be implemented in the future.');
+    });
+  </script>
 </body>
 </html>

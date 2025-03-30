@@ -165,8 +165,8 @@ task = "packager.installForAll"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "/home/runner/workspace/.pythonlibs/bin/python3 simple_server.py"
-waitForPort = 5001
+args = "/home/runner/workspace/.pythonlibs/bin/python3 app_simple.py"
+waitForPort = 5000
 
 [[workflows.workflow]]
 name = "Flask Simple Server"
@@ -180,7 +180,7 @@ task = "packager.installForAll"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "/home/runner/workspace/.pythonlibs/bin/python3 app_simple.py"
+args = "python app_simple.py"
 waitForPort = 5000
 
 [[ports]]

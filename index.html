@@ -3,638 +3,935 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FleetTrack Pro - Ultra Premium Fleet Management</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <title>FleetPulse - AI-Powered Fleet Management</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  
   <style>
-    /* Ultra-premium dark theme with neon yellow accents */
     :root {
-      --background-primary: #0a0a0e;
-      --background-secondary: #111116;
-      --background-tertiary: #16161c;
-      --accent-primary: #f0ee0a;
-      --accent-glow: rgba(240, 238, 10, 0.3);
-      --text-primary: #ffffff;
-      --text-secondary: #a0a0b0;
-      --card-border: rgba(240, 238, 10, 0.2);
+      --bg-color: #111;
+      --text-color: #f8f8f8;
+      --accent-color: #facc15;
+      --accent-glow: 0 0 15px rgba(250, 204, 21, 0.6);
+      --button-bg: #1a1a1a;
+      --button-hover: #252525;
+      --card-bg: #1a1a1a;
+      --border-color: rgba(250, 204, 21, 0.3);
+      --transition-speed: 0.3s;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
     
     body {
-      background-color: var(--background-primary);
-      background-image: 
-        radial-gradient(circle at 10% 20%, rgba(20, 20, 25, 0.3) 0%, transparent 35%),
-        radial-gradient(circle at 90% 80%, rgba(20, 20, 25, 0.3) 0%, transparent 35%),
-        linear-gradient(135deg, rgba(7, 7, 10, 0.9) 0%, rgba(15, 15, 25, 0.8) 100%);
-      color: var(--text-primary);
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      min-height: 100vh;
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      line-height: 1.6;
     }
     
-    /* Glassmorphism Cards */
-    .glassmorphic-card {
-      background: rgba(22, 22, 30, 0.7);
-      backdrop-filter: blur(12px);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      box-shadow: 
-        0 8px 32px rgba(0, 0, 0, 0.2),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.05);
-      transition: all 0.3s ease;
-      overflow: hidden;
-      position: relative;
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
     }
     
-    .glassmorphic-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
-      opacity: 0.3;
+    /* Header */
+    header {
+      padding: 1.5rem 0;
     }
     
-    .glassmorphic-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 
-        0 12px 40px rgba(0, 0, 0, 0.3),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.08),
-        0 0 15px rgba(240, 238, 10, 0.2);
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
     
-    /* Neon text and elements */
-    .neon-text {
-      color: var(--accent-primary);
-      text-shadow: 0 0 10px var(--accent-glow);
+    .logo {
+      display: flex;
+      align-items: center;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--text-color);
+      text-decoration: none;
     }
     
-    .neon-border {
-      border: 1px solid var(--accent-primary);
-      box-shadow: 0 0 15px var(--accent-glow);
+    .logo i {
+      color: var(--accent-color);
+      margin-right: 0.5rem;
+      filter: drop-shadow(var(--accent-glow));
     }
     
-    /* Geometric glowing lines */
-    .geo-line {
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
-      opacity: 0.3;
-      margin: 2rem 0;
-      position: relative;
+    .nav-links {
+      display: flex;
+      gap: 2rem;
     }
     
-    .geo-line::before {
-      content: '';
-      position: absolute;
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--accent-primary);
-      top: -2.5px;
-      left: calc(50% - 3px);
-      box-shadow: 0 0 15px var(--accent-glow);
+    .nav-link {
+      color: var(--text-color);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color var(--transition-speed) ease;
     }
     
-    /* Status indicators */
-    .status-indicator {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      display: inline-block;
-      margin-right: 8px;
-      position: relative;
+    .nav-link:hover {
+      color: var(--accent-color);
     }
     
-    .status-active {
-      background-color: #05d77b;
-      box-shadow: 0 0 10px rgba(5, 215, 123, 0.5);
-      animation: pulse 2s infinite;
-    }
-    
-    .status-inactive {
-      background-color: #f55b35;
-      box-shadow: 0 0 10px rgba(245, 91, 53, 0.5);
-    }
-    
-    .status-maintenance {
-      background-color: #f0ee0a;
-      box-shadow: 0 0 10px rgba(240, 238, 10, 0.5);
-    }
-    
-    .status-en-route {
-      background-color: #3b82f6;
-      box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
-      animation: pulse 1.5s infinite;
-    }
-    
-    @keyframes pulse {
-      0% {
-        transform: scale(1);
-        opacity: 1;
-      }
-      50% {
-        transform: scale(1.2);
-        opacity: 0.8;
-      }
-      100% {
-        transform: scale(1);
-        opacity: 1;
-      }
-    }
-    
-    /* Animated gradient button */
-    .gradient-button {
-      background: linear-gradient(90deg, #0a0a0e, #16161c, #0a0a0e);
-      background-size: 200% 100%;
-      border: 1px solid var(--card-border);
-      color: var(--accent-primary);
-      padding: 0.7rem 1.5rem;
-      border-radius: 6px;
+    .login-btn {
+      padding: 0.6rem 1.5rem;
+      background-color: transparent;
+      color: var(--accent-color);
+      border: 2px solid var(--accent-color);
+      border-radius: 0.5rem;
       font-weight: 600;
-      letter-spacing: 0.5px;
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-      z-index: 1;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all var(--transition-speed) ease;
     }
     
-    .gradient-button::before {
+    .login-btn:hover {
+      background-color: var(--accent-color);
+      color: var(--bg-color);
+      box-shadow: var(--accent-glow);
+    }
+    
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text-color);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+    
+    /* Hero Section */
+    .hero {
+      padding: 6rem 0;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 1000px;
+      height: 1000px;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle, rgba(30, 30, 30, 0.8) 0%, rgba(17, 17, 17, 0) 70%);
+      z-index: -1;
+    }
+    
+    .hero-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4rem;
+    }
+    
+    .hero-text {
+      max-width: 600px;
+    }
+    
+    .hero-tagline {
+      color: var(--accent-color);
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+    }
+    
+    .hero-tagline i {
+      margin-right: 0.5rem;
+    }
+    
+    .hero-title {
+      font-size: 3.5rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 1.5rem;
+      background: linear-gradient(90deg, var(--text-color), var(--accent-color));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .hero-description {
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+      color: rgba(248, 248, 248, 0.8);
+    }
+    
+    .hero-cta {
+      display: flex;
+      gap: 1rem;
+    }
+    
+    .primary-btn {
+      padding: 0.8rem 2rem;
+      background-color: var(--accent-color);
+      color: var(--bg-color);
+      border: none;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all var(--transition-speed) ease;
+    }
+    
+    .primary-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(250, 204, 21, 0.4);
+    }
+    
+    .secondary-btn {
+      padding: 0.8rem 2rem;
+      background-color: transparent;
+      color: var(--text-color);
+      border: 2px solid rgba(248, 248, 248, 0.3);
+      border-radius: 0.5rem;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all var(--transition-speed) ease;
+    }
+    
+    .secondary-btn:hover {
+      background-color: rgba(248, 248, 248, 0.05);
+      border-color: var(--text-color);
+      transform: translateY(-3px);
+    }
+    
+    .hero-image {
+      position: relative;
+      width: 500px;
+      height: 400px;
+    }
+    
+    .hero-image::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 400px;
+      height: 400px;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle, rgba(250, 204, 21, 0.1) 0%, rgba(250, 204, 21, 0) 70%);
+      border-radius: 50%;
+      z-index: -1;
+    }
+    
+    .dashboard-mockup {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(145deg, #1a1a1a, #222);
+      border-radius: 1rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .dashboard-mockup::before {
       content: '';
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(240, 238, 10, 0.1), transparent);
-      transform: translateX(-100%);
-      transition: transform 0.6s ease;
-      z-index: -1;
+      background: linear-gradient(145deg, rgba(250, 204, 21, 0.05), transparent);
+      z-index: 1;
     }
     
-    .gradient-button:hover {
-      box-shadow: 0 0 15px var(--accent-glow);
-      transform: translateY(-2px);
-      letter-spacing: 1px;
+    .dashboard-icon {
+      font-size: 4rem;
+      color: var(--accent-color);
+      filter: drop-shadow(var(--accent-glow));
     }
     
-    .gradient-button:hover::before {
-      transform: translateX(100%);
-    }
-    
-    /* Navigation */
-    .nav-item {
-      transition: all 0.3s ease;
+    /* Features Section */
+    .features {
+      padding: 6rem 0;
+      background-color: rgba(26, 26, 26, 0.5);
       position: relative;
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
     }
     
-    .nav-item:hover {
-      background: rgba(255, 255, 255, 0.05);
-      transform: translateY(-2px);
-    }
-    
-    .nav-item.active {
-      background: rgba(240, 238, 10, 0.1);
-      color: var(--accent-primary);
-    }
-    
-    .nav-item.active::before {
+    .features::before {
       content: '';
       position: absolute;
+      top: 0;
       left: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 3px;
-      height: 60%;
-      background: var(--accent-primary);
-      box-shadow: 0 0 10px var(--accent-glow);
-      border-radius: 0 3px 3px 0;
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
     }
     
-    /* Table styling */
-    .premium-table th {
-      background: rgba(22, 22, 30, 0.7);
-      color: var(--accent-primary);
-      font-weight: 600;
-      padding: 1rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      border-bottom: 1px solid var(--card-border);
+    .section-header {
+      text-align: center;
+      margin-bottom: 4rem;
     }
     
-    .premium-table td {
-      padding: 1rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    
-    .premium-table tr:hover td {
-      background: rgba(240, 238, 10, 0.03);
-    }
-    
-    /* Premium badge */
-    .premium-badge {
-      background: linear-gradient(135deg, #f0ee0a, #e4b400);
-      color: #0a0a0e;
-      padding: 0.25rem 0.75rem;
-      border-radius: 20px;
-      font-size: 0.75rem;
+    .section-title {
+      font-size: 2.5rem;
       font-weight: 700;
-      box-shadow: 0 0 10px rgba(240, 238, 10, 0.3);
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
+      margin-bottom: 1rem;
     }
     
-    /* Depth effects */
-    .depth-effect {
+    .section-subtitle {
+      font-size: 1.1rem;
+      color: rgba(248, 248, 248, 0.7);
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+    
+    .feature-card {
+      background-color: var(--card-bg);
+      border-radius: 1rem;
+      padding: 2rem;
+      transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
       position: relative;
+      overflow: hidden;
     }
     
-    .depth-effect::after {
+    .feature-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), 0 0 5px var(--accent-color);
+    }
+    
+    .feature-card::before {
       content: '';
       position: absolute;
-      top: 15px;
-      left: 15px;
-      width: calc(100% - 30px);
-      height: calc(100% - 30px);
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 12px;
-      z-index: -1;
-      filter: blur(15px);
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 40px;
+      background-color: var(--accent-color);
+      border-radius: 0 0 4px 0;
     }
     
-    /* Header with accent line */
-    .section-header {
-      position: relative;
-      padding-bottom: 0.5rem;
+    .feature-icon {
+      font-size: 2.5rem;
+      color: var(--accent-color);
       margin-bottom: 1.5rem;
     }
     
-    .section-header::after {
+    .feature-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+    
+    .feature-description {
+      color: rgba(248, 248, 248, 0.7);
+      margin-bottom: 1.5rem;
+    }
+    
+    .feature-link {
+      display: inline-flex;
+      align-items: center;
+      color: var(--accent-color);
+      font-weight: 600;
+      text-decoration: none;
+      transition: all var(--transition-speed) ease;
+    }
+    
+    .feature-link i {
+      margin-left: 0.5rem;
+      transition: transform var(--transition-speed) ease;
+    }
+    
+    .feature-link:hover {
+      color: var(--text-color);
+    }
+    
+    .feature-link:hover i {
+      transform: translateX(3px);
+    }
+    
+    /* AI Section */
+    .ai-section {
+      padding: 6rem 0;
+      position: relative;
+    }
+    
+    .ai-container {
+      display: flex;
+      align-items: center;
+      gap: 4rem;
+    }
+    
+    .ai-content {
+      max-width: 550px;
+    }
+    
+    .ai-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+    }
+    
+    .ai-title span {
+      color: var(--accent-color);
+    }
+    
+    .ai-description {
+      font-size: 1.1rem;
+      color: rgba(248, 248, 248, 0.8);
+      margin-bottom: 2rem;
+    }
+    
+    .ai-features {
+      margin-bottom: 2rem;
+    }
+    
+    .ai-feature-item {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+    
+    .ai-feature-icon {
+      color: var(--accent-color);
+      font-size: 1.2rem;
+      margin-right: 1rem;
+      margin-top: 0.2rem;
+    }
+    
+    .ai-feature-text h4 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+    }
+    
+    .ai-feature-text p {
+      font-size: 0.9rem;
+      color: rgba(248, 248, 248, 0.7);
+    }
+    
+    .ai-image {
+      width: 500px;
+      height: 350px;
+      background: linear-gradient(145deg, #1a1a1a, #222);
+      border-radius: 1rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .ai-image::before {
       content: '';
       position: absolute;
-      bottom: 0;
+      top: 0;
       left: 0;
-      width: 60px;
-      height: 2px;
-      background: var(--accent-primary);
-      box-shadow: 0 0 10px var(--accent-glow);
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(145deg, rgba(250, 204, 21, 0.05), transparent);
+      z-index: 1;
+    }
+    
+    .ai-icon {
+      font-size: 4rem;
+      color: var(--accent-color);
+      filter: drop-shadow(var(--accent-glow));
+    }
+    
+    /* CTA Section */
+    .cta-section {
+      padding: 6rem 0;
+      background-color: rgba(26, 26, 26, 0.5);
+      position: relative;
+      text-align: center;
+    }
+    
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+    }
+    
+    .cta-title {
+      font-size: 3rem;
+      font-weight: 800;
+      margin-bottom: 1.5rem;
+      background: linear-gradient(90deg, var(--text-color), var(--accent-color));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .cta-subtitle {
+      font-size: 1.2rem;
+      color: rgba(248, 248, 248, 0.8);
+      max-width: 600px;
+      margin: 0 auto 2.5rem;
+    }
+    
+    /* Footer */
+    footer {
+      padding: 4rem 0 2rem;
+      background-color: #0a0a0a;
+    }
+    
+    .footer-container {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 3rem;
+    }
+    
+    .footer-col {
+      flex: 1;
+      min-width: 200px;
+    }
+    
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-color);
+      text-decoration: none;
+      margin-bottom: 1rem;
+    }
+    
+    .footer-logo i {
+      color: var(--accent-color);
+      margin-right: 0.5rem;
+    }
+    
+    .footer-description {
+      color: rgba(248, 248, 248, 0.6);
+      margin-bottom: 1.5rem;
+    }
+    
+    .social-links {
+      display: flex;
+      gap: 1rem;
+    }
+    
+    .social-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: #1a1a1a;
+      color: var(--text-color);
+      font-size: 1.2rem;
+      transition: all var(--transition-speed) ease;
+    }
+    
+    .social-link:hover {
+      background-color: var(--accent-color);
+      color: var(--bg-color);
+      transform: translateY(-3px);
+    }
+    
+    .footer-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+    
+    .footer-links {
+      list-style: none;
+    }
+    
+    .footer-link {
+      margin-bottom: 0.8rem;
+    }
+    
+    .footer-link a {
+      color: rgba(248, 248, 248, 0.6);
+      text-decoration: none;
+      transition: color var(--transition-speed) ease;
+      display: inline-flex;
+      align-items: center;
+    }
+    
+    .footer-link a:hover {
+      color: var(--accent-color);
+    }
+    
+    .footer-link i {
+      font-size: 0.7rem;
+      margin-right: 0.5rem;
+    }
+    
+    .copyright {
+      text-align: center;
+      padding-top: 2rem;
+      margin-top: 4rem;
+      border-top: 1px solid rgba(248, 248, 248, 0.1);
+      color: rgba(248, 248, 248, 0.5);
+      font-size: 0.9rem;
+    }
+    
+    /* Responsive */
+    @media (max-width: 992px) {
+      .hero-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 3rem;
+      }
+      
+      .hero-text {
+        max-width: 100%;
+      }
+      
+      .hero-tagline {
+        justify-content: center;
+      }
+      
+      .hero-cta {
+        justify-content: center;
+      }
+      
+      .hero-title {
+        font-size: 2.5rem;
+      }
+      
+      .ai-container {
+        flex-direction: column-reverse;
+        gap: 3rem;
+      }
+      
+      .ai-content {
+        max-width: 100%;
+        text-align: center;
+      }
+      
+      .ai-feature-item {
+        justify-content: center;
+        text-align: left;
+      }
+      
+      .section-title, .ai-title, .cta-title {
+        font-size: 2rem;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .nav-links, .login-btn {
+        display: none;
+      }
+      
+      .mobile-menu-btn {
+        display: block;
+      }
+      
+      .hero-image, .ai-image {
+        width: 100%;
+        max-width: 400px;
+        height: 300px;
+      }
+      
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .hero-title {
+        font-size: 2rem;
+      }
+      
+      .section-title, .ai-title, .cta-title {
+        font-size: 1.8rem;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="container mx-auto p-6">
-    <!-- Header -->
-    <header class="flex items-center justify-between mb-8">
-      <div class="flex items-center space-x-2">
-        <div class="text-2xl font-bold neon-text">FleetTrack<span class="text-white">Pro</span></div>
-        <span class="premium-badge">Enterprise</span>
-      </div>
-      <div class="flex space-x-4">
-        <button class="gradient-button">
-          <i class="fas fa-bell mr-2"></i>
-          <span class="bg-red-500 rounded-full px-2 py-0.5 text-xs">3</span>
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <nav class="navbar">
+        <a href="/" class="logo">
+          <i class="fas fa-truck-moving"></i> FleetPulse
+        </a>
+        
+        <div class="nav-links">
+          <a href="#features" class="nav-link">Features</a>
+          <a href="#ai" class="nav-link">AI Technology</a>
+          <a href="#" class="nav-link">Contact</a>
+        </div>
+        
+        <button class="login-btn" onclick="window.location.href='/login'">Login</button>
+        
+        <button class="mobile-menu-btn">
+          <i class="fas fa-bars"></i>
         </button>
-        <div class="flex items-center space-x-2">
-          <div class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center">
-            <i class="fas fa-user text-gray-300"></i>
+      </nav>
+    </div>
+  </header>
+  
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-text">
+          <div class="hero-tagline">
+            <i class="fas fa-bolt"></i> Next-Generation Fleet Management
           </div>
-          <div>
-            <div class="text-sm font-medium">Admin User</div>
-            <div class="text-xs text-gray-400">Fleet Manager</div>
-          </div>
-        </div>
-      </div>
-    </header>
-    
-    <!-- Main content -->
-    <div class="flex flex-col md:flex-row">
-      <!-- Sidebar Navigation -->
-      <div class="w-full md:w-64 pr-0 md:pr-6 mb-6 md:mb-0">
-        <nav class="glassmorphic-card p-4 mb-6">
-          <div class="mb-6 pb-4 border-b border-gray-700">
-            <div class="font-medium text-sm text-gray-400 mb-2">MAIN NAVIGATION</div>
-            <ul class="space-y-2">
-              <li class="nav-item active">
-                <i class="fas fa-tachometer-alt mr-3"></i>
-                Dashboard
-              </li>
-              <li class="nav-item">
-                <i class="fas fa-truck mr-3"></i>
-                Fleet Management
-              </li>
-              <li class="nav-item">
-                <i class="fas fa-route mr-3"></i>
-                Route Planning
-              </li>
-              <li class="nav-item">
-                <i class="fas fa-chart-line mr-3"></i>
-                Analytics
-              </li>
-              <li class="nav-item">
-                <i class="fas fa-cog mr-3"></i>
-                Settings
-              </li>
-            </ul>
-          </div>
-          <div>
-            <div class="font-medium text-sm text-gray-400 mb-2">PREMIUM SERVICES</div>
-            <ul class="space-y-2">
-              <li class="nav-item">
-                <i class="fas fa-shield-alt mr-3"></i>
-                Insurance Services
-              </li>
-              <li class="nav-item">
-                <i class="fas fa-gavel mr-3"></i>
-                Legal Support
-              </li>
-              <li class="nav-item">
-                <i class="fas fa-credit-card mr-3"></i>
-                Instant Payments
-              </li>
-              <li class="nav-item">
-                <i class="fas fa-trophy mr-3"></i>
-                Driver Achievements
-              </li>
-            </ul>
-          </div>
-        </nav>
-        
-        <!-- Quick Stats -->
-        <div class="glassmorphic-card p-4">
-          <h3 class="text-lg font-bold mb-4 section-header">Fleet Stats</h3>
-          <div class="space-y-4">
-            <div>
-              <div class="flex justify-between text-sm">
-                <span>Active Trucks</span>
-                <span class="neon-text">76%</span>
-              </div>
-              <div class="w-full h-2 bg-gray-700 rounded-full mt-1">
-                <div class="h-full rounded-full" style="width: 76%; background: linear-gradient(90deg, var(--accent-primary), #c2c007);"></div>
-              </div>
-            </div>
-            <div>
-              <div class="flex justify-between text-sm">
-                <span>Fuel Efficiency</span>
-                <span class="neon-text">84%</span>
-              </div>
-              <div class="w-full h-2 bg-gray-700 rounded-full mt-1">
-                <div class="h-full rounded-full" style="width: 84%; background: linear-gradient(90deg, var(--accent-primary), #c2c007);"></div>
-              </div>
-            </div>
-            <div>
-              <div class="flex justify-between text-sm">
-                <span>On-Time Delivery</span>
-                <span class="neon-text">92%</span>
-              </div>
-              <div class="w-full h-2 bg-gray-700 rounded-full mt-1">
-                <div class="h-full rounded-full" style="width: 92%; background: linear-gradient(90deg, var(--accent-primary), #c2c007);"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Main Dashboard Content -->
-      <div class="flex-1">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <!-- Fleet Overview Card -->
-          <div class="glassmorphic-card p-6 col-span-1 depth-effect">
-            <div class="flex items-center justify-between mb-4">
-              <h3 class="text-lg font-bold section-header">Fleet Overview</h3>
-              <button class="text-sm text-gray-400 hover:text-white"><i class="fas fa-sync-alt"></i></button>
-            </div>
-            <div class="grid grid-cols-2 gap-4">
-              <div class="bg-opacity-30 bg-gray-800 p-4 rounded-lg">
-                <div class="text-sm text-gray-400">Total Trucks</div>
-                <div class="text-2xl font-bold mt-1">42</div>
-              </div>
-              <div class="bg-opacity-30 bg-gray-800 p-4 rounded-lg">
-                <div class="text-sm text-gray-400">Active Routes</div>
-                <div class="text-2xl font-bold mt-1">28</div>
-              </div>
-              <div class="bg-opacity-30 bg-gray-800 p-4 rounded-lg">
-                <div class="text-sm text-gray-400">Drivers</div>
-                <div class="text-2xl font-bold mt-1">36</div>
-              </div>
-              <div class="bg-opacity-30 bg-gray-800 p-4 rounded-lg">
-                <div class="text-sm text-gray-400">Maintenance</div>
-                <div class="text-2xl font-bold mt-1">7</div>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Monthly Performance Card -->
-          <div class="glassmorphic-card p-6 col-span-1 md:col-span-2 depth-effect">
-            <div class="flex items-center justify-between mb-4">
-              <h3 class="text-lg font-bold section-header">Monthly Performance</h3>
-              <div class="flex space-x-2">
-                <button class="text-sm bg-gray-800 px-2 py-1 rounded">Week</button>
-                <button class="text-sm bg-gray-800 px-2 py-1 rounded neon-text">Month</button>
-                <button class="text-sm bg-gray-800 px-2 py-1 rounded">Year</button>
-              </div>
-            </div>
-            <!-- Placeholder for chart -->
-            <div class="h-48 flex items-center justify-center bg-opacity-30 bg-gray-800 rounded-lg">
-              <div class="text-center">
-                <div class="text-gray-400 mb-2">Performance Chart</div>
-                <i class="fas fa-chart-line text-4xl neon-text"></i>
-              </div>
-            </div>
+          <h1 class="hero-title">Intelligent Fleet Management Powered by AI</h1>
+          <p class="hero-description">
+            FleetPulse brings cutting-edge artificial intelligence to your fleet operations. Optimize routes, reduce costs, and enhance driver safety with real-time analytics and predictive insights.
+          </p>
+          <div class="hero-cta">
+            <button class="primary-btn" onclick="window.location.href='/login'">Get Started</button>
+            <button class="secondary-btn">Schedule Demo</button>
           </div>
         </div>
         
-        <!-- Geometric Line Divider -->
-        <div class="geo-line my-6"></div>
-        
-        <!-- Active Trucks Section -->
-        <div>
-          <h2 class="text-xl font-bold mb-4 section-header">Active Trucks</h2>
-          
-          <div class="glassmorphic-card overflow-hidden">
-            <div class="overflow-x-auto">
-              <table class="w-full premium-table">
-                <thead>
-                  <tr>
-                    <th class="text-left">Truck</th>
-                    <th class="text-left">Driver</th>
-                    <th class="text-left">Destination</th>
-                    <th class="text-left">Status</th>
-                    <th class="text-center">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>
-                      <div class="flex items-center">
-                        <i class="fas fa-truck-moving mr-3 text-gray-400"></i>
-                        <div>
-                          <div class="font-medium">TK-42198</div>
-                          <div class="text-xs text-gray-400">Volvo VNL 760</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="font-medium">James Wilson</div>
-                      <div class="text-xs text-gray-400">ID: DRV-8834</div>
-                    </td>
-                    <td>
-                      <div class="font-medium">Portland, OR</div>
-                      <div class="text-xs text-gray-400">1,020 miles away</div>
-                    </td>
-                    <td>
-                      <div class="flex items-center">
-                        <span class="status-indicator status-active"></span>
-                        <span>Active</span>
-                      </div>
-                    </td>
-                    <td class="text-center">
-                      <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-map-marked-alt"></i></button>
-                      <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-phone"></i></button>
-                      <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-info-circle"></i></button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div class="flex items-center">
-                        <i class="fas fa-truck-moving mr-3 text-gray-400"></i>
-                        <div>
-                          <div class="font-medium">TK-58392</div>
-                          <div class="text-xs text-gray-400">Peterbilt 579</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="font-medium">Sarah Johnson</div>
-                      <div class="text-xs text-gray-400">ID: DRV-7721</div>
-                    </td>
-                    <td>
-                      <div class="font-medium">Miami, FL</div>
-                      <div class="text-xs text-gray-400">845 miles away</div>
-                    </td>
-                    <td>
-                      <div class="flex items-center">
-                        <span class="status-indicator status-maintenance"></span>
-                        <span>Maintenance</span>
-                      </div>
-                    </td>
-                    <td class="text-center">
-                      <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-map-marked-alt"></i></button>
-                      <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-phone"></i></button>
-                      <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-info-circle"></i></button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div class="flex items-center">
-                        <i class="fas fa-truck-moving mr-3 text-gray-400"></i>
-                        <div>
-                          <div class="font-medium">TK-77219</div>
-                          <div class="text-xs text-gray-400">Kenworth T680</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="font-medium">Robert Chen</div>
-                      <div class="text-xs text-gray-400">ID: DRV-9938</div>
-                    </td>
-                    <td>
-                      <div class="font-medium">Chicago, IL</div>
-                      <div class="text-xs text-gray-400">320 miles away</div>
-                    </td>
-                    <td>
-                      <div class="flex items-center">
-                        <span class="status-indicator status-en-route"></span>
-                        <span>En Route</span>
-                      </div>
-                    </td>
-                    <td class="text-center">
-                      <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-map-marked-alt"></i></button>
-                      <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-phone"></i></button>
-                      <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-info-circle"></i></button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div class="flex items-center">
-                        <i class="fas fa-truck-moving mr-3 text-gray-400"></i>
-                        <div>
-                          <div class="font-medium">TK-34567</div>
-                          <div class="text-xs text-gray-400">Freightliner Cascadia</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="font-medium">Maria Garcia</div>
-                      <div class="text-xs text-gray-400">ID: DRV-6612</div>
-                    </td>
-                    <td>
-                      <div class="font-medium">Denver, CO</div>
-                      <div class="text-xs text-gray-400">580 miles away</div>
-                    </td>
-                    <td>
-                      <div class="flex items-center">
-                        <span class="status-indicator status-inactive"></span>
-                        <span>Inactive</span>
-                      </div>
-                    </td>
-                    <td class="text-center">
-                      <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-map-marked-alt"></i></button>
-                      <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-phone"></i></button>
-                      <button class="text-gray-400 hover:text-white mx-1"><i class="fas fa-info-circle"></i></button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Services Section -->
-        <div class="mt-8">
-          <h2 class="text-xl font-bold mb-4 section-header">Premium Services</h2>
-          
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- Insurance Services Card -->
-            <div class="glassmorphic-card p-6 depth-effect">
-              <div class="text-center mb-4">
-                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full neon-border mb-4">
-                  <i class="fas fa-shield-alt text-2xl neon-text"></i>
-                </div>
-                <h3 class="text-lg font-bold">Insurance Services</h3>
-                <p class="text-sm text-gray-400 mt-2">Premium coverage for your entire fleet with instant claims processing.</p>
-              </div>
-              <button class="gradient-button w-full mt-4">Access Service</button>
-            </div>
-            
-            <!-- Legal Support Card -->
-            <div class="glassmorphic-card p-6 depth-effect">
-              <div class="text-center mb-4">
-                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full neon-border mb-4">
-                  <i class="fas fa-gavel text-2xl neon-text"></i>
-                </div>
-                <h3 class="text-lg font-bold">Legal Support</h3>
-                <p class="text-sm text-gray-400 mt-2">24/7 access to legal experts specialized in transportation regulations.</p>
-              </div>
-              <button class="gradient-button w-full mt-4">Access Service</button>
-            </div>
-            
-            <!-- Instant Payments Card -->
-            <div class="glassmorphic-card p-6 depth-effect">
-              <div class="text-center mb-4">
-                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full neon-border mb-4">
-                  <i class="fas fa-credit-card text-2xl neon-text"></i>
-                </div>
-                <h3 class="text-lg font-bold">Instant Payments</h3>
-                <p class="text-sm text-gray-400 mt-2">Same-day payment processing with integrated financial tools.</p>
-              </div>
-              <button class="gradient-button w-full mt-4">Access Service</button>
-            </div>
+        <div class="hero-image">
+          <div class="dashboard-mockup">
+            <i class="fas fa-chart-line dashboard-icon"></i>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </section>
+  
+  <!-- Features Section -->
+  <section class="features" id="features">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Core Features</h2>
+        <p class="section-subtitle">
+          FleetPulse combines powerful tools and intelligent technologies to transform how you manage your fleet operations.
+        </p>
+      </div>
+      
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-map-marked-alt"></i>
+          </div>
+          <h3 class="feature-title">Real-Time Tracking</h3>
+          <p class="feature-description">
+            Monitor your entire fleet in real-time with precise GPS tracking. View vehicle locations, routes, and delivery progress on an interactive map.
+          </p>
+          <a href="#" class="feature-link">Learn more <i class="fas fa-arrow-right"></i></a>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-brain"></i>
+          </div>
+          <h3 class="feature-title">Predictive Maintenance</h3>
+          <p class="feature-description">
+            Prevent breakdowns before they happen with AI-powered predictive maintenance. Reduce downtime and extend vehicle lifespan.
+          </p>
+          <a href="#" class="feature-link">Learn more <i class="fas fa-arrow-right"></i></a>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-route"></i>
+          </div>
+          <h3 class="feature-title">Intelligent Routing</h3>
+          <p class="feature-description">
+            Optimize delivery routes with our advanced AI algorithms. Save fuel, reduce delivery times, and increase customer satisfaction.
+          </p>
+          <a href="#" class="feature-link">Learn more <i class="fas fa-arrow-right"></i></a>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+          <h3 class="feature-title">Driver Safety</h3>
+          <p class="feature-description">
+            Improve driver behavior and reduce accidents with real-time coaching and safety alerts. Protect your most valuable assets.
+          </p>
+          <a href="#" class="feature-link">Learn more <i class="fas fa-arrow-right"></i></a>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-chart-bar"></i>
+          </div>
+          <h3 class="feature-title">Performance Analytics</h3>
+          <p class="feature-description">
+            Gain deep insights into your fleet's performance with comprehensive analytics. Identify trends and make data-driven decisions.
+          </p>
+          <a href="#" class="feature-link">Learn more <i class="fas fa-arrow-right"></i></a>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-truck-loading"></i>
+          </div>
+          <h3 class="feature-title">Load Management</h3>
+          <p class="feature-description">
+            Optimize cargo distribution and loading efficiency. Ensure compliance with weight regulations and maximize capacity utilization.
+          </p>
+          <a href="#" class="feature-link">Learn more <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- AI Section -->
+  <section class="ai-section" id="ai">
+    <div class="container">
+      <div class="ai-container">
+        <div class="ai-content">
+          <h2 class="ai-title">Harness the Power of <span>Artificial Intelligence</span></h2>
+          <p class="ai-description">
+            Our advanced AI algorithms analyze thousands of data points in real-time to provide actionable insights and automate critical decisions for your fleet operations.
+          </p>
+          
+          <div class="ai-features">
+            <div class="ai-feature-item">
+              <div class="ai-feature-icon">
+                <i class="fas fa-robot"></i>
+              </div>
+              <div class="ai-feature-text">
+                <h4>Predictive Analytics</h4>
+                <p>Forecast maintenance needs, fuel consumption, and delivery times with remarkable accuracy.</p>
+              </div>
+            </div>
+            
+            <div class="ai-feature-item">
+              <div class="ai-feature-icon">
+                <i class="fas fa-microchip"></i>
+              </div>
+              <div class="ai-feature-text">
+                <h4>Machine Learning</h4>
+                <p>Our system continuously learns from your fleet's data to improve predictions and recommendations.</p>
+              </div>
+            </div>
+            
+            <div class="ai-feature-item">
+              <div class="ai-feature-icon">
+                <i class="fas fa-language"></i>
+              </div>
+              <div class="ai-feature-text">
+                <h4>Natural Language Processing</h4>
+                <p>Generate comprehensive reports and insights in plain language that anyone can understand.</p>
+              </div>
+            </div>
+          </div>
+          
+          <button class="primary-btn">Explore AI Features</button>
+        </div>
+        
+        <div class="ai-image">
+          <i class="fas fa-brain ai-icon"></i>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="container">
+      <h2 class="cta-title">Ready to Transform Your Fleet Operations?</h2>
+      <p class="cta-subtitle">
+        Join thousands of businesses that have optimized their fleet management with FleetPulse.
+      </p>
+      
+      <button class="primary-btn" onclick="window.location.href='/login'">Get Started Today</button>
+    </div>
+  </section>
+  
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-container">
+        <div class="footer-col">
+          <a href="/" class="footer-logo">
+            <i class="fas fa-truck-moving"></i> FleetPulse
+          </a>
+          <p class="footer-description">
+            Next-generation fleet management powered by artificial intelligence and real-time analytics.
+          </p>
+          <div class="social-links">
+            <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+          </div>
+        </div>
+        
+        <div class="footer-col">
+          <h3 class="footer-title">Features</h3>
+          <ul class="footer-links">
+            <li class="footer-link"><a href="#"><i class="fas fa-chevron-right"></i> Real-Time Tracking</a></li>
+            <li class="footer-link"><a href="#"><i class="fas fa-chevron-right"></i> Predictive Maintenance</a></li>
+            <li class="footer-link"><a href="#"><i class="fas fa-chevron-right"></i> Route Optimization</a></li>
+            <li class="footer-link"><a href="#"><i class="fas fa-chevron-right"></i> Driver Safety</a></li>
+            <li class="footer-link"><a href="#"><i class="fas fa-chevron-right"></i> Performance Analytics</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-col">
+          <h3 class="footer-title">Company</h3>
+          <ul class="footer-links">
+            <li class="footer-link"><a href="#"><i class="fas fa-chevron-right"></i> About Us</a></li>
+            <li class="footer-link"><a href="#"><i class="fas fa-chevron-right"></i> Careers</a></li>
+            <li class="footer-link"><a href="#"><i class="fas fa-chevron-right"></i> Press</a></li>
+            <li class="footer-link"><a href="#"><i class="fas fa-chevron-right"></i> Blog</a></li>
+            <li class="footer-link"><a href="#"><i class="fas fa-chevron-right"></i> Contact</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-col">
+          <h3 class="footer-title">Resources</h3>
+          <ul class="footer-links">
+            <li class="footer-link"><a href="#"><i class="fas fa-chevron-right"></i> Help Center</a></li>
+            <li class="footer-link"><a href="#"><i class="fas fa-chevron-right"></i> Documentation</a></li>
+            <li class="footer-link"><a href="#"><i class="fas fa-chevron-right"></i> API</a></li>
+            <li class="footer-link"><a href="#"><i class="fas fa-chevron-right"></i> Status</a></li>
+            <li class="footer-link"><a href="#"><i class="fas fa-chevron-right"></i> Privacy Policy</a></li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="copyright">
+        &copy; 2025 FleetPulse. All rights reserved.
+      </div>
+    </div>
+  </footer>
+  
+  <script>
+    // Mobile menu functionality would go here
+    document.querySelector('.mobile-menu-btn').addEventListener('click', function() {
+      alert('Mobile menu is coming soon!');
+    });
+    
+    // Demo schedule functionality
+    document.querySelector('.secondary-btn').addEventListener('click', function() {
+      alert('Schedule a demo feature is coming soon!');
+    });
+    
+    // Explore AI features functionality
+    document.querySelector('.ai-content .primary-btn').addEventListener('click', function() {
+      window.location.href = '/login';
+    });
+  </script>
 </body>
 </html>
