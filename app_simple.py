@@ -13,6 +13,12 @@ class User:
         self.username = username
         self.is_authenticated = True
         self.level = 2
+        self.points = 0
+        self.achievements = []
+        self.safety_score = 90.0
+        self.total_distance = 0.0
+        self.fuel_efficiency = 0.0
+        self.on_time_delivery_rate = 100.0
     
     @property
     def is_active(self):
@@ -584,6 +590,158 @@ def get_ai_performance_analysis(truck_id):
         'analysis': analysis
     })
 
+def get_achievement_progress(user, achievement):
+    """Calculate the progress for a specific achievement"""
+    # This is just a mock function for demonstration
+    # In a real app, you would calculate the progress based on the user's stats
+    if 'progress' in achievement:
+        return achievement['progress']
+    else:
+        # Return random progress between 10 and 100
+        return min(100, max(10, (user.id * 10) % 100))
+
+# Achievements route
+@app.route('/achievements')
+@login_required
+def achievements():
+    # Get the current user
+    user = User(id=1, username=session.get('username', 'demo_user'))
+    user.points = 7800
+    user.level = 5
+    user.achievements = []
+    user.safety_score = 95.5
+    
+    # Mock achievements data
+    achievements = [
+        {
+            'id': 1,
+            'name': 'Fuel Efficiency Master',
+            'description': 'Maintain an average fuel efficiency of 7+ MPG for 30 days',
+            'points': 500,
+            'icon': 'fa-gas-pump',
+            'category': 'efficiency',
+            'progress': 75
+        },
+        {
+            'id': 2,
+            'name': 'Safe Driver Award',
+            'description': 'Complete 10,000 miles without any safety incidents',
+            'points': 1000,
+            'icon': 'fa-shield-alt',
+            'category': 'safety',
+            'progress': 100,
+            'completed': True,
+            'completed_date': datetime.datetime.now() - datetime.timedelta(days=30)
+        },
+        {
+            'id': 3,
+            'name': 'On-Time Champion',
+            'description': 'Maintain a 98% on-time delivery rate for 3 months',
+            'points': 750,
+            'icon': 'fa-clock',
+            'category': 'reliability',
+            'progress': 85
+        }
+    ]
+    
+    rewards = [
+        {
+            'id': 1,
+            'name': 'Premium Truck Upgrade',
+            'description': 'Get priority access to newer truck models',
+            'points_required': 5000,
+            'icon': 'fa-truck',
+            'available': True
+        },
+        {
+            'id': 2,
+            'name': '$500 Bonus',
+            'description': 'Cash bonus added to your next paycheck',
+            'points_required': 10000,
+            'icon': 'fa-dollar-sign',
+            'available': False
+        },
+        {
+            'id': 3,
+            'name': 'Extra Vacation Day',
+            'description': 'Earn an additional paid day off',
+            'points_required': 7500,
+            'icon': 'fa-umbrella-beach',
+            'available': True
+        }
+    ]
+    
+    # Mock leaderboard data
+    leaderboard = [
+        {
+            'id': 1,
+            'username': 'john_driver',
+            'points': 12500,
+            'level': 8,
+            'achievements': [1, 2, 3, 4, 5],
+            'safety_score': 98.2
+        },
+        {
+            'id': 2,
+            'username': session.get('username', 'demo_user'),
+            'points': 7800,
+            'level': 5,
+            'achievements': [1, 2, 3],
+            'safety_score': 95.5
+        },
+        {
+            'id': 3,
+            'username': 'mike_trucker',
+            'points': 6200,
+            'level': 4,
+            'achievements': [1, 3],
+            'safety_score': 92.8
+        },
+        {
+            'id': 4,
+            'username': 'sarah_express',
+            'points': 5800,
+            'level': 4,
+            'achievements': [1, 2],
+            'safety_score': 94.1
+        },
+        {
+            'id': 5,
+            'username': 'dave_haul',
+            'points': 4500,
+            'level': 3,
+            'achievements': [1],
+            'safety_score': 91.0
+        }
+    ]
+    
+    return render_template('gamification.html', 
+                           achievements=achievements, 
+                           rewards=rewards,
+                           current_user=user,
+                           leaderboard=leaderboard,
+                           get_achievement_progress=get_achievement_progress)
+
+# NextLoad page route
+@app.route('/nextload_page')
+@login_required
+def nextload_page():
+    # US States for the dropdown menu
+    states = [
+        'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California',
+        'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia',
+        'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa',
+        'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland',
+        'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri',
+        'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey',
+        'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio',
+        'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina',
+        'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont',
+        'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
+    ]
+    
+    return render_template('nextload.html', states=states)
+
 # Handle specific route patterns for remaining routes
 @app.route('/map/<truck_id>')
 @app.route('/call/<truck_id>')
@@ -594,8 +752,6 @@ def get_ai_performance_analysis(truck_id):
 @app.route('/maintenance')
 @app.route('/analytics')
 @app.route('/settings')
-@app.route('/achievements')
-@app.route('/nextload_page')
 @login_required
 def handle_app_routes(truck_id=None, service_type=None):
     # For now, all routes simply return the preview.html page
