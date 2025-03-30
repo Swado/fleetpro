@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FleetPulse | Autonomous TMS AI Platform</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    /* Additional landing page styles */
+    .hero-gradient {
+      background: linear-gradient(135deg, rgba(17, 24, 39, 0.95), rgba(0, 0, 0, 0.95)), url('https://images.unsplash.com/photo-1519003722824-194d4455a60c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80');
+      background-size: cover;
+      background-position: center;
+    }
+    
+    .feature-icon-container {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      border-radius: 30%;
+      background: linear-gradient(145deg, #171717, #1f1f1f);
+      box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.25),
+                  -8px -8px 16px rgba(255, 255, 255, 0.03);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    
+    .feature-icon-container::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: conic-gradient(transparent, rgba(250, 204, 21, 0.3), transparent 30%);
+      animation: rotate 4s linear infinite;
+    }
+    
+    .feature-icon-container::before {
+      content: '';
+      position: absolute;
+      inset: 2px;
+      border-radius: 29%;
+      background: #171717;
+      z-index: 1;
+    }
+    
+    .feature-icon {
+      position: relative;
+      z-index: 2;
+      font-size: 2rem;
+      color: #facc15;
+    }
+    
+    @keyframes rotate {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+    
+    .hover-lift {
+      transition: transform 0.3s ease;
+    }
+    
+    .hover-lift:hover {
+      transform: translateY(-5px);
+    }
+    
+    .text-stroke {
+      -webkit-text-stroke: 1px rgba(250, 204, 21, 0.3);
+      color: transparent;
+    }
+    
+    .animate-float {
+      animation: float 6s ease-in-out infinite;
+    }
+    
+    .animate-float-delay-1 {
+      animation: float 6s ease-in-out 2s infinite;
+    }
+    
+    .animate-float-delay-2 {
+      animation: float 6s ease-in-out 4s infinite;
+    }
+    
+    @keyframes float {
+      0% {
+        transform: translateY(0px);
+      }
+      50% {
+        transform: translateY(-20px);
+      }
+      100% {
+        transform: translateY(0px);
+      }
+    }
+    
+    .cta-button {
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+      transition: all 0.3s ease;
+    }
+    
+    .cta-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: all 0.5s ease;
+      z-index: -1;
+    }
+    
+    .cta-button:hover::before {
+      left: 100%;
+    }
+    
+    .testimonial-card {
+      transform: perspective(1000px);
+      transition: transform 0.5s ease;
+    }
+    
+    .testimonial-card:hover {
+      transform: perspective(1000px) rotateY(5deg);
+    }
+    
+    .gradient-border {
+      position: relative;
+      border-radius: 0.75rem;
+      z-index: 0;
+    }
+    
+    .gradient-border::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: 0.75rem;
+      padding: 1px;
+      background: linear-gradient(120deg, #facc15, transparent, #facc15);
+      -webkit-mask: 
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      z-index: -1;
+    }
+    
+    /* Animate numbers */
+    .animate-count {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(10px);
+      animation: countUp 0.5s forwards ease-out;
+    }
+    
+    @keyframes countUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    /* For the background elements */
+    .bg-element {
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(circle at center, rgba(250, 204, 21, 0.3), transparent 70%);
+      opacity: 0.1;
+      filter: blur(60px);
+      z-index: 0;
+    }
+  </style>
+</head>
+<body class="bg-black text-white">
+  <!-- Background elements for visual effect -->
+  <div class="bg-element w-[600px] h-[600px] top-[-200px] right-[-100px]"></div>
+  <div class="bg-element w-[500px] h-[500px] bottom-[20%] left-[-200px]"></div>
+  
+  <div class="min-h-screen flex flex-col">
+    <!-- Navigation -->
+    <header class="py-6 absolute w-full z-10">
+      <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between">
+          <!-- Logo -->
+          <div class="flex items-center space-x-3">
+            <div class="text-3xl font-bold text-yellow-400">FleetPulse</div>
+            <div class="hidden md:flex border-l border-gray-700 pl-3 ml-1">
+              <div class="neon-pulse-sm mr-2"></div>
+              <span class="text-sm text-yellow-400">AI-POWERED</span>
+            </div>
+          </div>
+          
+          <!-- Main Navigation -->
+          <nav class="hidden md:flex items-center space-x-8">
+            <a href="#features" class="text-gray-300 hover:text-yellow-400 transition-colors text-sm font-medium">Features</a>
+            <a href="#ai" class="text-gray-300 hover:text-yellow-400 transition-colors text-sm font-medium">AI Technology</a>
+            <a href="#testimonials" class="text-gray-300 hover:text-yellow-400 transition-colors text-sm font-medium">Testimonials</a>
+            <a href="#pricing" class="text-gray-300 hover:text-yellow-400 transition-colors text-sm font-medium">Pricing</a>
+          </nav>
+          
+          <!-- CTA Buttons -->
+          <div class="flex items-center space-x-4">
+            <a href="/login" class="text-gray-300 hover:text-yellow-400 transition-colors text-sm font-medium">Sign In</a>
+            <a href="#demo" class="gradient-button py-2 px-5 text-sm">Request Demo</a>
+          </div>
+        </div>
+      </div>
+    </header>
+    
+    <!-- Hero Section -->
+    <section class="hero-gradient min-h-screen flex items-center pt-20">
+      <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div class="z-10">
+            <h1 class="text-4xl md:text-6xl font-extrabold mb-4">
+              <span class="text-white">Autonomous </span>
+              <span class="text-yellow-400">Fleet Management</span>
+              <span class="text-white"> Powered by AI</span>
+            </h1>
+            <p class="text-xl text-gray-300 mb-8">
+              The next generation of transportation management systems. Streamline operations, optimize routes, and increase efficiency with our cutting-edge AI platform.
+            </p>
+            <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mb-8">
+              <a href="#demo" class="cta-button gradient-button py-3 px-8 text-center text-lg">Get Started Free</a>
+              <a href="#how-it-works" class="border border-gray-700 hover:border-yellow-400 py-3 px-8 rounded-md text-center text-lg flex items-center justify-center transition-colors">
+                <i class="fas fa-play-circle mr-2"></i> Watch Demo
+              </a>
+            </div>
+            <div class="flex items-center space-x-4 text-sm text-gray-400">
+              <div class="flex -space-x-2">
+                <img src="https://randomuser.me/api/portraits/men/32.jpg" class="w-8 h-8 rounded-full border-2 border-black" alt="User">
+                <img src="https://randomuser.me/api/portraits/women/44.jpg" class="w-8 h-8 rounded-full border-2 border-black" alt="User">
+                <img src="https://randomuser.me/api/portraits/men/86.jpg" class="w-8 h-8 rounded-full border-2 border-black" alt="User">
+                <div class="w-8 h-8 rounded-full bg-gray-900 border-2 border-black flex items-center justify-center text-xs">+8k</div>
+              </div>
+              <span>Trusted by 8,000+ fleet managers across North America</span>
+            </div>
+          </div>
+          
+          <div class="relative z-10">
+            <div class="glassmorphic-card p-1 md:p-2 lg:p-3 rounded-2xl overflow-hidden relative">
+              <img src="https://images.unsplash.com/photo-1580674285054-bed31e145f59?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" 
+                  class="w-full h-auto rounded-xl" alt="Fleet Management Dashboard">
+              
+              <!-- Floating UI Elements -->
+              <div class="absolute top-[10%] right-[5%] glassmorphic-card p-3 animate-float">
+                <div class="text-sm font-bold">Efficiency Score</div>
+                <div class="text-2xl font-bold text-yellow-400">98.7%</div>
+              </div>
+              
+              <div class="absolute bottom-[15%] left-[5%] glassmorphic-card p-3 animate-float-delay-1">
+                <div class="text-sm font-bold">Savings This Month</div>
+                <div class="text-2xl font-bold text-green-400">$12,845</div>
+              </div>
+              
+              <div class="absolute top-[40%] left-[10%] glassmorphic-card p-3 animate-float-delay-2">
+                <div class="text-sm font-bold">AI Recommendations</div>
+                <div class="text-md text-blue-400">3 New Updates</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Stats Section -->
+    <section class="py-20 bg-gray-900">
+      <div class="container mx-auto px-4">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div class="text-center">
+            <div class="text-4xl font-bold text-yellow-400 mb-2">98%</div>
+            <div class="text-gray-400">On-Time Delivery</div>
+          </div>
+          <div class="text-center">
+            <div class="text-4xl font-bold text-yellow-400 mb-2">37%</div>
+            <div class="text-gray-400">Fuel Savings</div>
+          </div>
+          <div class="text-center">
+            <div class="text-4xl font-bold text-yellow-400 mb-2">24/7</div>
+            <div class="text-gray-400">AI Monitoring</div>
+          </div>
+          <div class="text-center">
+            <div class="text-4xl font-bold text-yellow-400 mb-2">5.8M</div>
+            <div class="text-gray-400">Miles Optimized</div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Features Section -->
+    <section id="features" class="py-20">
+      <div class="container mx-auto px-4">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+          <span class="text-yellow-400 text-sm font-semibold uppercase tracking-wider">Features</span>
+          <h2 class="text-3xl md:text-4xl font-bold mt-2 mb-4">Intelligent Fleet Management</h2>
+          <p class="text-gray-400 text-lg">Discover how our AI-powered platform transforms your transportation operations with advanced features designed for maximum efficiency.</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <!-- Feature 1 -->
+          <div class="glassmorphic-card p-8 hover-lift">
+            <div class="feature-icon-container mx-auto mb-6">
+              <i class="fas fa-route feature-icon"></i>
+            </div>
+            <h3 class="text-xl font-bold text-center mb-4">Intelligent Routing</h3>
+            <p class="text-gray-400 text-center">AI-powered route optimization that factors in traffic, weather, and driver constraints to find the most efficient paths.</p>
+            <ul class="mt-6 space-y-2">
+              <li class="flex items-start">
+                <i class="fas fa-check text-yellow-400 mt-1 mr-2"></i>
+                <span class="text-sm text-gray-300">Dynamic rerouting based on real-time conditions</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fas fa-check text-yellow-400 mt-1 mr-2"></i>
+                <span class="text-sm text-gray-300">Multi-stop optimization with time windows</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fas fa-check text-yellow-400 mt-1 mr-2"></i>
+                <span class="text-sm text-gray-300">Fuel consumption analysis and minimization</span>
+              </li>
+            </ul>
+          </div>
+          
+          <!-- Feature 2 -->
+          <div class="glassmorphic-card p-8 hover-lift">
+            <div class="feature-icon-container mx-auto mb-6">
+              <i class="fas fa-chart-line feature-icon"></i>
+            </div>
+            <h3 class="text-xl font-bold text-center mb-4">Predictive Analytics</h3>
+            <p class="text-gray-400 text-center">Forecasting tools that analyze historical data to predict maintenance needs, demand patterns, and potential issues.</p>
+            <ul class="mt-6 space-y-2">
+              <li class="flex items-start">
+                <i class="fas fa-check text-yellow-400 mt-1 mr-2"></i>
+                <span class="text-sm text-gray-300">Maintenance prediction with 94% accuracy</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fas fa-check text-yellow-400 mt-1 mr-2"></i>
+                <span class="text-sm text-gray-300">Demand forecasting to optimize fleet size</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fas fa-check text-yellow-400 mt-1 mr-2"></i>
+                <span class="text-sm text-gray-300">Driver performance analysis and coaching</span>
+              </li>
+            </ul>
+          </div>
+          
+          <!-- Feature 3 -->
+          <div class="glassmorphic-card p-8 hover-lift">
+            <div class="feature-icon-container mx-auto mb-6">
+              <i class="fas fa-user-shield feature-icon"></i>
+            </div>
+            <h3 class="text-xl font-bold text-center mb-4">Safety & Compliance</h3>
+            <p class="text-gray-400 text-center">Automated systems to ensure regulatory compliance, monitor driver behavior, and enhance overall fleet safety.</p>
+            <ul class="mt-6 space-y-2">
+              <li class="flex items-start">
+                <i class="fas fa-check text-yellow-400 mt-1 mr-2"></i>
+                <span class="text-sm text-gray-300">Real-time compliance monitoring and alerts</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fas fa-check text-yellow-400 mt-1 mr-2"></i>
+                <span class="text-sm text-gray-300">Driver fatigue detection and prevention</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fas fa-check text-yellow-400 mt-1 mr-2"></i>
+                <span class="text-sm text-gray-300">Automated documentation and record-keeping</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">
+          <!-- Feature 4 -->
+          <div class="glassmorphic-card p-8 hover-lift">
+            <div class="flex items-center mb-6">
+              <div class="feature-icon-container mr-6">
+                <i class="fas fa-robot feature-icon"></i>
+              </div>
+              <div>
+                <h3 class="text-xl font-bold mb-2">Autonomous Decision-Making</h3>
+                <p class="text-gray-400">The AI engine makes real-time decisions to solve logistical challenges without human intervention.</p>
+              </div>
+            </div>
+            <ul class="space-y-2">
+              <li class="flex items-start">
+                <i class="fas fa-check text-yellow-400 mt-1 mr-2"></i>
+                <span class="text-sm text-gray-300">Load balancing across available fleet resources</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fas fa-check text-yellow-400 mt-1 mr-2"></i>
+                <span class="text-sm text-gray-300">Emergency response protocols with automated dispatch</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fas fa-check text-yellow-400 mt-1 mr-2"></i>
+                <span class="text-sm text-gray-300">Smart scheduling with driver preference matching</span>
+              </li>
+            </ul>
+          </div>
+          
+          <!-- Feature 5 -->
+          <div class="glassmorphic-card p-8 hover-lift">
+            <div class="flex items-center mb-6">
+              <div class="feature-icon-container mr-6">
+                <i class="fas fa-coins feature-icon"></i>
+              </div>
+              <div>
+                <h3 class="text-xl font-bold mb-2">Financial Optimization</h3>
+                <p class="text-gray-400">Cost analysis tools that identify savings opportunities and optimize revenue generation.</p>
+              </div>
+            </div>
+            <ul class="space-y-2">
+              <li class="flex items-start">
+                <i class="fas fa-check text-yellow-400 mt-1 mr-2"></i>
+                <span class="text-sm text-gray-300">Real-time profitability analysis per route and vehicle</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fas fa-check text-yellow-400 mt-1 mr-2"></i>
+                <span class="text-sm text-gray-300">Automated invoicing with expedited payment processing</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fas fa-check text-yellow-400 mt-1 mr-2"></i>
+                <span class="text-sm text-gray-300">Fuel card integration with fraud detection systems</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- AI Technology Section -->
+    <section id="ai" class="py-20 bg-gray-900">
+      <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <div>
+            <span class="text-yellow-400 text-sm font-semibold uppercase tracking-wider">AI Technology</span>
+            <h2 class="text-3xl md:text-4xl font-bold mt-2 mb-6">Cutting-Edge Artificial Intelligence</h2>
+            <p class="text-gray-300 text-lg mb-8">
+              Our proprietary AI engine harnesses the power of machine learning and predictive analytics to transform your transportation operations.
+            </p>
+            
+            <div class="space-y-6">
+              <div class="glassmorphic-card p-4 border-l-4 border-yellow-400">
+                <h3 class="font-bold mb-2">Neural Network Architecture</h3>
+                <p class="text-sm text-gray-400">Utilizes deep learning models trained on billions of transportation data points to make optimal decisions.</p>
+              </div>
+              
+              <div class="glassmorphic-card p-4 border-l-4 border-blue-400">
+                <h3 class="font-bold mb-2">Natural Language Processing</h3>
+                <p class="text-sm text-gray-400">Enables voice commands, intelligent communication, and real-time document analysis.</p>
+              </div>
+              
+              <div class="glassmorphic-card p-4 border-l-4 border-green-400">
+                <h3 class="font-bold mb-2">Computer Vision Systems</h3>
+                <p class="text-sm text-gray-400">Analyzes road conditions, vehicle status, and cargo integrity through connected camera systems.</p>
+              </div>
+              
+              <div class="glassmorphic-card p-4 border-l-4 border-purple-400">
+                <h3 class="font-bold mb-2">Reinforcement Learning</h3>
+                <p class="text-sm text-gray-400">Continuously improves over time by learning from each decision and outcome to enhance future performance.</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="relative">
+            <div class="glassmorphic-card p-8 gradient-border">
+              <div class="absolute -top-8 -right-8 w-40 h-40 bg-yellow-400 opacity-20 rounded-full blur-3xl"></div>
+              
+              <h3 class="text-xl font-bold mb-6">AI Performance Metrics</h3>
+              
+              <!-- AI Metrics -->
+              <div class="space-y-6">
+                <div>
+                  <div class="flex justify-between mb-1">
+                    <div class="text-sm">Route Optimization Accuracy</div>
+                    <div class="text-sm text-yellow-400">98.7%</div>
+                  </div>
+                  <div class="h-2 bg-gray-700 rounded-full">
+                    <div class="h-2 bg-yellow-400 rounded-full" style="width: 98.7%"></div>
+                  </div>
+                </div>
+                
+                <div>
+                  <div class="flex justify-between mb-1">
+                    <div class="text-sm">Maintenance Prediction Precision</div>
+                    <div class="text-sm text-yellow-400">94.2%</div>
+                  </div>
+                  <div class="h-2 bg-gray-700 rounded-full">
+                    <div class="h-2 bg-yellow-400 rounded-full" style="width: 94.2%"></div>
+                  </div>
+                </div>
+                
+                <div>
+                  <div class="flex justify-between mb-1">
+                    <div class="text-sm">Fleet Utilization Improvement</div>
+                    <div class="text-sm text-yellow-400">42.8%</div>
+                  </div>
+                  <div class="h-2 bg-gray-700 rounded-full">
+                    <div class="h-2 bg-yellow-400 rounded-full" style="width: 42.8%"></div>
+                  </div>
+                </div>
+                
+                <div>
+                  <div class="flex justify-between mb-1">
+                    <div class="text-sm">Resource Allocation Efficiency</div>
+                    <div class="text-sm text-yellow-400">89.5%</div>
+                  </div>
+                  <div class="h-2 bg-gray-700 rounded-full">
+                    <div class="h-2 bg-yellow-400 rounded-full" style="width: 89.5%"></div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="mt-8 p-4 bg-gray-800 bg-opacity-50 rounded-lg">
+                <div class="text-center">
+                  <div class="text-sm text-gray-400 mb-1">AI Learning Rate</div>
+                  <div class="text-3xl font-bold text-yellow-400">
+                    <i class="fas fa-brain mr-2"></i> 2.4x Faster Than Industry Average
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Decorative code snippet -->
+            <div class="absolute -bottom-8 -left-8 glassmorphic-card p-4 text-xs text-gray-400 font-mono hidden md:block">
+              <pre><code>model.train(fleet_data, 
+  epochs=1000,
+  optimizer="adam",
+  learning_rate=0.001
+)
+# Accuracy: 98.7%</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="py-20">
+      <div class="container mx-auto px-4">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+          <span class="text-yellow-400 text-sm font-semibold uppercase tracking-wider">Testimonials</span>
+          <h2 class="text-3xl md:text-4xl font-bold mt-2 mb-4">What Our Customers Say</h2>
+          <p class="text-gray-400 text-lg">Fleet managers across North America trust FleetPulse to revolutionize their transportation operations.</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <!-- Testimonial 1 -->
+          <div class="glassmorphic-card p-8 testimonial-card">
+            <div class="flex items-center mb-6">
+              <img src="https://randomuser.me/api/portraits/men/32.jpg" class="w-14 h-14 rounded-full mr-4" alt="Testimonial">
+              <div>
+                <div class="font-bold">Michael Thompson</div>
+                <div class="text-sm text-gray-400">Fleet Director, LogiTech Solutions</div>
+              </div>
+            </div>
+            <p class="text-gray-300 italic mb-4">
+              "Since implementing FleetPulse, we've reduced our operational costs by 37% and improved delivery times by 28%. The AI recommendations are so accurate it's almost scary."
+            </p>
+            <div class="flex text-yellow-400">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+            </div>
+          </div>
+          
+          <!-- Testimonial 2 -->
+          <div class="glassmorphic-card p-8 testimonial-card">
+            <div class="flex items-center mb-6">
+              <img src="https://randomuser.me/api/portraits/women/44.jpg" class="w-14 h-14 rounded-full mr-4" alt="Testimonial">
+              <div>
+                <div class="font-bold">Sarah Johnson</div>
+                <div class="text-sm text-gray-400">Operations Manager, FreightWave Inc.</div>
+              </div>
+            </div>
+            <p class="text-gray-300 italic mb-4">
+              "The predictive maintenance feature alone saved us from 12 potential breakdowns last quarter. Our drivers love the intuitive interface and automated route guidance."
+            </p>
+            <div class="flex text-yellow-400">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+            </div>
+          </div>
+          
+          <!-- Testimonial 3 -->
+          <div class="glassmorphic-card p-8 testimonial-card">
+            <div class="flex items-center mb-6">
+              <img src="https://randomuser.me/api/portraits/men/86.jpg" class="w-14 h-14 rounded-full mr-4" alt="Testimonial">
+              <div>
+                <div class="font-bold">David Rodriguez</div>
+                <div class="text-sm text-gray-400">CEO, TransGlobal Logistics</div>
+              </div>
+            </div>
+            <p class="text-gray-300 italic mb-4">
+              "We manage over 500 vehicles across 3 countries, and FleetPulse has become our mission control. The ROI was evident within the first month of implementation."
+            </p>
+            <div class="flex text-yellow-400">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star-half-alt"></i>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Logos -->
+        <div class="mt-20">
+          <div class="text-center text-gray-500 text-sm mb-8">TRUSTED BY INDUSTRY LEADERS</div>
+          <div class="flex flex-wrap justify-center items-center gap-8 md:gap-16">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/J._B._Hunt_logo.svg/1280px-J._B._Hunt_logo.svg.png" alt="Company Logo" class="h-8 opacity-50 grayscale hover:opacity-100 hover:grayscale-0 transition-all">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Old_Dominion_Freight_Line_logo.svg/1280px-Old_Dominion_Freight_Line_logo.svg.png" alt="Company Logo" class="h-8 opacity-50 grayscale hover:opacity-100 hover:grayscale-0 transition-all">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Schneider_National_logo.svg/1920px-Schneider_National_logo.svg.png" alt="Company Logo" class="h-8 opacity-50 grayscale hover:opacity-100 hover:grayscale-0 transition-all">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/FedEx_Express.svg/1280px-FedEx_Express.svg.png" alt="Company Logo" class="h-8 opacity-50 grayscale hover:opacity-100 hover:grayscale-0 transition-all">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Logo_of_XPO_Logistics.svg/1024px-Logo_of_XPO_Logistics.svg.png" alt="Company Logo" class="h-8 opacity-50 grayscale hover:opacity-100 hover:grayscale-0 transition-all">
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-20 bg-gray-900">
+      <div class="container mx-auto px-4">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+          <span class="text-yellow-400 text-sm font-semibold uppercase tracking-wider">Pricing</span>
+          <h2 class="text-3xl md:text-4xl font-bold mt-2 mb-4">Simple, Transparent Pricing</h2>
+          <p class="text-gray-400 text-lg">Choose the perfect plan for your fleet size and needs with no hidden fees or surprises.</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <!-- Basic Plan -->
+          <div class="glassmorphic-card p-8 hover-lift">
+            <div class="text-center">
+              <h3 class="text-xl font-bold mb-2">Starter</h3>
+              <div class="text-gray-400 mb-6">For small fleets getting started</div>
+              <div class="text-4xl font-bold mb-1">$299<span class="text-sm text-gray-400">/mo</span></div>
+              <div class="text-sm text-gray-400 mb-6">per 10 vehicles</div>
+            </div>
+            
+            <div class="space-y-3 mb-8">
+              <div class="flex items-center">
+                <i class="fas fa-check text-yellow-400 mr-3"></i>
+                <span>Core route optimization</span>
+              </div>
+              <div class="flex items-center">
+                <i class="fas fa-check text-yellow-400 mr-3"></i>
+                <span>Basic maintenance alerts</span>
+              </div>
+              <div class="flex items-center">
+                <i class="fas fa-check text-yellow-400 mr-3"></i>
+                <span>Standard reporting</span>
+              </div>
+              <div class="flex items-center">
+                <i class="fas fa-check text-yellow-400 mr-3"></i>
+                <span>Email support</span>
+              </div>
+              <div class="flex items-center text-gray-600">
+                <i class="fas fa-times mr-3"></i>
+                <span>Advanced AI features</span>
+              </div>
+              <div class="flex items-center text-gray-600">
+                <i class="fas fa-times mr-3"></i>
+                <span>Predictive analytics</span>
+              </div>
+            </div>
+            
+            <a href="#demo" class="gradient-button py-2 px-4 rounded-md w-full block text-center">Get Started</a>
+          </div>
+          
+          <!-- Professional Plan -->
+          <div class="glassmorphic-card p-8 hover-lift border-yellow-400 transform scale-105 z-10">
+            <div class="absolute -top-3 right-6 bg-yellow-400 text-black px-3 py-1 rounded-full text-xs font-bold">POPULAR</div>
+            <div class="text-center">
+              <h3 class="text-xl font-bold mb-2">Professional</h3>
+              <div class="text-gray-400 mb-6">For growing fleets with advanced needs</div>
+              <div class="text-4xl font-bold mb-1">$599<span class="text-sm text-gray-400">/mo</span></div>
+              <div class="text-sm text-gray-400 mb-6">per 10 vehicles</div>
+            </div>
+            
+            <div class="space-y-3 mb-8">
+              <div class="flex items-center">
+                <i class="fas fa-check text-yellow-400 mr-3"></i>
+                <span>Advanced route optimization</span>
+              </div>
+              <div class="flex items-center">
+                <i class="fas fa-check text-yellow-400 mr-3"></i>
+                <span>Predictive maintenance</span>
+              </div>
+              <div class="flex items-center">
+                <i class="fas fa-check text-yellow-400 mr-3"></i>
+                <span>Advanced analytics & reporting</span>
+              </div>
+              <div class="flex items-center">
+                <i class="fas fa-check text-yellow-400 mr-3"></i>
+                <span>Priority support</span>
+              </div>
+              <div class="flex items-center">
+                <i class="fas fa-check text-yellow-400 mr-3"></i>
+                <span>AI route recommendations</span>
+              </div>
+              <div class="flex items-center text-gray-600">
+                <i class="fas fa-times mr-3"></i>
+                <span>Autonomous decision engine</span>
+              </div>
+            </div>
+            
+            <a href="#demo" class="gradient-button py-2 px-4 rounded-md w-full block text-center">Get Started</a>
+          </div>
+          
+          <!-- Enterprise Plan -->
+          <div class="glassmorphic-card p-8 hover-lift">
+            <div class="text-center">
+              <h3 class="text-xl font-bold mb-2">Enterprise</h3>
+              <div class="text-gray-400 mb-6">For large fleets with complex operations</div>
+              <div class="text-4xl font-bold mb-1">$1,299<span class="text-sm text-gray-400">/mo</span></div>
+              <div class="text-sm text-gray-400 mb-6">per 10 vehicles</div>
+            </div>
+            
+            <div class="space-y-3 mb-8">
+              <div class="flex items-center">
+                <i class="fas fa-check text-yellow-400 mr-3"></i>
+                <span>All Professional features</span>
+              </div>
+              <div class="flex items-center">
+                <i class="fas fa-check text-yellow-400 mr-3"></i>
+                <span>Autonomous decision engine</span>
+              </div>
+              <div class="flex items-center">
+                <i class="fas fa-check text-yellow-400 mr-3"></i>
+                <span>Custom AI model training</span>
+              </div>
+              <div class="flex items-center">
+                <i class="fas fa-check text-yellow-400 mr-3"></i>
+                <span>Dedicated account manager</span>
+              </div>
+              <div class="flex items-center">
+                <i class="fas fa-check text-yellow-400 mr-3"></i>
+                <span>24/7 premium support</span>
+              </div>
+              <div class="flex items-center">
+                <i class="fas fa-check text-yellow-400 mr-3"></i>
+                <span>API access & custom integrations</span>
+              </div>
+            </div>
+            
+            <a href="#demo" class="gradient-button py-2 px-4 rounded-md w-full block text-center">Contact Sales</a>
+          </div>
+        </div>
+        
+        <div class="mt-12 text-center">
+          <p class="text-gray-400">Need a custom plan for your specific requirements?</p>
+          <a href="#contact" class="text-yellow-400 hover:underline">Contact our sales team for custom pricing</a>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Demo Request Section -->
+    <section id="demo" class="py-20">
+      <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div>
+            <span class="text-yellow-400 text-sm font-semibold uppercase tracking-wider">Get Started</span>
+            <h2 class="text-3xl md:text-4xl font-bold mt-2 mb-6">Ready to Transform Your Fleet Management?</h2>
+            <p class="text-gray-300 text-lg mb-6">
+              Schedule a personalized demo to see how FleetPulse can revolutionize your transportation operations with AI-powered intelligence.
+            </p>
+            
+            <div class="space-y-6 mb-8">
+              <div class="flex items-start">
+                <div class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center mr-4 mt-1">
+                  <i class="fas fa-eye text-yellow-400"></i>
+                </div>
+                <div>
+                  <h3 class="font-bold mb-1">See FleetPulse in Action</h3>
+                  <p class="text-gray-400">Get a live walkthrough of the platform tailored to your specific needs.</p>
+                </div>
+              </div>
+              
+              <div class="flex items-start">
+                <div class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center mr-4 mt-1">
+                  <i class="fas fa-chart-pie text-yellow-400"></i>
+                </div>
+                <div>
+                  <h3 class="font-bold mb-1">Custom ROI Analysis</h3>
+                  <p class="text-gray-400">Receive a detailed report on your potential savings and efficiency gains.</p>
+                </div>
+              </div>
+              
+              <div class="flex items-start">
+                <div class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center mr-4 mt-1">
+                  <i class="fas fa-hand-holding-usd text-yellow-400"></i>
+                </div>
+                <div>
+                  <h3 class="font-bold mb-1">Free 14-Day Trial</h3>
+                  <p class="text-gray-400">Experience the full platform with your own data, risk-free for two weeks.</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="p-4 bg-gray-800 bg-opacity-50 rounded-lg mb-6">
+              <div class="flex items-center">
+                <i class="fas fa-shield-alt text-yellow-400 mr-3 text-xl"></i>
+                <div class="text-sm">
+                  Your information is protected by our <a href="#" class="text-yellow-400 hover:underline">privacy policy</a>.
+                  We never share your data with third parties.
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div>
+            <div class="glassmorphic-card p-8">
+              <h3 class="text-xl font-bold mb-6">Request Your Free Demo</h3>
+              
+              <form>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label class="block text-sm text-gray-400 mb-1">First Name</label>
+                    <input type="text" class="w-full bg-gray-900 border border-gray-700 rounded-md px-3 py-2 focus:outline-none focus:border-yellow-400">
+                  </div>
+                  <div>
+                    <label class="block text-sm text-gray-400 mb-1">Last Name</label>
+                    <input type="text" class="w-full bg-gray-900 border border-gray-700 rounded-md px-3 py-2 focus:outline-none focus:border-yellow-400">
+                  </div>
+                </div>
+                
+                <div class="mb-4">
+                  <label class="block text-sm text-gray-400 mb-1">Company Name</label>
+                  <input type="text" class="w-full bg-gray-900 border border-gray-700 rounded-md px-3 py-2 focus:outline-none focus:border-yellow-400">
+                </div>
+                
+                <div class="mb-4">
+                  <label class="block text-sm text-gray-400 mb-1">Work Email</label>
+                  <input type="email" class="w-full bg-gray-900 border border-gray-700 rounded-md px-3 py-2 focus:outline-none focus:border-yellow-400">
+                </div>
+                
+                <div class="mb-4">
+                  <label class="block text-sm text-gray-400 mb-1">Phone Number</label>
+                  <input type="tel" class="w-full bg-gray-900 border border-gray-700 rounded-md px-3 py-2 focus:outline-none focus:border-yellow-400">
+                </div>
+                
+                <div class="mb-4">
+                  <label class="block text-sm text-gray-400 mb-1">Fleet Size</label>
+                  <select class="w-full bg-gray-900 border border-gray-700 rounded-md px-3 py-2 focus:outline-none focus:border-yellow-400">
+                    <option>Select your fleet size</option>
+                    <option>1-10 vehicles</option>
+                    <option>11-50 vehicles</option>
+                    <option>51-100 vehicles</option>
+                    <option>101-500 vehicles</option>
+                    <option>500+ vehicles</option>
+                  </select>
+                </div>
+                
+                <div class="mb-6">
+                  <label class="block text-sm text-gray-400 mb-1">What are your primary challenges?</label>
+                  <textarea rows="3" class="w-full bg-gray-900 border border-gray-700 rounded-md px-3 py-2 focus:outline-none focus:border-yellow-400"></textarea>
+                </div>
+                
+                <button type="submit" class="gradient-button py-3 px-6 w-full text-center font-bold">Schedule My Demo</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- CTA Section -->
+    <section class="py-20 bg-gray-900">
+      <div class="container mx-auto px-4 text-center">
+        <h2 class="text-3xl md:text-4xl font-bold mb-4">Ready to Revolutionize Your Fleet Management?</h2>
+        <p class="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
+          Join thousands of fleet managers who have transformed their operations with FleetPulse.
+        </p>
+        <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+          <a href="#demo" class="gradient-button py-3 px-8 text-lg">Get Started Today</a>
+          <a href="/login" class="border border-gray-700 hover:border-yellow-400 rounded-md py-3 px-8 text-lg transition-colors">
+            Sign In
+          </a>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="bg-black py-12 border-t border-gray-800">
+      <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+          <div>
+            <div class="text-2xl font-bold text-yellow-400 mb-4">FleetPulse</div>
+            <p class="text-gray-400 mb-4">
+              The next generation of transportation management systems powered by artificial intelligence.
+            </p>
+            <div class="flex space-x-4">
+              <a href="#" class="text-gray-400 hover:text-yellow-400 transition-colors">
+                <i class="fab fa-linkedin text-xl"></i>
+              </a>
+              <a href="#" class="text-gray-400 hover:text-yellow-400 transition-colors">
+                <i class="fab fa-twitter text-xl"></i>
+              </a>
+              <a href="#" class="text-gray-400 hover:text-yellow-400 transition-colors">
+                <i class="fab fa-facebook text-xl"></i>
+              </a>
+              <a href="#" class="text-gray-400 hover:text-yellow-400 transition-colors">
+                <i class="fab fa-youtube text-xl"></i>
+              </a>
+            </div>
+          </div>
+          
+          <div>
+            <h3 class="font-bold mb-4">Product</h3>
+            <ul class="space-y-2">
+              <li><a href="#features" class="text-gray-400 hover:text-yellow-400 transition-colors">Features</a></li>
+              <li><a href="#ai" class="text-gray-400 hover:text-yellow-400 transition-colors">AI Technology</a></li>
+              <li><a href="#pricing" class="text-gray-400 hover:text-yellow-400 transition-colors">Pricing</a></li>
+              <li><a href="#" class="text-gray-400 hover:text-yellow-400 transition-colors">Security</a></li>
+              <li><a href="#" class="text-gray-400 hover:text-yellow-400 transition-colors">Integrations</a></li>
+            </ul>
+          </div>
+          
+          <div>
+            <h3 class="font-bold mb-4">Resources</h3>
+            <ul class="space-y-2">
+              <li><a href="#" class="text-gray-400 hover:text-yellow-400 transition-colors">Documentation</a></li>
+              <li><a href="#" class="text-gray-400 hover:text-yellow-400 transition-colors">Blog</a></li>
+              <li><a href="#" class="text-gray-400 hover:text-yellow-400 transition-colors">Case Studies</a></li>
+              <li><a href="#" class="text-gray-400 hover:text-yellow-400 transition-colors">Webinars</a></li>
+              <li><a href="#" class="text-gray-400 hover:text-yellow-400 transition-colors">Support Center</a></li>
+            </ul>
+          </div>
+          
+          <div>
+            <h3 class="font-bold mb-4">Company</h3>
+            <ul class="space-y-2">
+              <li><a href="#" class="text-gray-400 hover:text-yellow-400 transition-colors">About Us</a></li>
+              <li><a href="#" class="text-gray-400 hover:text-yellow-400 transition-colors">Careers</a></li>
+              <li><a href="#" class="text-gray-400 hover:text-yellow-400 transition-colors">News</a></li>
+              <li><a href="#" class="text-gray-400 hover:text-yellow-400 transition-colors">Contact</a></li>
+              <li><a href="#" class="text-gray-400 hover:text-yellow-400 transition-colors">Partners</a></li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
+          <div class="text-gray-500 text-sm mb-4 md:mb-0">
+            &copy; 2025 FleetPulse. All rights reserved.
+          </div>
+          <div class="flex space-x-6">
+            <a href="#" class="text-gray-500 hover:text-gray-400 text-sm">Privacy Policy</a>
+            <a href="#" class="text-gray-500 hover:text-gray-400 text-sm">Terms of Service</a>
+            <a href="#" class="text-gray-500 hover:text-gray-400 text-sm">Cookies</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

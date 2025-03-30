@@ -5,7 +5,11 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return send_from_directory('.', 'preview.html')
+    return send_from_directory('.', 'landing.html')
+
+@app.route('/login')
+def login():
+    return send_from_directory('.', 'login.html')
 
 # Handle specific route patterns
 @app.route('/map/<truck_id>')
