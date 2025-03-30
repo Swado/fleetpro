@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="/styles.css">
   <style>
     .login-gradient {
-      background: linear-gradient(135deg, rgba(17, 24, 39, 0.95), rgba(0, 0, 0, 0.95)), url('https://images.unsplash.com/photo-1506682640149-daaec9fc9388?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80');
+      background: linear-gradient(135deg, rgba(17, 24, 39, 0.95), rgba(0, 0, 0, 0.95));
       background-size: cover;
       background-position: center;
     }
@@ -146,14 +146,14 @@
         </div>
         
         <div class="glassmorphic-card p-8 rounded-xl">
-          <form action="/dashboard" method="GET" class="space-y-6">
+          <form action="/fleet" method="POST" class="space-y-6">
             <div>
-              <label for="email" class="block text-sm font-medium text-gray-300 mb-1">Email Address</label>
+              <label for="username" class="block text-sm font-medium text-gray-300 mb-1">Username</label>
               <div class="relative">
-                <i class="fas fa-envelope input-icon"></i>
-                <input id="email" name="email" type="email" autocomplete="email" required 
+                <i class="fas fa-user input-icon"></i>
+                <input id="username" name="username" type="text" autocomplete="username" required 
                        class="input-focus input-with-icon block w-full px-3 py-3 bg-gray-900 text-white placeholder-gray-500 border border-gray-700 rounded-md focus:ring-0"
-                       placeholder="Enter your email">
+                       placeholder="Enter your username" value="admin">
                 <div class="border-gradient"></div>
               </div>
             </div>
@@ -164,7 +164,7 @@
                 <i class="fas fa-lock input-icon"></i>
                 <input id="password" name="password" type="password" autocomplete="current-password" required 
                        class="input-focus input-with-icon block w-full px-3 py-3 bg-gray-900 text-white placeholder-gray-500 border border-gray-700 rounded-md focus:ring-0"
-                       placeholder="Enter your password">
+                       placeholder="Enter your password" value="admin123">
                 <div class="border-gradient"></div>
               </div>
             </div>

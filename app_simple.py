@@ -1,4 +1,4 @@
-from flask import Flask, render_template, send_from_directory, redirect, url_for
+from flask import Flask, render_template, send_from_directory, redirect, url_for, request
 import os
 
 app = Flask(__name__)
@@ -7,9 +7,22 @@ app = Flask(__name__)
 def index():
     return send_from_directory('.', 'landing.html')
 
-@app.route('/login')
+@app.route('/login', methods=['GET'])
 def login():
     return send_from_directory('.', 'login.html')
+
+@app.route('/fleet', methods=['POST'])
+def authenticate():
+    username = request.form.get('username')
+    password = request.form.get('password')
+    
+    # Check if the credentials match admin/admin123
+    if username == 'admin' and password == 'admin123':
+        # Authentication successful, redirect to dashboard
+        return redirect('/fleet')
+    else:
+        # Authentication failed, redirect back to login
+        return redirect('/login')
 
 # Handle specific route patterns
 @app.route('/map/<truck_id>')
@@ -28,14 +41,14 @@ def truck_detail(truck_id):
 def services(service_type):
     return send_from_directory('.', 'services.html')
 
-@app.route('/dashboard')
-@app.route('/fleet')
-@app.route('/routes')
-@app.route('/drivers')
-@app.route('/maintenance')
-@app.route('/analytics')
-@app.route('/messages')
-@app.route('/settings')
+@app.route('/dashboard', methods=['GET'])
+@app.route('/fleet', methods=['GET'])
+@app.route('/routes', methods=['GET'])
+@app.route('/drivers', methods=['GET'])
+@app.route('/maintenance', methods=['GET'])
+@app.route('/analytics', methods=['GET'])
+@app.route('/messages', methods=['GET'])
+@app.route('/settings', methods=['GET'])
 def handle_app_routes():
     # For most routes, return the main dashboard
     return send_from_directory('.', 'preview.html')
