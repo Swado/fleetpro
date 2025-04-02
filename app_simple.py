@@ -10,7 +10,7 @@ app = Flask(__name__,
             template_folder='.')
 
 # Secret key for session
-app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'fleetpulse_secret_key')
+app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'express360_secret_key')
 
 # Sample user data for demo purposes
 users = {
